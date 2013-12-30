@@ -21,32 +21,43 @@ import java.awt.Font;
 import javax.swing.JButton;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
+
+import javax.swing.JPanel;
+
+import java.awt.CardLayout;
+import net.miginfocom.swing.MigLayout;
 
 public class Wizard extends JFrame {
-	private Box horizontalBox;
+	private JLabel stepTitle;
+	private JButton backButton;
+	private JButton nextButton;
+	private JButton finishButton;
+	private JPanel panel = new JPanel();
+
+	private JPanel horizontalBox;
 	{
     	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	}
-	public Wizard() throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+	public Wizard() throws Exception {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Wizard.class.getResource("/Start.png")));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Setter Upper");
 		
-		Box verticalBox = Box.createVerticalBox();
-		getContentPane().add(verticalBox, BorderLayout.NORTH);
+		Box header = Box.createVerticalBox();
+		getContentPane().add(header, BorderLayout.NORTH);
 		
-		horizontalBox = Box.createHorizontalBox();
+		horizontalBox = new JPanel();
 		horizontalBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-		verticalBox.add(horizontalBox);
+		header.add(horizontalBox);
+		horizontalBox.setLayout(new MigLayout("", "[68px,grow]", "[30.00px]"));
 		
-		Component rigidArea_1 = Box.createRigidArea(new Dimension(20, 40));
-		horizontalBox.add(rigidArea_1);
-		
-		JLabel stepTitle = new JLabel("New label");
+		stepTitle = new JLabel("About me");
 		stepTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
-		horizontalBox.add(stepTitle);
+		horizontalBox.add(stepTitle, "cell 0 0,alignx left,aligny center");
 		
 		JSeparator separator = new JSeparator();
-		verticalBox.add(separator);
+		header.add(separator);
 		
 		JTree tree = new JTree();
 		tree.setRootVisible(false);
@@ -77,39 +88,36 @@ public class Wizard extends JFrame {
 	         tree.expandRow(i);
 		}
 		
-		Box controls = Box.createVerticalBox();
-		getContentPane().add(controls, BorderLayout.SOUTH);
+		Box footer = Box.createVerticalBox();
+		getContentPane().add(footer, BorderLayout.SOUTH);
 		
 		JSeparator separator_1 = new JSeparator();
-		controls.add(separator_1);
+		footer.add(separator_1);
 		
-		Box horizontalBox_2 = Box.createHorizontalBox();
-		controls.add(horizontalBox_2);
+		JPanel navigationControls = new JPanel();
+		footer.add(navigationControls);
+		navigationControls.setLayout(new MigLayout("", "[14.00px,grow,fill][55px][55px][59px]", "[30.00px]"));
 		
-		Component horizontalGlue = Box.createHorizontalGlue();
-		horizontalBox_2.add(horizontalGlue);
+		navigationControls.add(Box.createHorizontalGlue(), "cell 0 0,alignx left,aligny center");
 		
-		JButton btnNewButton = new JButton("Back");
-		btnNewButton.setEnabled(false);
-		horizontalBox_2.add(btnNewButton);
+		backButton = new JButton("Back");
+		backButton.setEnabled(false);
+		nextButton = new JButton("Next");
+		finishButton = new JButton("Finish");
 		
-		Component rigidArea = Box.createRigidArea(new Dimension(5, 40));
-		horizontalBox_2.add(rigidArea);
+		navigationControls.add(backButton, "cell 1 0,alignx left,aligny center");
+		navigationControls.add(nextButton, "cell 2 0,alignx left,aligny center");
+		navigationControls.add(finishButton, "cell 3 0,alignx left,aligny center");
 		
-		JButton btnNewButton_1 = new JButton("Next");
-		horizontalBox_2.add(btnNewButton_1);
-		
-		Component rigidArea_3 = Box.createRigidArea(new Dimension(5, 40));
-		horizontalBox_2.add(rigidArea_3);
-		
-		JButton btnNewButton_2 = new JButton("Finish");
-		horizontalBox_2.add(btnNewButton_2);
-		
-		Component rigidArea_2 = Box.createRigidArea(new Dimension(20, 20));
-		horizontalBox_2.add(rigidArea_2);
+		getContentPane().add(panel, BorderLayout.CENTER);
+		panel.setLayout(new CardLayout(0, 0));
+		panel.add(new GitConfigPanel());
+		panel.add(new HostSelectionPanel());
+		panel.add(new HostConfigPanel());
+		panel.add(new RepositoryPanel());
 		
 		this.setMinimumSize(new Dimension(500, 400));
+		// Center on the screen
 		this.setLocationRelativeTo(null);
 	}
-
 }
