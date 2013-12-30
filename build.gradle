@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+//apply plugin: 'launch4j'
+
+mainClassName = "com.joeylawrance.starterupper.Main"
+version = '0.0.1'
+description = 'Starter Upper: Quick git project setup for newbies.'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'org.eclipse.jgit:org.eclipse.jgit-parent:3.2.0.201312181205-r', 'com.jcraft:jsch:0.1.50', 'org.apache.httpcomponents:httpclient:4.3.1', 'com.github.sarxos:lti-civil-no-swt:20070920-1721'
+	testCompile 'junit:junit:4.11'
+}
