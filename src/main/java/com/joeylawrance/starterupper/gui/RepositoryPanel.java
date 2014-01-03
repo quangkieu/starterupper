@@ -46,7 +46,7 @@ public class RepositoryPanel extends JPanel {
 		add(lblNewLabel, "cell 1 3");
 		
 		JLabel lblRemoteRepositories = new JLabel("Remote repositories");
-		add(lblRemoteRepositories, "cell 0 4,aligny top");
+		add(lblRemoteRepositories, "cell 0 4,alignx right,aligny top");
 		
 		table = new JTable();
 		add(table, "cell 1 4,grow");
@@ -58,7 +58,7 @@ public class RepositoryPanel extends JPanel {
 		JButton btnGenerate = new JButton("Generate repositories");
 		add(btnGenerate, "cell 1 6");
 		
-		JLabel lblNewLabel_3 = new JLabel(" ");
+		JLabel lblNewLabel_3 = new JLabel("Nothing will happen until you click above.");
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		add(lblNewLabel_3, "cell 1 7");
 	}

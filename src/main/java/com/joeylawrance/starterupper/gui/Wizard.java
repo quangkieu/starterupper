@@ -42,7 +42,7 @@ public class Wizard extends JFrame {
 	public Wizard() throws Exception {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Wizard.class.getResource("/Start.png")));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setTitle("Setter Upper");
+		setTitle("Starter Upper");
 		
 		Box header = Box.createVerticalBox();
 		getContentPane().add(header, BorderLayout.NORTH);
