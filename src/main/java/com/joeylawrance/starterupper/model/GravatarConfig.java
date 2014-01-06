@@ -14,7 +14,7 @@ public class GravatarConfig {
 	private String url;
 	public GravatarConfig(String email) throws Exception {
 		gravatar = new Gravatar()
-			.setSize(100)
+			.setSize(320)
 			.setRating(GravatarRating.GENERAL_AUDIENCES)
 			.setDefaultImage(GravatarDefaultImage.IDENTICON);
 		url = gravatar.getUrl(email);

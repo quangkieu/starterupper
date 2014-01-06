@@ -75,9 +75,7 @@ public class Wizard extends JFrame {
 					add(node_1);
 					node_1 = new DefaultMutableTreeNode("Project host setup");
 						node_1.add(new DefaultMutableTreeNode("Bitbucket"));
-						node_1.add(new DefaultMutableTreeNode("Deveo"));
-						node_1.add(new DefaultMutableTreeNode("GitEnterprise"));
-						node_1.add(new DefaultMutableTreeNode("Github"));
+						node_1.add(new DefaultMutableTreeNode("GitHub"));
 						node_1.add(new DefaultMutableTreeNode("GitLab Cloud"));
 					add(node_1);
 					add(new DefaultMutableTreeNode("Repositories"));
@@ -112,8 +110,7 @@ public class Wizard extends JFrame {
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new CardLayout(0, 0));
 		panel.add(new GitConfigPanel());
-		panel.add(new HostSelectionPanel());
-		panel.add(new HostConfigPanel());
+//		panel.add(new HostSignUp("asdf"));
 		panel.add(new RepositoryPanel());
 		
 		this.setMinimumSize(new Dimension(500, 400));

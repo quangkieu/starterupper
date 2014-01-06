@@ -16,13 +16,12 @@ public class GitConfigPanel extends JPanel {
 	private JTextField fullName;
 	private JTextField textField;
 	private JTextField textField_1;
-	private JPasswordField passwordField;
 	private GitConfig gitConfig;
 	public GitConfigPanel() throws Exception {
 		setName("About me");
 		
-		gitConfig = new GitConfig();
-		setLayout(new MigLayout("", "[45px][67px,grow]", "[20px][20.00][][20.00][20px][20.00px][][]"));
+		gitConfig = GitConfig.getInstance();
+		setLayout(new MigLayout("", "[45px][]", "[20px][20.00][][20.00][20px][20.00px]"));
 		
 		JLabel lblFullName = new JLabel("Full name");
 		add(lblFullName, "cell 0 0,alignx right,aligny center");
@@ -55,15 +54,6 @@ public class GitConfigPanel extends JPanel {
 		JLabel label_4 = new JLabel("Enter your .edu email address.");
 		label_4.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		add(label_4, "cell 1 5,aligny top");
-		
-		add(new JLabel("Password"), "cell 0 6,alignx trailing");
-		
-		passwordField = new JPasswordField();
-		add(passwordField, "cell 1 6,growx");
-		
-		JLabel lblNewLabel = new JLabel("(Optional) Protect your host credentials.");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(lblNewLabel, "cell 1 7,alignx left,aligny top");
 	}
 
 }
