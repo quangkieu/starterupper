@@ -1,8 +1,6 @@
 package com.joeylawrance.starterupper.model;
 
-import java.util.Properties;
-
-public class BitbucketModel extends GenericGitHostModel implements GitHostPrivateRepositoryModel {
+public class BitbucketModel extends GenericGitHostModel {
 
 	public BitbucketModel() {
 		super("Bitbucket");
@@ -17,42 +15,15 @@ public class BitbucketModel extends GenericGitHostModel implements GitHostPrivat
 		setPublicKeyURL(String.format("https://bitbucket.org/account/user/%s/ssh-keys/", username));
 	}
 	
-	public void watchRepo(String repoURL) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void saveToken(Properties p) throws Exception {
-		// TODO Auto-generated method stub
-		// https://bitbucket.org/account/user/lawrancej/api
-	}
-
-	public boolean signUp(String username, String password) throws Exception {
+	@Override
+	public boolean canAuthenticateWithToken() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void setPrivateRepositoryName(String name) {
+	public void fetchToken() throws Exception {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void addCollaborator(String username) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean createPrivateRepository() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean shareRepositoryWithCollaborators() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

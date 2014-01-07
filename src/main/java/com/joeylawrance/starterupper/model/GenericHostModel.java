@@ -2,6 +2,12 @@ package com.joeylawrance.starterupper.model;
 
 import java.util.HashMap;
 
+/**
+ * Generically log in, sign up, or reset the password for a host.
+ * 
+ * @author Joey Lawrance
+ *
+ */
 public class GenericHostModel implements HostModel {
 	WebHelper client;
 	final String window;
@@ -84,4 +90,5 @@ public class GenericHostModel implements HostModel {
 	public void setFullname(String fullname) {
 		map.put("Name", fullname);
 	}
+
 }

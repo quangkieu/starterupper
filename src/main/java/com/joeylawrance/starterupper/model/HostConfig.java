@@ -2,8 +2,11 @@ package com.joeylawrance.starterupper.model;
 
 import java.util.Properties;
 
-/*
- * Store credentials for hosts.
+/**
+ * Store tokens for hosts. This probably won't make the cut for the first release.
+ * 
+ * @author Joey Lawrance
+ *
  */
 public class HostConfig {
 	private Properties config = new Properties();

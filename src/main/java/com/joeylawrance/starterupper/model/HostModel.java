@@ -1,5 +1,11 @@
 package com.joeylawrance.starterupper.model;
 
+/**
+ * Defines an interface for authenticating with a host.
+ * 
+ * @author Joey Lawrance
+ *
+ */
 public interface HostModel {
 	/**
 	 * Set the user name for this host.

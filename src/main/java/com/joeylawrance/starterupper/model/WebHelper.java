@@ -20,6 +20,12 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlLabel;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+/**
+ * A wrapper around HTMLUnit to fill and submit forms without needing to know the silly details.
+ * 
+ * @author Joey Lawrance
+ *
+ */
 public class WebHelper {
 	static {
 	    LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");

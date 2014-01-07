@@ -2,7 +2,7 @@ package com.joeylawrance.starterupper.model;
 
 import java.util.Properties;
 
-public class GitHubModel extends GenericGitHostModel implements GitHostPrivateRepositoryModel {
+public class GitHubModel extends GenericGitHostModel {
 
 	public GitHubModel() {
 		super("GitHub");
@@ -18,37 +18,28 @@ public class GitHubModel extends GenericGitHostModel implements GitHostPrivateRe
 
 	}
 
-	@Override
 	public void saveToken(Properties p) throws Exception {
 		// TODO Auto-generated method stub
 		// https://github.com/settings/applications
 	}
 
-
 	@Override
-	public void setPrivateRepositoryName(String name) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void addCollaborator(String username) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public boolean createPrivateRepository() throws Exception {
+	public boolean canAuthenticateWithToken() {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 
 	@Override
-	public boolean shareRepositoryWithCollaborators() throws Exception {
+	public void setToken(Properties p) {
 		// TODO Auto-generated method stub
-		return false;
+		
+	}
+
+
+	@Override
+	public void fetchToken() throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 }

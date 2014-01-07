@@ -9,8 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import com.jcraft.jsch.*;
 
-/*
- * Generate SSH keys.
+/**
+ * Generate SSH keys or use the existing keys.
+ * 
+ * @author Joey Lawrance
+ *
  */
 public class KeyConfig {
 	private final Logger logger = LoggerFactory.getLogger(KeyConfig.class);

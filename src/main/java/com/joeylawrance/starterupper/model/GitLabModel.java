@@ -51,4 +51,25 @@ public class GitLabModel extends GenericGitHostModel {
 		
 		return !signupURL.equals(client.getPageUrl(window));
 	}
+
+
+	@Override
+	public boolean canAuthenticateWithToken() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public void setToken(Properties p) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void fetchToken() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
