@@ -2,7 +2,7 @@ package com.joeylawrance.starterupper.model;
 
 import java.util.Properties;
 
-public class GitHubModel extends GenericGitHostModel {
+public class GitHubModel extends GenericGitHostRepositoryModel {
 
 	public GitHubModel() {
 		super("GitHub");
@@ -10,6 +10,11 @@ public class GitHubModel extends GenericGitHostModel {
 		setSignupURL("https://github.com/join");
 		setResetURL("https://github.com/sessions/forgot_password");
 		setPublicKeyURL("https://github.com/settings/ssh");
+		setRepositoryCreateURL("https://github.com/new");
+		
+		// https://github.com/session
+		// Authentication Code
+		// Verify
 	}
 
 

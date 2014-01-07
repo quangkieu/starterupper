@@ -89,6 +89,7 @@ public class GenericHostModel implements HostModel {
 	@Override
 	public void setFullname(String fullname) {
 		map.put("Name", fullname);
+		map.put("Full name", fullname);
 	}
 
 }

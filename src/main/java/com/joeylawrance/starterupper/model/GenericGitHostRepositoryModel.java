@@ -4,7 +4,7 @@ public class GenericGitHostRepositoryModel extends GenericGitHostModel implement
 		GitHostRepositoryModel {
 
 	String repositoryCreateURL;
-
+	
 	public GenericGitHostRepositoryModel(String window) {
 		super(window);
 	}
@@ -16,8 +16,8 @@ public class GenericGitHostRepositoryModel extends GenericGitHostModel implement
 
 	@Override
 	public void setPrivateRepositoryName(String name) {
-		// TODO Auto-generated method stub
-
+		// By this time, hopefully we've set up the user's full name.
+		map.put("Name", name);
 	}
 
 	@Override
@@ -28,8 +28,10 @@ public class GenericGitHostRepositoryModel extends GenericGitHostModel implement
 
 	@Override
 	public boolean createPrivateRepository() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		client.load(window,repositoryCreateURL);
+		client.fillForm(window, map);
+		client.submitForm(window,"Create");
+		return !client.getPageUrl(window).equals(repositoryCreateURL);
 	}
 
 	@Override

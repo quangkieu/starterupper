@@ -6,7 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 
-public class GitLabModel extends GenericGitHostModel {
+public class GitLabModel extends GenericGitHostRepositoryModel {
 	
 	public GitLabModel() {
 		super("gitlab");
@@ -14,6 +14,7 @@ public class GitLabModel extends GenericGitHostModel {
 		setSignupURL("https://gitlab.com/users/sign_up");
 		setResetURL("https://gitlab.com/users/password/new");
 		setPublicKeyURL("https://gitlab.com/profile/keys/new");
+		setRepositoryCreateURL("https://gitlab.com/projects/new");
 	}
 	
 
