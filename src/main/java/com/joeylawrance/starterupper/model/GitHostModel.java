@@ -23,22 +23,4 @@ public interface GitHostModel extends HostModel {
 	 * @throws Exception if the key is not set.
 	 */
 	public void sharePublicKey() throws Exception;
-	/**
-	 * Set the token data structure for authenticating with the project host.
-	 * 
-	 * @param p Properties from which to read/write to.
-	 */
-	public void setToken(Properties p);
-	/**
-	 * Fetch the token from the project host.
-	 * 
-	 * @throws Exception
-	 */
-	public void fetchToken() throws Exception;
-	/**
-	 * Does the token work?
-	 * 
-	 * @return Whether the token works for authentication.
-	 */
-	public boolean canAuthenticateWithToken();
 }

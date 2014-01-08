@@ -4,6 +4,7 @@ public class GenericGitHostRepositoryModel extends GenericGitHostModel implement
 		GitHostRepositoryModel {
 
 	String repositoryCreateURL;
+	String collaboratorURL;
 	
 	public GenericGitHostRepositoryModel(String window) {
 		super(window);
@@ -13,17 +14,15 @@ public class GenericGitHostRepositoryModel extends GenericGitHostModel implement
 		this.repositoryCreateURL = repositoryCreateURL;
 	}
 
+	public void setCollaboratorURL(String collaboratorURL) {
+		this.collaboratorURL = String.format(collaboratorURL, getUsername(), map.get("Repository name"));
+	}
 
 	@Override
 	public void setPrivateRepositoryName(String name) {
 		// By this time, hopefully we've set up the user's full name.
 		map.put("Name", name);
-	}
-
-	@Override
-	public void addCollaborator(String username) {
-		// TODO Auto-generated method stub
-
+		map.put("Repository name", name);
 	}
 
 	@Override
@@ -35,23 +34,14 @@ public class GenericGitHostRepositoryModel extends GenericGitHostModel implement
 	}
 
 	@Override
-	public boolean shareRepositoryWithCollaborators() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public void fetchToken() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public boolean canAuthenticateWithToken() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean addCollaboratorToRepository(String username) throws Exception {
+		client.load(window, collaboratorURL);
+		// This sucks. I need to rethink how I do this.
+		map.remove("Username");
+		map.put("user|friend", username);
+		client.fillForm(window, map);
+		client.submitForm(window, "Add");
+		return !client.getPageUrl(window).equals(collaboratorURL);
 	}
 
 }

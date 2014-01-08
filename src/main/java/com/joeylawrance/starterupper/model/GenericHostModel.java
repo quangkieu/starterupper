@@ -14,6 +14,7 @@ public class GenericHostModel implements HostModel {
 	String signupURL;
 	String loginURL;
 	String resetURL;
+	String username;
 	
 	protected HashMap<String, String> map = new HashMap<String, String>();
 	
@@ -63,9 +64,15 @@ public class GenericHostModel implements HostModel {
 
 	@Override
 	public void setUsername(String username) {
+		this.username = username;
 		map.put("Username", username);
 	}
 
+	@Override
+	public String getUsername() {
+		return username;
+	}
+	
 	@Override
 	public void setEmail(String email) {
 		map.put("Email", email);
@@ -90,6 +97,12 @@ public class GenericHostModel implements HostModel {
 	public void setFullname(String fullname) {
 		map.put("Name", fullname);
 		map.put("Full name", fullname);
+	}
+
+	@Override
+	public String getHostName() {
+		// TODO Auto-generated method stub
+		return window;
 	}
 
 }

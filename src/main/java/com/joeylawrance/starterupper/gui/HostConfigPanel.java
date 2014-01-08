@@ -3,18 +3,24 @@ package com.joeylawrance.starterupper.gui;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
 import java.awt.Font;
+
 import javax.swing.JPasswordField;
 import javax.swing.Box;
 import javax.swing.JButton;
+
+import com.joeylawrance.starterupper.model.HostModel;
+
 import java.awt.Component;
 import java.awt.Dimension;
+
 import net.miginfocom.swing.MigLayout;
 
 public class HostConfigPanel extends JPanel {
 	private JTextField textField;
 	private JPasswordField passwordField;
-	public HostConfigPanel() {
+	public HostConfigPanel(HostModel model) {
 		setLayout(new MigLayout("", "[48px][86px]", "[20px][][][29.00][23px][]"));
 		
 		JLabel lblNewLabel = new JLabel("Username");
@@ -44,7 +50,7 @@ public class HostConfigPanel extends JPanel {
 		JButton logIn = new JButton("Log in");
 		add(logIn, "cell 1 4");
 
-		JLabel lblSignUpIf = new JLabel("Click \"Log in\" to verify and save account credentials for Starter Upper.");
+		JLabel lblSignUpIf = new JLabel(" ");
 		lblSignUpIf.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		add(lblSignUpIf, "cell 1 5");
 		

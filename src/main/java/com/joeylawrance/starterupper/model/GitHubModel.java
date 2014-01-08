@@ -11,40 +11,10 @@ public class GitHubModel extends GenericGitHostRepositoryModel {
 		setResetURL("https://github.com/sessions/forgot_password");
 		setPublicKeyURL("https://github.com/settings/ssh");
 		setRepositoryCreateURL("https://github.com/new");
+		setCollaboratorURL("https://github.com/%s/%s/settings/collaboration");
 		
 		// https://github.com/session
 		// Authentication Code
 		// Verify
-	}
-
-
-	public void watchRepo(String repoURL) throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void saveToken(Properties p) throws Exception {
-		// TODO Auto-generated method stub
-		// https://github.com/settings/applications
-	}
-
-	@Override
-	public boolean canAuthenticateWithToken() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public void setToken(Properties p) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void fetchToken() throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -9,7 +9,7 @@ import java.util.Properties;
  * @author Joey Lawrance
  *
  */
-public abstract class GenericGitHostModel extends GenericHostModel implements GitHostModel {
+public class GenericGitHostModel extends GenericHostModel implements GitHostModel {
 
 	private String publicKeyURL;
 	Properties token;
@@ -33,10 +33,5 @@ public abstract class GenericGitHostModel extends GenericHostModel implements Gi
 	@Override
 	public void setPublicKey(String key) {
 		map.put("Key", key);
-	}
-	
-	@Override
-	public void setToken(Properties token) {
-		this.token = token;
 	}
 }

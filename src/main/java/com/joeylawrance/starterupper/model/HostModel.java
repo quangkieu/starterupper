@@ -13,6 +13,11 @@ public interface HostModel {
 	 */
 	public void setUsername(String username);
 	/**
+	 * Get the user name for this host.
+	 * @return
+	 */
+	public String getUsername();
+	/**
 	 * Set the email address for this host.
 	 * @param email
 	 */
@@ -54,4 +59,10 @@ public interface HostModel {
 	 * @throws Exception
 	 */
 	public void forgotPassword() throws Exception;
+	/**
+	 * Get the host name.
+	 * 
+	 * @return The name of this host.
+	 */
+	public String getHostName();
 }

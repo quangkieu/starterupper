@@ -8,23 +8,12 @@ public class BitbucketModel extends GenericGitHostRepositoryModel {
 		setSignupURL("https://bitbucket.org/account/signup/");
 		setResetURL("https://bitbucket.org/account/password/reset/");
 		setRepositoryCreateURL("https://bitbucket.org/repo/create");
+		setCollaboratorURL("https://bitbucket.org/%s/%s/admin/access");
 	}
 	
 	@Override
 	public void setUsername(String username) {
 		super.setUsername(username);
 		setPublicKeyURL(String.format("https://bitbucket.org/account/user/%s/ssh-keys/", username));
-	}
-	
-	@Override
-	public boolean canAuthenticateWithToken() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void fetchToken() throws Exception {
-		// TODO Auto-generated method stub
-		
 	}
 }
