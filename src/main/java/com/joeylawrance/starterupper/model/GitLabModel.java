@@ -9,7 +9,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class GitLabModel extends GenericGitHostRepositoryModel {
 	
 	public GitLabModel() {
-		super("GitLab Cloud", GitLabModel.class.getResource("/gitlab.png"));
+		super("GitLab Cloud", GitLabModel.class.getResource("/gitlab.png"), "GitLab Cloud is an open source git project host.");
 		setLoginURL("https://gitlab.com/users/sign_in");
 		setSignupURL("https://gitlab.com/users/sign_up");
 		setResetURL("https://gitlab.com/users/password/new");

@@ -13,6 +13,7 @@ public class GenericHostModel implements HostModel {
 	WebHelper client;
 	final String window;
 	final URL logo;
+	final String description;
 	String signupURL;
 	String loginURL;
 	String resetURL;
@@ -20,9 +21,10 @@ public class GenericHostModel implements HostModel {
 	
 	protected HashMap<String, String> map = new HashMap<String, String>();
 	
-	public GenericHostModel(String window, URL logo) {
+	public GenericHostModel(String window, URL logo, String description) {
 		this.window = window;
 		this.logo = logo;
+		this.description = description;
 		client = new WebHelper();
 		client.newWindow(window);
 	}
@@ -114,13 +116,17 @@ public class GenericHostModel implements HostModel {
 
 	@Override
 	public String getHostName() {
-		// TODO Auto-generated method stub
 		return window;
 	}
 
 	@Override
 	public URL getLogo() {
 		return logo;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
 	}
 
 }

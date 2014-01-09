@@ -23,45 +23,49 @@ public class HostConfigPanel extends JPanel {
 	private JTextField textField;
 	private JPasswordField passwordField;
 	public HostConfigPanel(HostModel model) {
-		setLayout(new MigLayout("", "[48px][86px]", "[70.00][20px][][][29.00][23px][]"));
+		setLayout(new MigLayout("", "[48px][86px,grow]", "[76.00][][20px][][][29.00][23px][]"));
 		
 		JLabel logo = new JLabel();
 		logo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
 		add(logo, "cell 1 0");
 		
+		JLabel description = new JLabel();
+		description.setText(model.getDescription());
+		add(description, "cell 1 1");
+		
 		JLabel lblNewLabel = new JLabel("Username");
-		add(lblNewLabel, "cell 0 1,alignx left,aligny center");
+		add(lblNewLabel, "cell 0 2,alignx left,aligny center");
 		
 		textField = new JTextField();
-		add(textField, "cell 1 1,growx,aligny top");
+		add(textField, "cell 1 2,growx,aligny top");
 		textField.setColumns(10);
 		
-		JLabel label = new JLabel("Enter a username for this service.");
+		JLabel label = new JLabel(String.format("Enter a username for %s.",model.getHostName()));
 		label.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(label, "cell 1 2");
+		add(label, "cell 1 3");
 		
 		JLabel label_1 = new JLabel("Password");
-		add(label_1, "cell 0 3");
+		add(label_1, "cell 0 4");
 		
 		passwordField = new JPasswordField();
-		add(passwordField, "cell 1 3,growx");
+		add(passwordField, "cell 1 4,growx");
 		
-		JLabel label_2 = new JLabel("Enter a password for this service.");
+		JLabel label_2 = new JLabel(String.format("Enter a password for %s.",model.getHostName()));
 		label_2.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(label_2, "cell 1 4,aligny top");
+		add(label_2, "cell 1 5,aligny top");
 		
 		JButton signUp = new JButton("Sign up");
-		add(signUp, "flowx,cell 1 5");
+		add(signUp, "flowx,cell 1 6");
 
 		JButton logIn = new JButton("Log in");
-		add(logIn, "cell 1 5");
+		add(logIn, "cell 1 6");
 
 		JLabel lblSignUpIf = new JLabel(" ");
 		lblSignUpIf.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(lblSignUpIf, "cell 1 6");
+		add(lblSignUpIf, "cell 1 7");
 		
 		JButton btnNewButton = new JButton("Reset password");
-		add(btnNewButton, "cell 1 5");
+		add(btnNewButton, "cell 1 6");
 		
 	}
 }

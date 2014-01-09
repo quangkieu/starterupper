@@ -8,8 +8,8 @@ public class GenericGitHostRepositoryModel extends GenericGitHostModel implement
 	String repositoryCreateURL;
 	String collaboratorURL;
 	
-	public GenericGitHostRepositoryModel(String window, URL logo) {
-		super(window, logo);
+	public GenericGitHostRepositoryModel(String window, URL logo, String description) {
+		super(window, logo, description);
 	}
 	
 	public void setRepositoryCreateURL(String repositoryCreateURL) {

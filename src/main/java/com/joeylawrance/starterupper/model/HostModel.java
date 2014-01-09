@@ -81,4 +81,10 @@ public interface HostModel {
 	 * @return The name of this host.
 	 */
 	public String getHostName();
+	/**
+	 * Get a description of the host.
+	 * 
+	 * @return A description of this host.
+	 */
+	public String getDescription();
 }

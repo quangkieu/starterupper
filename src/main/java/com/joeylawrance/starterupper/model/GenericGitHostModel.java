@@ -15,8 +15,8 @@ public class GenericGitHostModel extends GenericHostModel implements GitHostMode
 	private String publicKeyURL;
 	Properties token;
 
-	public GenericGitHostModel(String window, URL logo) {
-		super(window, logo);
+	public GenericGitHostModel(String window, URL logo, String description) {
+		super(window, logo, description);
 	}
 	
 	protected void setPublicKeyURL(String publicKeyURL) {

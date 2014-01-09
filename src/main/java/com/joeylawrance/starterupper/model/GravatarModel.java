@@ -12,7 +12,7 @@ import helma.xmlrpc.secure.SecureXmlRpcClient;
 
 public class GravatarModel extends GenericHostModel {
 	public GravatarModel() {
-		super("Gravatar", GravatarModel.class.getResource("/Gravatar.png"));
+		super("Gravatar", GravatarModel.class.getResource("/Gravatar.png"), "Gravatar hosts your profile picture across the web.");
 		setLoginURL("https://wordpress.com/wp-login.php");
 		setSignupURL("https://signup.wordpress.com/signup/?user=1");
 		setResetURL("http://wordpress.com/wp-login.php?action=lostpassword");

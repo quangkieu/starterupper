@@ -39,7 +39,8 @@ public class GitConfig {
 		return config.getString("user", null, "email");
 	}
 	public String getUsername() {
-		return System.getProperty("user.name");
+		String storedDefault = config.getString("user", null, "defaultname");
+		return (storedDefault == null) ? System.getProperty("user.name") : storedDefault;
 	}
 	public void setUserFullName(String name) throws Exception {
 		config.setString("user", null, "name", name);
@@ -47,6 +48,10 @@ public class GitConfig {
 	}
 	public void setUserEmail(String email) throws Exception {
 		config.setString("user", null, "email", email);
+		save();
+	}
+	public void setUsername(String username) throws Exception {
+		config.setString("user", null, "defaultname", username);
 		save();
 	}
 	private void save() throws Exception {
