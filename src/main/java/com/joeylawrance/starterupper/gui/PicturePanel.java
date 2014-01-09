@@ -2,28 +2,11 @@ package com.joeylawrance.starterupper.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-
-
-
-
-
-
-
-
-
-
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamPanel;
-import com.joeylawrance.starterupper.Constants;
+import com.joeylawrance.starterupper.model.GravatarModel;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -32,16 +15,13 @@ import java.awt.Color;
 
 public class PicturePanel extends JPanel {
 	CameraPanel camPanel;
-	public PicturePanel() {
-		this(Constants.PROFILE_PICTURE);
-	}
-	public PicturePanel(File image) {
+	public PicturePanel(GravatarModel model) {
 		setLayout(new MigLayout("", "[320.00,grow]", "[][240.00][grow][]"));
 		
 		JLabel lblNewLabel = new JLabel("Smile! Take a picture and share it to associate names and faces.");
 		add(lblNewLabel, "cell 0 0,alignx center");
 
-		camPanel = new CameraPanel(image);
+		camPanel = new CameraPanel(model.getProfilePicture());
 		add(camPanel, "cell 0 1,alignx center");
 		
 		JPanel panel = new JPanel();

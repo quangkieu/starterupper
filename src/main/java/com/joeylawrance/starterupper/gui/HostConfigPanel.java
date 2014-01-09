@@ -64,7 +64,7 @@ public class HostConfigPanel extends JPanel {
 		lblSignUpIf.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		add(lblSignUpIf, "cell 1 7");
 		
-		JButton btnNewButton = new JButton("Reset password");
+		JButton btnNewButton = new JButton("Forgot password");
 		add(btnNewButton, "cell 1 6");
 		
 	}

@@ -1,7 +1,5 @@
 package com.joeylawrance.starterupper.model;
 
-import java.util.Properties;
-
 /**
  * Defines one-time git project hosting setup methods.
  * 

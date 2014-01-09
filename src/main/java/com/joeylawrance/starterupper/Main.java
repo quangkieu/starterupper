@@ -8,18 +8,17 @@ import com.joeylawrance.starterupper.gui.Wizard;
 import com.joeylawrance.starterupper.model.BitbucketModel;
 import com.joeylawrance.starterupper.model.GitHubModel;
 import com.joeylawrance.starterupper.model.GitLabModel;
-import com.joeylawrance.starterupper.model.GravatarConfig;
 import com.joeylawrance.starterupper.model.GravatarModel;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-//    	System.out.println(System.getProperty("user.name"));
-		GravatarConfig g = new GravatarConfig("lawrancej@wit.edu");
+    	GravatarModel gravatar = new GravatarModel();
 
     	Wizard w = new Wizard();
+    	
 		w.addStep("Name & email", new GitConfigPanel());
-		w.addStep("Gravatar setup", new HostConfigPanel(new GravatarModel()));
-		w.addStep("Profile picture", new PicturePanel());
+		w.addStep("Gravatar setup", new HostConfigPanel(gravatar));
+		w.addStep("Profile picture", new PicturePanel(gravatar));
 		w.addStep("Bitbucket setup", new HostConfigPanel(new BitbucketModel()));
 		w.addStep("GitHub setup", new HostConfigPanel(new GitHubModel()));
 		w.addStep("GitLab setup", new HostConfigPanel(new GitLabModel()));
