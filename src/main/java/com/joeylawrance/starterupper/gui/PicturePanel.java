@@ -20,8 +20,10 @@ import net.miginfocom.swing.MigLayout;
 
 
 
+
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
+import com.joeylawrance.starterupper.Constants;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -31,7 +33,7 @@ import java.awt.Color;
 public class PicturePanel extends JPanel {
 	CameraPanel camPanel;
 	public PicturePanel() {
-		this(new File("me.png"));
+		this(Constants.PROFILE_PICTURE);
 	}
 	public PicturePanel(File image) {
 		setLayout(new MigLayout("", "[320.00,grow]", "[][240.00][grow][]"));

@@ -1,32 +1,33 @@
 package com.joeylawrance.starterupper.gui;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-
-import java.awt.BorderLayout;
-
+import javax.swing.JSeparator;
+import javax.swing.JPanel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.Box;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-import java.awt.Component;
-
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.JSeparator;
 
 import java.awt.Font;
-
-import javax.swing.JButton;
-
 import java.awt.Dimension;
 import java.awt.Toolkit;
-
-import javax.swing.JPanel;
-
 import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
+
 import net.miginfocom.swing.MigLayout;
+
+import java.awt.Color;
+
+import javax.swing.JList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.border.EmptyBorder;
 
 public class Wizard extends JFrame {
 	private JLabel stepTitle;
@@ -34,87 +35,105 @@ public class Wizard extends JFrame {
 	private JButton nextButton;
 	private JButton finishButton;
 	private JPanel panel = new JPanel();
+	private DefaultListModel steps;
 
 	private JPanel horizontalBox;
 	{
-    	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	}
 	public Wizard() throws Exception {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Wizard.class.getResource("/Start.png")));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Starter Upper");
-		
+
 		Box header = Box.createVerticalBox();
 		getContentPane().add(header, BorderLayout.NORTH);
-		
+
 		horizontalBox = new JPanel();
 		horizontalBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 		header.add(horizontalBox);
 		horizontalBox.setLayout(new MigLayout("", "[68px,grow]", "[30.00px]"));
-		
+
 		stepTitle = new JLabel("About me");
 		stepTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
 		horizontalBox.add(stepTitle, "cell 0 0,alignx left,aligny center");
-		
+
 		JSeparator separator = new JSeparator();
 		header.add(separator);
+
+		steps = new DefaultListModel();
+		JList list = new JList(steps);
+		list.setBorder(new EmptyBorder(0, 3, 0, 0));
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.setLayoutOrientation(JList.VERTICAL);
+		list.setPreferredSize(new Dimension(120,320));
+		list.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		
-		JTree tree = new JTree();
-		tree.setRootVisible(false);
-		tree.setToggleClickCount(0);
-		tree.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		getContentPane().add(tree, BorderLayout.WEST);
-		tree.setModel(new DefaultTreeModel(
-			new DefaultMutableTreeNode("Root") {
-				{
-					DefaultMutableTreeNode node_1;
-					node_1 = new DefaultMutableTreeNode("About me");
-						node_1.add(new DefaultMutableTreeNode("Name & email"));
-						node_1.add(new DefaultMutableTreeNode("Public SSH key"));
-						node_1.add(new DefaultMutableTreeNode("Gravatar"));
-					add(node_1);
-					node_1 = new DefaultMutableTreeNode("Project host setup");
-						node_1.add(new DefaultMutableTreeNode("Bitbucket"));
-						node_1.add(new DefaultMutableTreeNode("GitHub"));
-						node_1.add(new DefaultMutableTreeNode("GitLab Cloud"));
-					add(node_1);
-					add(new DefaultMutableTreeNode("Repositories"));
-				}
+		list.addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				gotoStep(steps.getElementAt(arg0.getFirstIndex()).toString());
 			}
-		));
-		for (int i = 0; i < tree.getRowCount(); i++) {
-	         tree.expandRow(i);
-		}
+			
+		});
 		
+		getContentPane().add(list, BorderLayout.WEST);
+
 		Box footer = Box.createVerticalBox();
 		getContentPane().add(footer, BorderLayout.SOUTH);
-		
+
 		JSeparator separator_1 = new JSeparator();
 		footer.add(separator_1);
-		
+
 		JPanel navigationControls = new JPanel();
 		footer.add(navigationControls);
 		navigationControls.setLayout(new MigLayout("", "[14.00px,grow,fill][55px][55px][59px]", "[30.00px]"));
-		
+
 		navigationControls.add(Box.createHorizontalGlue(), "cell 0 0,alignx left,aligny center");
-		
+
 		backButton = new JButton("Back");
 		backButton.setEnabled(false);
 		nextButton = new JButton("Next");
 		finishButton = new JButton("Finish");
-		
+
 		navigationControls.add(backButton, "cell 1 0,alignx left,aligny center");
 		navigationControls.add(nextButton, "cell 2 0,alignx left,aligny center");
 		navigationControls.add(finishButton, "cell 3 0,alignx left,aligny center");
 		
+		backButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			}
+			
+		});
+
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new CardLayout(0, 0));
-		panel.add(new GitConfigPanel());
-//		panel.add(new HostSignUp("asdf"));
-		panel.add(new RepositoryPanel());
-		
+
 		this.setMinimumSize(new Dimension(500, 400));
 		// Center on the screen
 		this.setLocationRelativeTo(null);
+	}
+	public void addStep(String name, JPanel card) {
+		steps.addElement(name);
+		panel.add(card, name);
+	}
+	private void gotoStep(String name) {
+		CardLayout panelLayout = (CardLayout) panel.getLayout();
+		panelLayout.show(panel, name);
+	}
+	private boolean hasNext() {
+		return true;
+	}
+	private boolean hasBack() {
+		return false;
+	}
+	private void goNext() {
+		
+	}
+	private void goBack() {
+		
 	}
 }

@@ -1,5 +1,6 @@
 package com.joeylawrance.starterupper.gui;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -17,19 +18,21 @@ public class CameraPanel extends WebcamPanel {
 		this(Webcam.getDefault(), image);
 	}
 	public CameraPanel(Webcam webcam, File image) {
-		super(webcam);
+		super(webcam, new Dimension(240,240), false);
 		cam = webcam;
-		if (image.exists()) cam.close();
+		if (!image.exists()) {
+			this.start();
+		}
 		this.image = image;
 	}
 	public void take() throws Exception {
 		BufferedImage bi = cam.getImage();
-		ImageIO.write(bi, "PNG", image);
-		cam.close();
+		ImageIO.write(bi, "jpg", image);
+		this.stop();
 	}
 	public void discard() throws Exception {
 		image.delete();
-		cam.open();
+		this.start();
 	}
 	public void paintComponent(Graphics g) {
 		if (image.exists()) {
