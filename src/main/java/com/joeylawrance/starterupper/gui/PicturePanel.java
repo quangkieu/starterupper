@@ -85,5 +85,9 @@ public class PicturePanel extends JPanel {
 		error.setForeground(Color.RED);
 		add(error, "cell 0 3,alignx center");
 	}
-
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		camPanel.setVisible(visible);
+	}
 }

@@ -35,7 +35,10 @@ public class Wizard extends JFrame {
 	private JButton nextButton;
 	private JButton finishButton;
 	private JPanel panel = new JPanel();
+	private JList list;
+	private ListSelectionListener selectionListener;
 	private DefaultListModel steps;
+	private int currentIndex = 0;
 
 	private JPanel horizontalBox;
 	{
@@ -54,7 +57,7 @@ public class Wizard extends JFrame {
 		header.add(horizontalBox);
 		horizontalBox.setLayout(new MigLayout("", "[68px,grow]", "[30.00px]"));
 
-		stepTitle = new JLabel("About me");
+		stepTitle = new JLabel();
 		stepTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
 		horizontalBox.add(stepTitle, "cell 0 0,alignx left,aligny center");
 
@@ -62,21 +65,19 @@ public class Wizard extends JFrame {
 		header.add(separator);
 
 		steps = new DefaultListModel();
-		JList list = new JList(steps);
+		list = new JList(steps);
 		list.setBorder(new EmptyBorder(0, 3, 0, 0));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setLayoutOrientation(JList.VERTICAL);
 		list.setPreferredSize(new Dimension(120,320));
 		list.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		
-		list.addListSelectionListener(new ListSelectionListener() {
 
+		selectionListener = new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
-				gotoStep(steps.getElementAt(arg0.getFirstIndex()).toString());
+				gotoStep(list.getSelectedIndex());
 			}
-			
-		});
+		};
 		
 		getContentPane().add(list, BorderLayout.WEST);
 
@@ -93,7 +94,6 @@ public class Wizard extends JFrame {
 		navigationControls.add(Box.createHorizontalGlue(), "cell 0 0,alignx left,aligny center");
 
 		backButton = new JButton("Back");
-		backButton.setEnabled(false);
 		nextButton = new JButton("Next");
 		finishButton = new JButton("Finish");
 
@@ -102,11 +102,16 @@ public class Wizard extends JFrame {
 		navigationControls.add(finishButton, "cell 3 0,alignx left,aligny center");
 		
 		backButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				goBack();
 			}
-			
+		});
+		nextButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				goNext();
+			}
 		});
 
 		getContentPane().add(panel, BorderLayout.CENTER);
@@ -119,21 +124,35 @@ public class Wizard extends JFrame {
 	public void addStep(String name, JPanel card) {
 		steps.addElement(name);
 		panel.add(card, name);
+		gotoStep(0);
 	}
-	private void gotoStep(String name) {
+	private void updateState() {
+		// Don't fire events, silly
+		list.removeListSelectionListener(selectionListener);
+		list.setSelectedIndex(currentIndex);
+		list.addListSelectionListener(selectionListener);
+		
+		backButton.setEnabled(currentIndex > 0);
+		nextButton.setEnabled(currentIndex < steps.getSize() - 1);
+		finishButton.setEnabled(currentIndex == steps.getSize() - 1);
+	}
+	private void gotoStep(int index) {
 		CardLayout panelLayout = (CardLayout) panel.getLayout();
+		String name = steps.getElementAt(index).toString();
+		stepTitle.setText(name);
 		panelLayout.show(panel, name);
-	}
-	private boolean hasNext() {
-		return true;
-	}
-	private boolean hasBack() {
-		return false;
+		panel.getComponents()[index].setVisible(true);
+		currentIndex = index;
+		updateState();
 	}
 	private void goNext() {
-		
+		gotoStep(currentIndex+1);
 	}
 	private void goBack() {
-		
+		gotoStep(currentIndex-1);
+	}
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		list.addListSelectionListener(selectionListener);
 	}
 }

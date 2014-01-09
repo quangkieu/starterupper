@@ -23,10 +23,20 @@ public interface HostModel {
 	 */
 	public void setEmail(String email);
 	/**
+	 * Get the email address.
+	 * @return
+	 */
+	public String getEmail();
+	/**
 	 * Set the password for this host.
 	 * @param password
 	 */
 	public void setPassword(String password);
+	/**
+	 * Get the password for this host.
+	 * @return
+	 */
+	public String getPassword();
 	/**
 	 * Set the first name for this host.
 	 * @param firstname

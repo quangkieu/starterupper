@@ -77,10 +77,20 @@ public class GenericHostModel implements HostModel {
 	public void setEmail(String email) {
 		map.put("Email", email);
 	}
+	
+	@Override
+	public String getEmail() {
+		return map.get("Email");
+	}
 
 	@Override
 	public void setPassword(String password) {
 		map.put("Password", password);
+	}
+	
+	@Override
+	public String getPassword() {
+		return map.get("Password");
 	}
 
 	@Override
