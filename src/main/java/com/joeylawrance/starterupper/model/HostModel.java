@@ -1,5 +1,7 @@
 package com.joeylawrance.starterupper.model;
 
+import java.net.URL;
+
 /**
  * Defines an interface for authenticating with a host.
  * 
@@ -7,6 +9,10 @@ package com.joeylawrance.starterupper.model;
  *
  */
 public interface HostModel {
+	/**
+	 * Get the logo for this host.
+	 */
+	public URL getLogo();
 	/**
 	 * Set the user name for this host.
 	 * @param username

@@ -1,13 +1,15 @@
 package com.joeylawrance.starterupper.model;
 
+import java.net.URL;
+
 public class GenericGitHostRepositoryModel extends GenericGitHostModel implements
 		GitHostRepositoryModel {
 
 	String repositoryCreateURL;
 	String collaboratorURL;
 	
-	public GenericGitHostRepositoryModel(String window) {
-		super(window);
+	public GenericGitHostRepositoryModel(String window, URL logo) {
+		super(window, logo);
 	}
 	
 	public void setRepositoryCreateURL(String repositoryCreateURL) {

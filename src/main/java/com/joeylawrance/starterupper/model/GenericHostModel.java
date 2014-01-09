@@ -1,5 +1,6 @@
 package com.joeylawrance.starterupper.model;
 
+import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -11,6 +12,7 @@ import java.util.HashMap;
 public class GenericHostModel implements HostModel {
 	WebHelper client;
 	final String window;
+	final URL logo;
 	String signupURL;
 	String loginURL;
 	String resetURL;
@@ -18,8 +20,9 @@ public class GenericHostModel implements HostModel {
 	
 	protected HashMap<String, String> map = new HashMap<String, String>();
 	
-	public GenericHostModel(String window) {
+	public GenericHostModel(String window, URL logo) {
 		this.window = window;
+		this.logo = logo;
 		client = new WebHelper();
 		client.newWindow(window);
 	}
@@ -113,6 +116,11 @@ public class GenericHostModel implements HostModel {
 	public String getHostName() {
 		// TODO Auto-generated method stub
 		return window;
+	}
+
+	@Override
+	public URL getLogo() {
+		return logo;
 	}
 
 }

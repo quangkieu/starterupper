@@ -113,6 +113,12 @@ public class Wizard extends JFrame {
 				goNext();
 			}
 		});
+		finishButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
+			}
+		});
 
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new CardLayout(0, 0));

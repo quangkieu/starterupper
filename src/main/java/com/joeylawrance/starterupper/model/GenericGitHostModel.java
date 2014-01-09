@@ -1,6 +1,7 @@
 package com.joeylawrance.starterupper.model;
 
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -14,8 +15,8 @@ public class GenericGitHostModel extends GenericHostModel implements GitHostMode
 	private String publicKeyURL;
 	Properties token;
 
-	public GenericGitHostModel(String window) {
-		super(window);
+	public GenericGitHostModel(String window, URL logo) {
+		super(window, logo);
 	}
 	
 	protected void setPublicKeyURL(String publicKeyURL) {

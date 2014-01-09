@@ -1,11 +1,9 @@
 package com.joeylawrance.starterupper.model;
 
-import java.util.Properties;
-
 public class GitHubModel extends GenericGitHostRepositoryModel {
 
 	public GitHubModel() {
-		super("GitHub");
+		super("GitHub", GitHubModel.class.getResource("/github.png"));
 		setLoginURL("https://github.com/login");
 		setSignupURL("https://github.com/join");
 		setResetURL("https://github.com/sessions/forgot_password");

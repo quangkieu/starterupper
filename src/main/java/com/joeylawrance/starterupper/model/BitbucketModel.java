@@ -3,7 +3,7 @@ package com.joeylawrance.starterupper.model;
 public class BitbucketModel extends GenericGitHostRepositoryModel {
 
 	public BitbucketModel() {
-		super("Bitbucket");
+		super("Bitbucket", BitbucketModel.class.getResource("/bitbucket.png"));
 		setLoginURL("https://bitbucket.org/account/signin/");
 		setSignupURL("https://bitbucket.org/account/signup/");
 		setResetURL("https://bitbucket.org/account/password/reset/");
