@@ -17,11 +17,11 @@ public class Main {
     	Wizard w = new Wizard();
     	
 		w.addStep("Name & email", new GitConfigPanel());
-		w.addStep("Gravatar setup", new HostConfigPanel(gravatar));
+		w.addStep("Gravatar", new HostConfigPanel(gravatar));
 		w.addStep("Profile picture", new PicturePanel(gravatar));
-		w.addStep("Bitbucket setup", new HostConfigPanel(new BitbucketModel()));
-		w.addStep("GitHub setup", new HostConfigPanel(new GitHubModel()));
-		w.addStep("GitLab setup", new HostConfigPanel(new GitLabModel()));
+		w.addStep("Bitbucket", new HostConfigPanel(new BitbucketModel()));
+		w.addStep("GitHub", new HostConfigPanel(new GitHubModel()));
+		w.addStep("GitLab Cloud", new HostConfigPanel(new GitLabModel()));
 		w.addStep("Repository setup", new RepositoryPanel());
 
     	w.setVisible(true);

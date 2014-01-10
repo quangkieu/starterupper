@@ -35,9 +35,9 @@ public class Wizard extends JFrame {
 	private JButton nextButton;
 	private JButton finishButton;
 	private JPanel panel = new JPanel();
-	private JList list;
+	private JList<String> list;
 	private ListSelectionListener selectionListener;
-	private DefaultListModel steps;
+	private DefaultListModel<String> steps;
 	private int currentIndex = 0;
 
 	private JPanel horizontalBox;
@@ -61,11 +61,10 @@ public class Wizard extends JFrame {
 		stepTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
 		horizontalBox.add(stepTitle, "cell 0 0,alignx left,aligny center");
 
-		JSeparator separator = new JSeparator();
-		header.add(separator);
+		header.add(new JSeparator());
 
-		steps = new DefaultListModel();
-		list = new JList(steps);
+		steps = new DefaultListModel<String>();
+		list = new JList<String>(steps);
 		list.setBorder(new EmptyBorder(0, 3, 0, 0));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setLayoutOrientation(JList.VERTICAL);
@@ -84,8 +83,7 @@ public class Wizard extends JFrame {
 		Box footer = Box.createVerticalBox();
 		getContentPane().add(footer, BorderLayout.SOUTH);
 
-		JSeparator separator_1 = new JSeparator();
-		footer.add(separator_1);
+		footer.add(new JSeparator());
 
 		JPanel navigationControls = new JPanel();
 		footer.add(navigationControls);
@@ -123,7 +121,7 @@ public class Wizard extends JFrame {
 		getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(new CardLayout(0, 0));
 
-		this.setMinimumSize(new Dimension(500, 400));
+		this.setMinimumSize(new Dimension(640, 480));
 		// Center on the screen
 		this.setLocationRelativeTo(null);
 	}
@@ -144,10 +142,9 @@ public class Wizard extends JFrame {
 	}
 	private void gotoStep(int index) {
 		CardLayout panelLayout = (CardLayout) panel.getLayout();
-		String name = steps.getElementAt(index).toString();
+		String name = steps.getElementAt(index);
 		stepTitle.setText(name);
 		panelLayout.show(panel, name);
-		panel.getComponents()[index].setVisible(true);
 		currentIndex = index;
 		updateState();
 	}
@@ -156,9 +153,5 @@ public class Wizard extends JFrame {
 	}
 	private void goBack() {
 		gotoStep(currentIndex-1);
-	}
-	public void setVisible(boolean visible) {
-		super.setVisible(visible);
-		list.addListSelectionListener(selectionListener);
 	}
 }

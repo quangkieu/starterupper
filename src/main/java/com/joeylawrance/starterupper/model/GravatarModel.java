@@ -39,17 +39,20 @@ public class GravatarModel extends GenericHostModel {
 	@Override
 	public void setEmail(String email) {
 		super.setEmail(email);
-		gravatar = new Gravatar()
-		.setSize(240)
-		.setRating(GravatarRating.GENERAL_AUDIENCES)
-		.setDefaultImage(GravatarDefaultImage.IDENTICON);
-		byte[] jpg = gravatar.download(email);
-		try {
-			ImageIO.write(toBufferedImage(new ImageIcon(jpg).getImage()),
-					"jpg",
-					profilePicture);
-		} catch (IOException e) {
-			logger.error("Unable to save gravatar to file.");
+		// Now that we know their email, let's see if the user already has a Gravatar
+		if (!profilePicture.exists()) {
+			gravatar = new Gravatar()
+			.setSize(240)
+			.setRating(GravatarRating.GENERAL_AUDIENCES)
+			.setDefaultImage(GravatarDefaultImage.IDENTICON);
+			byte[] jpg = gravatar.download(email);
+			try {
+				ImageIO.write(toBufferedImage(new ImageIcon(jpg).getImage()),
+						"jpg",
+						profilePicture);
+			} catch (IOException e) {
+				logger.error("Unable to save gravatar to file.");
+			}
 		}
 	}
 	/**

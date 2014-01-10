@@ -36,7 +36,7 @@ public class HostConfigPanel extends JPanel {
 		JLabel lblNewLabel = new JLabel("Username");
 		add(lblNewLabel, "cell 0 2,alignx left,aligny center");
 		
-		textField = new JTextField();
+		textField = new JTextField(model.getUsername());
 		add(textField, "cell 1 2,growx,aligny top");
 		textField.setColumns(10);
 		
@@ -55,9 +55,11 @@ public class HostConfigPanel extends JPanel {
 		add(label_2, "cell 1 5,aligny top");
 		
 		JButton signUp = new JButton("Sign up");
+		signUp.setToolTipText("Click here if you do not have an account.");
 		add(signUp, "flowx,cell 1 6");
 
 		JButton logIn = new JButton("Log in");
+		logIn.setToolTipText("Click here if you already have an account.");
 		add(logIn, "cell 1 6");
 
 		JLabel lblSignUpIf = new JLabel(" ");
@@ -65,6 +67,7 @@ public class HostConfigPanel extends JPanel {
 		add(lblSignUpIf, "cell 1 7");
 		
 		JButton btnNewButton = new JButton("Forgot password");
+		btnNewButton.setToolTipText("Click if you need to reset your password via email.");
 		add(btnNewButton, "cell 1 6");
 		
 	}

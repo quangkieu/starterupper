@@ -8,31 +8,23 @@ import java.net.URL;
  * @author Joey Lawrance
  *
  */
-public interface HostModel {
+public interface HostModel extends UserModel {
 	/**
 	 * Get the logo for this host.
 	 */
 	public URL getLogo();
 	/**
-	 * Set the user name for this host.
-	 * @param username
+	 * Get the host name.
+	 * 
+	 * @return The name of this host.
 	 */
-	public void setUsername(String username);
+	public String getHostName();
 	/**
-	 * Get the user name for this host.
-	 * @return
+	 * Get a description of the host.
+	 * 
+	 * @return A description of this host.
 	 */
-	public String getUsername();
-	/**
-	 * Set the email address for this host.
-	 * @param email
-	 */
-	public void setEmail(String email);
-	/**
-	 * Get the email address.
-	 * @return
-	 */
-	public String getEmail();
+	public String getDescription();
 	/**
 	 * Set the password for this host.
 	 * @param password
@@ -43,21 +35,6 @@ public interface HostModel {
 	 * @return
 	 */
 	public String getPassword();
-	/**
-	 * Set the first name for this host.
-	 * @param firstname
-	 */
-	public void setFirstname(String firstname);
-	/**
-	 * Set the last name for this host.
-	 * @param lastname
-	 */
-	public void setLastname(String lastname);
-	/**
-	 * Set the full name for this host.
-	 * @param fullname
-	 */
-	public void setFullname(String fullname);
 	/**
 	 * Sign up for the given host.
 	 * @return Whether the sign up was successful.
@@ -75,16 +52,4 @@ public interface HostModel {
 	 * @throws Exception
 	 */
 	public void forgotPassword() throws Exception;
-	/**
-	 * Get the host name.
-	 * 
-	 * @return The name of this host.
-	 */
-	public String getHostName();
-	/**
-	 * Get a description of the host.
-	 * 
-	 * @return A description of this host.
-	 */
-	public String getDescription();
 }

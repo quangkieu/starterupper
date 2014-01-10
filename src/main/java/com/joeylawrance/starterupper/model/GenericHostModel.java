@@ -1,6 +1,7 @@
 package com.joeylawrance.starterupper.model;
 
 import java.net.URL;
+import java.security.MessageDigest;
 import java.util.HashMap;
 
 /**
@@ -57,7 +58,12 @@ public class GenericHostModel implements HostModel {
 		client.load(window,loginURL);
 		client.fillForm(window, map);
 		client.submitForm(window,"Sign in|Log in");
-		return !loginURL.equals(client.getPageUrl(window));
+		boolean successful = loginURL.equals(client.getPageUrl(window));
+		if (successful) {
+			MessageDigest md = MessageDigest.getInstance("SHA-256");
+			GitUserModel.getInstance().setCustomProperty("starterupper", window, "login", getUsername());
+		}
+		return successful;
 	}
 
 	@Override
@@ -75,6 +81,12 @@ public class GenericHostModel implements HostModel {
 
 	@Override
 	public String getUsername() {
+		if (username == null) {
+			setUsername(GitUserModel.getInstance().getCustomProperty("starterupper", window, "login"));
+		}
+		if (username == null) {
+			setUsername(GitUserModel.getInstance().getUsername());
+		}
 		return username;
 	}
 	
@@ -85,6 +97,9 @@ public class GenericHostModel implements HostModel {
 	
 	@Override
 	public String getEmail() {
+		if (map.get("Email") == null) {
+			setEmail(GitUserModel.getInstance().getEmail());
+		}
 		return map.get("Email");
 	}
 
@@ -127,6 +142,23 @@ public class GenericHostModel implements HostModel {
 	@Override
 	public String getDescription() {
 		return description;
+	}
+
+	@Override
+	public String getFirstname() {
+		return null;
+	}
+
+	@Override
+	public String getLastname() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getFullname() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
