@@ -9,6 +9,8 @@ import org.eclipse.jgit.util.FS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.joeylawrance.starterupper.model.interfaces.UserModel;
+
 /**
  * A Java Bean for user data, backed by the global git configuration.
  * 

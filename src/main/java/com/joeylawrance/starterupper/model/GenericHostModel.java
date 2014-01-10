@@ -1,8 +1,9 @@
 package com.joeylawrance.starterupper.model;
 
 import java.net.URL;
-import java.security.MessageDigest;
 import java.util.HashMap;
+
+import com.joeylawrance.starterupper.model.interfaces.HostModel;
 
 /**
  * Generically log in, sign up, or reset the password for a host.
@@ -60,7 +61,6 @@ public class GenericHostModel implements HostModel {
 		client.submitForm(window,"Sign in|Log in");
 		boolean successful = loginURL.equals(client.getPageUrl(window));
 		if (successful) {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			GitUserModel.getInstance().setCustomProperty("starterupper", window, "login", getUsername());
 		}
 		return successful;

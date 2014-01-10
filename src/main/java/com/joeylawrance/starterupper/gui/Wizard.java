@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.Box;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 
@@ -22,13 +21,12 @@ import java.awt.Component;
 
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.Color;
-
 import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.border.EmptyBorder;
 
+@SuppressWarnings("serial")
 public class Wizard extends JFrame {
 	private JLabel stepTitle;
 	private JButton backButton;

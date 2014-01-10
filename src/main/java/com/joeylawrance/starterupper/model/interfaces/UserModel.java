@@ -1,4 +1,4 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.interfaces;
 
 /**
  * Defines getters and setters for a user's name and email address.

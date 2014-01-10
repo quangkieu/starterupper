@@ -1,4 +1,5 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.interfaces;
+
 
 /**
  * Create a private repository and add collaborators on the project host.

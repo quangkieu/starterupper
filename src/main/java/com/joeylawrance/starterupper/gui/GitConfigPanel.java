@@ -14,6 +14,7 @@ import net.miginfocom.swing.MigLayout;
 
 import com.joeylawrance.starterupper.model.GitUserModel;
 
+@SuppressWarnings("serial")
 public class GitConfigPanel extends JPanel {
 	private final GitUserModel gitConfig;
 	private JTextField fullName;

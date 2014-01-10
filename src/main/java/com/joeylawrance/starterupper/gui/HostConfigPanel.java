@@ -8,17 +8,15 @@ import javax.swing.JTextField;
 import java.awt.Font;
 
 import javax.swing.JPasswordField;
-import javax.swing.Box;
 import javax.swing.JButton;
 
-import com.joeylawrance.starterupper.model.HostModel;
+import com.joeylawrance.starterupper.model.interfaces.HostModel;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 public class HostConfigPanel extends JPanel {
 	private JTextField textField;
 	private JPasswordField passwordField;

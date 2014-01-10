@@ -1,4 +1,4 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.interfaces;
 
 import java.net.URL;
 

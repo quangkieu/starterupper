@@ -1,15 +1,19 @@
 package com.joeylawrance.starterupper.gui;
 
 import javax.swing.JPanel;
+
 import net.miginfocom.swing.MigLayout;
+
 import javax.swing.JLabel;
 import javax.swing.JButton;
+
 import java.awt.Font;
+
 import javax.swing.JTextField;
 import javax.swing.Box;
-import javax.swing.JList;
 import javax.swing.JTable;
 
+@SuppressWarnings("serial")
 public class RepositoryPanel extends JPanel {
 	private JTextField textField;
 	private JTextField textField_1;

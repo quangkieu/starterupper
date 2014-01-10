@@ -13,6 +13,7 @@ import javax.swing.event.AncestorListener;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 
+@SuppressWarnings("serial")
 public class CameraPanel extends WebcamPanel {
 	private Webcam cam;
 	private File image;

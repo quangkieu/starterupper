@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.Properties;
 
+import com.joeylawrance.starterupper.model.interfaces.GitHostModel;
+
 /**
  * Generically share public key with host.
  * 

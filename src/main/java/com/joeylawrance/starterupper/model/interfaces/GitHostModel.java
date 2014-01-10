@@ -1,4 +1,5 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.interfaces;
+
 
 /**
  * Defines one-time git project hosting setup methods.

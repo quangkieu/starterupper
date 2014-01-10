@@ -2,6 +2,7 @@ package com.joeylawrance.starterupper.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
@@ -13,6 +14,7 @@ import javax.swing.JLabel;
 
 import java.awt.Color;
 
+@SuppressWarnings("serial")
 public class PicturePanel extends JPanel {
 	final JButton sharePicture;
 	final JButton takePicture;
