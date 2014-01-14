@@ -97,4 +97,14 @@ public class GitUserModel implements UserModel {
 	public String getLastname() {
 		return config.getString("user", null, "lastname");
 	}
+	@Override
+	public String getByName(String name) {
+		// Ugly hack
+		if (name.equals("Full name")) return getFullname();
+		if (name.equals("First name")) return getFirstname();
+		if (name.equals("Last name")) return getLastname();
+		if (name.equals("Email address")) return getEmail();
+		if (name.equals("Username")) return getUsername();
+		return null;
+	}
 }

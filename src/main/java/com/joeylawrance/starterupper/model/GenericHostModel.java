@@ -161,4 +161,9 @@ public class GenericHostModel implements HostModel {
 		return null;
 	}
 
+	@Override
+	public String getByName(String name) {
+		return map.get(name);
+	}
+
 }

@@ -7,8 +7,11 @@ import javax.swing.JTextField;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
-import java.awt.Font;
+import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
+import org.netbeans.validation.api.ui.swing.SwingValidationGroup;
+
 import java.awt.Toolkit;
+import java.util.HashMap;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -17,76 +20,56 @@ import com.joeylawrance.starterupper.model.GitUserModel;
 @SuppressWarnings("serial")
 public class GitConfigPanel extends JPanel {
 	private final GitUserModel gitConfig;
-	private JTextField fullName;
-	private JTextField userName;
-	private JTextField email;
-	private JTextField firstName;
-	private JTextField lastName;
+	private HashMap<String, JTextField> fields = new HashMap<String, JTextField>();
+	private HashMap<String, SwingValidationGroup> validationGroups = new HashMap<String, SwingValidationGroup>();
+	
+	private int row;
+	
+	/**
+	 * Create a form text area with a label, tooltip and validator.
+	 * @param name
+	 * @param description
+	 */
+	private void addForm(String name, String description) {
+		add(new JLabel(name), String.format("cell 0 %s,alignx trailing", row));
+		JTextField field = new JTextField(gitConfig.getByName(name));
+		field.setToolTipText(description);
+		field.setName(name);
+		field.setColumns(10);
+		fields.put(name, field);
+		add(field, String.format("cell 1 %s,growx", row));
+		row++;
+		
+		SwingValidationGroup fieldValidator = SwingValidationGroup.create();
+		validationGroups.put(name, fieldValidator);
+		fieldValidator.add(field, StringValidators.REQUIRE_NON_EMPTY_STRING);
+		add(fieldValidator.createProblemLabel(), String.format("cell 1 %s,growx", row));
+		row++;
+	}
+	
+	private void addValidator(String name, StringValidators validator) {
+		validationGroups.get(name).add(fields.get(name), validator);
+	}
 	
 	public GitConfigPanel() throws Exception {
 		gitConfig = GitUserModel.getInstance();
-		setLayout(new MigLayout("", "[45px,right][grow]", "[51.00][11.00,top][][][][][20px][11.00][][10.00][20px][10.00px]"));
+		setLayout(new MigLayout("", "[45px,right][grow]", "[51.00][11.00,top][][][][][20px][][][][20px][grow,top]"));
 		
 		JLabel logo = new JLabel();
 		logo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(GitConfigPanel.class.getResource("/Git.png"))));
 		add(logo, "cell 1 0");
 		
-		JLabel lblGitIsA = new JLabel("Configure git (a distributed version control system).");
-		add(lblGitIsA, "cell 1 1");
-		
-		JLabel lblFirstName = new JLabel("First name");
-		add(lblFirstName, "cell 0 2,alignx trailing");
-		
-		firstName = new JTextField(gitConfig.getFirstname());
-		add(firstName, "cell 1 2,growx");
-		firstName.setColumns(10);
-		
-		JLabel lblEnterYourFirst = new JLabel("Enter your first name (e.g., John).");
-		lblEnterYourFirst.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(lblEnterYourFirst, "cell 1 3");
-		
-		JLabel lblLastName = new JLabel("Last name");
-		add(lblLastName, "cell 0 4,alignx trailing");
-		
-		lastName = new JTextField(gitConfig.getLastname());
-		add(lastName, "cell 1 4,growx");
-		lastName.setColumns(10);
-		
-		JLabel lblNewLabel = new JLabel("Enter your last name (e.g., Smith).");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(lblNewLabel, "cell 1 5");
-		
-		JLabel lblFullName = new JLabel("Full name");
-		add(lblFullName, "cell 0 6,alignx right,aligny center");
-		
-		fullName = new JTextField(gitConfig.getFullname());
-		add(fullName, "cell 1 6,growx,aligny top");
-		fullName.setColumns(10);
-		
-		JLabel label = new JLabel("Enter your first and last name  (e.g., John Smith).");
-		label.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(label, "cell 1 7,aligny top");
-		
-		add(new JLabel("Username"), "cell 0 8,alignx right");
-		
-		userName = new JTextField(gitConfig.getUsername());
-		userName.setColumns(10);
-		add(userName, "cell 1 8,growx");
-		
-		JLabel label_2 = new JLabel("Enter your preferred username for project hosts (e.g., smithj).");
-		label_2.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(label_2, "cell 1 9,aligny top");
-		
-		JLabel label_3 = new JLabel("Email address");
-		add(label_3, "flowx,cell 0 10,alignx right");
-		
-		email = new JTextField(gitConfig.getEmail());
-		email.setColumns(10);
-		add(email, "cell 1 10,growx");
-		
-		JLabel label_4 = new JLabel("Enter your .edu email address.");
-		label_4.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(label_4, "cell 1 11,aligny top");
+		add(new JLabel("Enter your information below to configure git."), "cell 1 1");
+		row = 2;
+		addForm("First name", "Enter your first name (e.g., John).");
+		addForm("Last name", "Enter your last name (e.g., Smith).");
+		addForm("Full name", "Enter your first and last name  (e.g., John Smith).");
+		addForm("Username", "Enter your preferred username for project hosts (e.g., smithj).");
+		addForm("Email address", "Enter your .edu email address.");
+		addValidator("Username", StringValidators.NO_WHITESPACE);
+		addValidator("Email address", StringValidators.NO_WHITESPACE);
+		addValidator("Email address", StringValidators.EMAIL_ADDRESS);
+
 		this.addAncestorListener(new AncestorListener() {
 			@Override
 			public void ancestorAdded(AncestorEvent arg0) {

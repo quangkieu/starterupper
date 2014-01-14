@@ -1,7 +1,7 @@
 package com.joeylawrance.starterupper.model.interfaces;
 
 /**
- * Defines getters and setters for a user's name and email address.
+ * A Java Bean for user-specific information common to all hosts.
  * 
  * @author Joey Lawrance
  *
@@ -57,4 +57,10 @@ public interface UserModel {
 	 * @return the full name
 	 */
 	public String getFullname();
+	/**
+	 * Given a string for the property name, return the value
+	 * @param name the property name
+	 * @return the value of the property.
+	 */
+	public String getByName(String name);
 }
