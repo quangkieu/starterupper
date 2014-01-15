@@ -21,7 +21,7 @@ public class HostConfigPanel extends JPanel {
 	private JTextField textField;
 	private JPasswordField passwordField;
 	public HostConfigPanel(HostModel model) {
-		setLayout(new MigLayout("", "[48px][86px,grow]", "[76.00][][20px][][][29.00][23px][]"));
+		setLayout(new MigLayout("", "[48px][86px,grow]", "[76.00][][20px][][23px][]"));
 		
 		JLabel logo = new JLabel();
 		logo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
@@ -38,35 +38,27 @@ public class HostConfigPanel extends JPanel {
 		add(textField, "cell 1 2,growx,aligny top");
 		textField.setColumns(10);
 		
-		JLabel label = new JLabel(String.format("Enter a username for %s.",model.getHostName()));
-		label.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(label, "cell 1 3");
-		
 		JLabel label_1 = new JLabel("Password");
-		add(label_1, "cell 0 4");
+		add(label_1, "cell 0 3");
 		
 		passwordField = new JPasswordField();
-		add(passwordField, "cell 1 4,growx");
-		
-		JLabel label_2 = new JLabel(String.format("Enter a password for %s.",model.getHostName()));
-		label_2.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(label_2, "cell 1 5,aligny top");
+		add(passwordField, "cell 1 3,growx");
 		
 		JButton signUp = new JButton("Sign up");
 		signUp.setToolTipText("Click here if you do not have an account.");
-		add(signUp, "flowx,cell 1 6");
+		add(signUp, "flowx,cell 1 4");
 
 		JButton logIn = new JButton("Log in");
 		logIn.setToolTipText("Click here if you already have an account.");
-		add(logIn, "cell 1 6");
+		add(logIn, "cell 1 4");
 
 		JLabel lblSignUpIf = new JLabel(" ");
 		lblSignUpIf.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(lblSignUpIf, "cell 1 7");
+		add(lblSignUpIf, "cell 1 5");
 		
 		JButton btnNewButton = new JButton("Forgot password");
 		btnNewButton.setToolTipText("Click if you need to reset your password via email.");
-		add(btnNewButton, "cell 1 6");
+		add(btnNewButton, "cell 1 4");
 		
 	}
 }

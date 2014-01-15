@@ -18,6 +18,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -37,6 +39,7 @@ public class Wizard extends JFrame {
 	private ListSelectionListener selectionListener;
 	private DefaultListModel<String> steps;
 	private int currentIndex = 0;
+	private boolean hasProblems = false;
 
 	private JPanel horizontalBox;
 	{
@@ -46,7 +49,7 @@ public class Wizard extends JFrame {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Wizard.class.getResource("/Start.png")));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Starter Upper");
-
+		
 		Box header = Box.createVerticalBox();
 		getContentPane().add(header, BorderLayout.NORTH);
 
@@ -72,7 +75,11 @@ public class Wizard extends JFrame {
 		selectionListener = new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
-				gotoStep(list.getSelectedIndex());
+				if (!hasProblems) {
+					gotoStep(list.getSelectedIndex());
+				} else {
+					updateState();
+				}
 			}
 		};
 		
@@ -126,18 +133,27 @@ public class Wizard extends JFrame {
 	public void addStep(String name, JPanel card) {
 		steps.addElement(name);
 		panel.add(card, name);
+		card.addPropertyChangeListener("hasProblems", new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent hasProblem) {
+				hasProblems = (Boolean)hasProblem.getNewValue();
+				updateState();
+			}
+		});
 		gotoStep(0);
 	}
+	// Set the button and list selection states.
 	private void updateState() {
 		// Don't fire events, silly
 		list.removeListSelectionListener(selectionListener);
 		list.setSelectedIndex(currentIndex);
 		list.addListSelectionListener(selectionListener);
 		
-		backButton.setEnabled(currentIndex > 0);
-		nextButton.setEnabled(currentIndex < steps.getSize() - 1);
-		finishButton.setEnabled(currentIndex == steps.getSize() - 1);
+		backButton.setEnabled(!hasProblems && currentIndex > 0);
+		nextButton.setEnabled(!hasProblems && currentIndex < steps.getSize() - 1);
+		finishButton.setEnabled(!hasProblems && currentIndex == steps.getSize() - 1);
 	}
+	// Change the step title, show the step, update the button and list selection states.
 	private void gotoStep(int index) {
 		CardLayout panelLayout = (CardLayout) panel.getLayout();
 		String name = steps.getElementAt(index);
@@ -145,6 +161,7 @@ public class Wizard extends JFrame {
 		panelLayout.show(panel, name);
 		currentIndex = index;
 		updateState();
+		// update State used to be here. I'm thinking we need to bring it back and have a flag set for whether there's a problem now.
 	}
 	private void goNext() {
 		gotoStep(currentIndex+1);
