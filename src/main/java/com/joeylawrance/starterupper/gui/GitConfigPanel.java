@@ -1,7 +1,6 @@
 package com.joeylawrance.starterupper.gui;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -11,9 +10,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.jdesktop.swingx.prompt.PromptSupport;
-import org.netbeans.validation.api.AbstractValidator;
-import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Severity;
 import org.netbeans.validation.api.Validator;
 import org.netbeans.validation.api.ValidatorUtils;
 import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
@@ -21,9 +17,6 @@ import org.netbeans.validation.api.ui.swing.SwingValidationGroup;
 import org.netbeans.validation.api.ui.swing.ValidationPanel;
 
 import java.awt.Toolkit;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -32,9 +25,7 @@ import com.joeylawrance.starterupper.model.GitUserModel;
 @SuppressWarnings("serial")
 public class GitConfigPanel extends JPanel {
 	private final GitUserModel gitConfig;
-	private HashMap<String, JTextField> fields = new HashMap<String, JTextField>();
 	private SwingValidationGroup fieldValidator = SwingValidationGroup.create();
-	private final ValidationPanel p;
 	
 	private int row;
 	
@@ -52,10 +43,8 @@ public class GitConfigPanel extends JPanel {
 		PromptSupport.setPrompt(tooltip, field);
 		field.setToolTipText(tooltip);
 		field.setColumns(10);
-		fields.put(name, field);
 		add(field, String.format("cell 1 %s,growx",row));
 		row++;
-
 	}
 	
 	public GitConfigPanel() throws Exception {
@@ -77,7 +66,7 @@ public class GitConfigPanel extends JPanel {
 
 		add(fieldValidator.createProblemLabel(), String.format("cell 1 %s,growx", row));
 		
-		p = new ValidationPanel(fieldValidator);
+		final ValidationPanel p = new ValidationPanel(fieldValidator);
 		p.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
@@ -85,21 +74,17 @@ public class GitConfigPanel extends JPanel {
 			}
 		});
 
-		row++;
-
 		this.addAncestorListener(new AncestorListener() {
-			
 			// We need to tell the wizard whether we've got problems as soon as we're visible.
 			@Override
 			public void ancestorAdded(AncestorEvent arg0) {
-				GitConfigPanel.this.firePropertyChange("hasProblems", false, p.isFatalProblem());
+				GitConfigPanel.this.firePropertyChange("hasProblems", !p.isFatalProblem(), p.isFatalProblem());
 			}
 			@Override
 			public void ancestorMoved(AncestorEvent arg0) {
 			}
 			@Override
 			public void ancestorRemoved(AncestorEvent arg0) {
-				System.out.println("Im not visible now?");
 			}
 		});
 	}
