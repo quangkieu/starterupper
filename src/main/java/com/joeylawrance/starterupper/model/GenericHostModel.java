@@ -59,7 +59,9 @@ public class GenericHostModel implements HostModel {
 		client.load(window,loginURL);
 		client.fillForm(window, map);
 		client.submitForm(window,"Sign in|Log in");
-		boolean successful = loginURL.equals(client.getPageUrl(window));
+		System.out.println(loginURL);
+		System.out.println(client.getPageUrl(window));
+		boolean successful = !loginURL.equals(client.getPageUrl(window));
 		if (successful) {
 			GitUserModel.getInstance().setCustomProperty("starterupper", window, "login", getUsername());
 		}
@@ -164,6 +166,11 @@ public class GenericHostModel implements HostModel {
 	@Override
 	public String getByName(String name) {
 		return map.get(name);
+	}
+
+	@Override
+	public void setByName(String name, String value) {
+		map.put(name, value);
 	}
 
 }

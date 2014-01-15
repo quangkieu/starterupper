@@ -10,6 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.jdesktop.swingx.prompt.PromptSupport;
+import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
 import org.netbeans.validation.api.ValidatorUtils;
 import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
@@ -17,6 +18,8 @@ import org.netbeans.validation.api.ui.swing.SwingValidationGroup;
 import org.netbeans.validation.api.ui.swing.ValidationPanel;
 
 import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -31,14 +34,34 @@ public class GitConfigPanel extends JPanel {
 	
 	/**
 	 * Create a form text area with a label, tooltip and validator.
-	 * @param name
-	 * @param description
+	 * 
+	 * @param name The label for the form element
+	 * @param tooltip A tooltip / placeholder
+	 * @param validator The input validator
 	 */
-	private void addForm(String name, String tooltip, Validator<String> validator) {
+	private void addForm(String name, String tooltip, final Validator<String> validator) {
 		add(new JLabel(name), String.format("cell 0 %s,alignx trailing", row));
-		JTextField field = new JTextField(gitConfig.getByName(name));
+		final JTextField field = new JTextField(gitConfig.getByName(name));
 		field.setName(name);
 		fieldValidator.add(field, validator);
+		field.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				Problems problems = new Problems();
+				validator.validate(problems, field.getName(), field.getText());
+				if (!problems.hasFatal()) {
+					gitConfig.setByName(field.getName(), field.getText().trim());
+				}
+			}
+			
+		});
 		PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, field);
 		PromptSupport.setPrompt(tooltip, field);
 		field.setToolTipText(tooltip);

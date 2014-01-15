@@ -63,4 +63,5 @@ public interface UserModel {
 	 * @return the value of the property.
 	 */
 	public String getByName(String name);
+	public void setByName(String name, String value);
 }

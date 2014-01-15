@@ -107,4 +107,13 @@ public class GitUserModel implements UserModel {
 		if (name.equals("Username")) return getUsername();
 		return null;
 	}
+	@Override
+	public void setByName(String name, String value) {
+		// Another ugly hack
+		if (name.equals("Full name")) setFullname(value);
+		if (name.equals("First name")) setFirstname(value);
+		if (name.equals("Last name")) setLastname(value);
+		if (name.equals("Email address")) setEmail(value);
+		if (name.equals("Username")) setUsername(value);
+	}
 }

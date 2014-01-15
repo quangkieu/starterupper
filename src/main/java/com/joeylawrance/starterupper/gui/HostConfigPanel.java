@@ -45,11 +45,11 @@ public class HostConfigPanel extends JPanel {
 		add(passwordField, "cell 1 3,growx");
 		
 		JButton signUp = new JButton("Sign up");
-		signUp.setToolTipText("Click here if you do not have an account.");
+		signUp.setToolTipText("Sign up if you do not already have an account.");
 		add(signUp, "flowx,cell 1 4");
 
 		JButton logIn = new JButton("Log in");
-		logIn.setToolTipText("Click here if you already have an account.");
+		logIn.setToolTipText("Log in if you already have an account.");
 		add(logIn, "cell 1 4");
 
 		JLabel lblSignUpIf = new JLabel(" ");

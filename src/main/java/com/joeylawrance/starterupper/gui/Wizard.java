@@ -27,6 +27,7 @@ import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.border.EmptyBorder;
+import java.awt.Color;
 
 @SuppressWarnings("serial")
 public class Wizard extends JFrame {
@@ -42,6 +43,7 @@ public class Wizard extends JFrame {
 	private boolean hasProblems = false;
 
 	private JPanel horizontalBox;
+	private JLabel status;
 	{
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	}
@@ -77,6 +79,9 @@ public class Wizard extends JFrame {
 			public void valueChanged(ListSelectionEvent arg0) {
 				if (!hasProblems) {
 					gotoStep(list.getSelectedIndex());
+				} else if (hasProblems && list.getSelectedIndex() < currentIndex) {
+					hasProblems = false;
+					gotoStep(list.getSelectedIndex());
 				} else {
 					updateState();
 				}
@@ -93,6 +98,10 @@ public class Wizard extends JFrame {
 		JPanel navigationControls = new JPanel();
 		footer.add(navigationControls);
 		navigationControls.setLayout(new MigLayout("", "[14.00px,grow,fill][55px][55px][59px]", "[30.00px]"));
+		
+		status = new JLabel();
+		status.setForeground(Color.RED);
+		navigationControls.add(status, "flowx,cell 0 0");
 
 		navigationControls.add(Box.createHorizontalGlue(), "cell 0 0,alignx left,aligny center");
 
@@ -149,7 +158,15 @@ public class Wizard extends JFrame {
 		list.setSelectedIndex(currentIndex);
 		list.addListSelectionListener(selectionListener);
 		
-		backButton.setEnabled(!hasProblems && currentIndex > 0);
+		if (hasProblems) {
+			status.setText(String.format("You need to complete the form above%s before continuing.", (currentIndex > 0) ? " or go back":""));
+		} else {
+			status.setText("");
+		}
+		
+		// If we can go back, we should always be able to
+		backButton.setEnabled(currentIndex > 0);
+		// We can't go forward or finish with fatal problems.
 		nextButton.setEnabled(!hasProblems && currentIndex < steps.getSize() - 1);
 		finishButton.setEnabled(!hasProblems && currentIndex == steps.getSize() - 1);
 	}
