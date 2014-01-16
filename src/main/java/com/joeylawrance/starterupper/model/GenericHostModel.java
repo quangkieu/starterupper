@@ -17,7 +17,7 @@ import com.joeylawrance.starterupper.model.interfaces.HostModel;
  * @author Joey Lawrance
  *
  */
-public class GenericHostModel implements HostModel {
+public class GenericHostModel extends GitUserModel implements HostModel {
 	private final Logger logger = LoggerFactory.getLogger(GenericHostModel.class);
 	WebHelper client;
 	final String window;
@@ -26,9 +26,9 @@ public class GenericHostModel implements HostModel {
 	String signupURL;
 	String loginURL;
 	String resetURL;
-	String username;
 	String logoutURL;
 	String profileURL;
+	String username;
 	
 	protected HashMap<String, String> map = new HashMap<String, String>();
 	
@@ -76,7 +76,7 @@ public class GenericHostModel implements HostModel {
 		System.out.println(client.getPageUrl(window));
 		boolean successful = !loginURL.equals(client.getPageUrl(window));
 		if (successful) {
-			GitUserModel.getInstance().setCustomProperty("starterupper", window, "login", getUsername());
+			setCustomProperty("starterupper", window, "login", getUsername());
 		}
 		return successful;
 	}
@@ -97,10 +97,10 @@ public class GenericHostModel implements HostModel {
 	@Override
 	public String getUsername() {
 		if (username == null) {
-			setUsername(GitUserModel.getInstance().getCustomProperty("starterupper", window, "login"));
+			setUsername(getCustomProperty("starterupper", window, "login"));
 		}
 		if (username == null) {
-			setUsername(GitUserModel.getInstance().getUsername());
+			setUsername(super.getUsername());
 		}
 		return username;
 	}
@@ -113,7 +113,7 @@ public class GenericHostModel implements HostModel {
 	@Override
 	public String getEmail() {
 		if (map.get("Email") == null) {
-			setEmail(GitUserModel.getInstance().getEmail());
+			setEmail(super.getEmail());
 		}
 		return map.get("Email");
 	}

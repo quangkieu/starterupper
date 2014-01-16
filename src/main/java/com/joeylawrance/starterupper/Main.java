@@ -8,6 +8,7 @@ import com.joeylawrance.starterupper.gui.Wizard;
 import com.joeylawrance.starterupper.model.BitbucketModel;
 import com.joeylawrance.starterupper.model.GitHubModel;
 import com.joeylawrance.starterupper.model.GitLabModel;
+import com.joeylawrance.starterupper.model.GitUserModel;
 import com.joeylawrance.starterupper.model.GravatarModel;
 
 public class Main {
@@ -16,7 +17,7 @@ public class Main {
 
     	Wizard w = new Wizard();
     	
-		w.addStep("Name & email", new GitConfigPanel());
+		w.addStep("Name & email", new GitConfigPanel(new GitUserModel()));
 		w.addStep("Gravatar", new HostConfigPanel(gravatar));
 		w.addStep("Profile picture", new PicturePanel(gravatar));
 		w.addStep("Bitbucket", new HostConfigPanel(new BitbucketModel()));

@@ -68,8 +68,8 @@ public class GitConfigPanel extends JPanel {
 		row++;
 	}
 	
-	public GitConfigPanel() throws Exception {
-		gitConfig = GitUserModel.getInstance();
+	public GitConfigPanel(GitUserModel gitUserModel) throws Exception {
+		gitConfig = gitUserModel;
 		setLayout(new MigLayout("", "[45px,right][grow]", "[51.00][11.00,top][][][][][][][][][][grow,top]"));
 		
 		JLabel logo = new JLabel();

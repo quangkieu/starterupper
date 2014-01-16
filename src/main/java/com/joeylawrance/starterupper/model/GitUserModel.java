@@ -18,38 +18,37 @@ import com.joeylawrance.starterupper.model.interfaces.UserModel;
  *
  */
 public class GitUserModel implements UserModel {
-	final Logger logger = LoggerFactory.getLogger(GitUserModel.class);
-	private GitUserModel() {
-		this(new File(new File(System.getProperty("user.home")), ".gitconfig"));
+	static final Logger logger = LoggerFactory.getLogger(GitUserModel.class);
+	public GitUserModel() {
 	}
 	private static class SingletonHolder {
-		public static final GitUserModel INSTANCE = new GitUserModel();
-	}
-	public static GitUserModel getInstance() {
-		return SingletonHolder.INSTANCE;
-	}
-	public GitUserModel(File f) {
-		config = new FileBasedConfig(f, FS.detect());
-		try {
-			config.load();
-		} catch (IOException e) {
-			logger.error("Can't read global .gitignore file, even though it exists.");
-		} catch (ConfigInvalidException e) {
-			logger.error("Global .gitignore file is improperly formatted.");
+		public static final FileBasedConfig INSTANCE;
+		static {
+			INSTANCE = new FileBasedConfig(new File(new File(System.getProperty("user.home")), ".gitconfig"), FS.detect());
+			try {
+				INSTANCE.load();
+				logger.info("Loaded global .gitconfig file.");
+			} catch (IOException e) {
+				logger.error("Can't read global .gitconfig file, even though it exists.");
+			} catch (ConfigInvalidException e) {
+				logger.error("Global .gitignore file is improperly formatted.");
+			}
 		}
 	}
-	private FileBasedConfig config;
+	private static FileBasedConfig getConfig() {
+		return SingletonHolder.INSTANCE;
+	}
 	@Override
 	public String getFullname() {
-		return config.getString("user", null, "name");
+		return getCustomProperty("user", null, "name");
 	}
 	@Override
 	public String getEmail() {
-		return config.getString("user", null, "email");
+		return getCustomProperty("user", null, "email");
 	}
 	@Override
 	public String getUsername() {
-		String storedDefault = config.getString("user", null, "defaultname");
+		String storedDefault = getCustomProperty("user", null, "defaultname");
 		return (storedDefault == null) ? System.getProperty("user.name") : storedDefault;
 	}
 	@Override
@@ -65,20 +64,21 @@ public class GitUserModel implements UserModel {
 		setCustomProperty("user", null, "defaultname", username);
 	}
 	public String getCustomProperty(String section, String subsection, String key) {
-		return config.getString(section, subsection, key);
+		return getConfig().getString(section, subsection, key);
 	}
 	public void setCustomProperty(String section, String subsection, String key, String value) {
-		config.setString(section, subsection, key, value);
-		save();
+		// Save changes only if necessary.
+		if (!getCustomProperty(section, subsection, key).equals(value)) {
+			getConfig().setString(section, subsection, key, value);
+			save();
+		}
 	}
 	private void save() {
-		if (config.isOutdated()) {
-			logger.error(String.format("Sorry, another program has updated your .gitconfig file in %s.", System.getProperty("user.home")));
-		}
 		try {
-			config.save();
+			getConfig().save();
+			logger.info("Saved changes to .gitconfig.");
 		} catch (Exception e) {
-			logger.error(String.format("Sorry, another program has locked your .gitconfig file in %s.", System.getProperty("user.home")));
+			logger.error("Sorry, another program has locked your .gitconfig file in {}.", System.getProperty("user.home"));
 		}
 	}
 	@Override
@@ -87,7 +87,7 @@ public class GitUserModel implements UserModel {
 	}
 	@Override
 	public String getFirstname() {
-		return config.getString("user", null, "firstname");
+		return getCustomProperty("user", null, "firstname");
 	}
 	@Override
 	public void setLastname(String lastname) {
@@ -95,7 +95,7 @@ public class GitUserModel implements UserModel {
 	}
 	@Override
 	public String getLastname() {
-		return config.getString("user", null, "lastname");
+		return getCustomProperty("user", null, "lastname");
 	}
 	@Override
 	public String getByName(String name) {
