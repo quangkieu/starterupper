@@ -36,20 +36,30 @@ public interface HostModel extends UserModel {
 	 */
 	public String getPassword();
 	/**
-	 * Sign up for the given host.
+	 * Sign up for the host.
 	 * @return Whether the sign up was successful.
 	 * @throws Exception
 	 */
 	public boolean signUp() throws Exception;
 	/**
-	 * Log into the given host.
+	 * Log into the host.
 	 * @return Whether the login was successful.
 	 * @throws Exception
 	 */
 	public boolean login() throws Exception;
 	/**
-	 * Reset the password for the given host.
+	 * Log out of the host.
+	 * @throws Exception
+	 */
+	public void logout() throws Exception;
+	/**
+	 * Reset the password for the host.
 	 * @throws Exception
 	 */
 	public void forgotPassword() throws Exception;
+	/**
+	 * Determine whether the username is taken
+	 * @return
+	 */
+	public boolean nameTaken();
 }

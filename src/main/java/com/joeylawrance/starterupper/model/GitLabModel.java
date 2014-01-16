@@ -11,6 +11,8 @@ public class GitLabModel extends GenericGitHostRepositoryModel {
 	public GitLabModel() {
 		super("GitLab Cloud", GitLabModel.class.getResource("/gitlab.png"), "GitLab Cloud is an open source git project host.");
 		setLoginURL("https://gitlab.com/users/sign_in");
+		setLogoutURL("https://gitlab.com/users/sign_out");
+		setProfileURL("https://gitlab.com/u/%s");
 		setSignupURL("https://gitlab.com/users/sign_up");
 		setResetURL("https://gitlab.com/users/password/new");
 		setPublicKeyURL("https://gitlab.com/profile/keys/new");

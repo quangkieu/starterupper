@@ -66,5 +66,4 @@ public class RepositoryPanel extends JPanel {
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 10));
 		add(lblNewLabel_3, "cell 1 7");
 	}
-
 }

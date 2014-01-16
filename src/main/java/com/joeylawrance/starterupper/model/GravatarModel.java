@@ -29,6 +29,7 @@ public class GravatarModel extends GenericHostModel {
 	public GravatarModel() {
 		super("Gravatar", GravatarModel.class.getResource("/Gravatar.png"), "Gravatar hosts your profile picture across the web.");
 		setLoginURL("https://wordpress.com/wp-login.php");
+		setProfileURL("http://en.gravatar.com/%s");
 		setSignupURL("https://signup.wordpress.com/signup/?user=1");
 		setResetURL("http://wordpress.com/wp-login.php?action=lostpassword");
 		profilePicture = new File(System.getProperty("user.home"),"me.jpg");

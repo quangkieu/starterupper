@@ -48,8 +48,6 @@ public class GitConfigPanel extends JPanel {
 
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override

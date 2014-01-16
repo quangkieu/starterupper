@@ -1,8 +1,14 @@
 package com.joeylawrance.starterupper.model;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.WebWindowNotFoundException;
 import com.joeylawrance.starterupper.model.interfaces.HostModel;
 
 /**
@@ -12,6 +18,7 @@ import com.joeylawrance.starterupper.model.interfaces.HostModel;
  *
  */
 public class GenericHostModel implements HostModel {
+	private final Logger logger = LoggerFactory.getLogger(GenericHostModel.class);
 	WebHelper client;
 	final String window;
 	final URL logo;
@@ -20,6 +27,8 @@ public class GenericHostModel implements HostModel {
 	String loginURL;
 	String resetURL;
 	String username;
+	String logoutURL;
+	String profileURL;
 	
 	protected HashMap<String, String> map = new HashMap<String, String>();
 	
@@ -31,19 +40,23 @@ public class GenericHostModel implements HostModel {
 		client.newWindow(window);
 	}
 	
-	protected WebHelper getClient() {
+	public WebHelper getClient() {
 		return client;
 	}
 	
-	protected void setSignupURL(String signupURL) {
+	public void setSignupURL(String signupURL) {
 		this.signupURL = signupURL;
 	}
 	
-	protected void setLoginURL(String loginURL) {
+	public void setLoginURL(String loginURL) {
 		this.loginURL = loginURL;
 	}
 	
-	protected void setResetURL(String resetURL) {
+	public void setLogoutURL(String logoutURL) {
+		this.logoutURL = logoutURL;
+	}
+	
+	public void setResetURL(String resetURL) {
 		this.resetURL = resetURL;
 	}
 
@@ -173,4 +186,26 @@ public class GenericHostModel implements HostModel {
 		map.put(name, value);
 	}
 
+	@Override
+	public void logout() throws Exception {
+		client.load(window,logoutURL);
+	}
+
+	public void setProfileURL(String profileURL) {
+		this.profileURL = profileURL;
+	}
+
+	@Override
+	public boolean nameTaken() {
+		try {
+			client.load(window, String.format(profileURL, getUsername()));
+		} catch (FailingHttpStatusCodeException e) {
+			return true;
+		} catch (WebWindowNotFoundException e) {
+			logger.error("Couldn't find window.");
+		} catch (IOException e) {
+			logger.error("Couldn't connect to the network.");
+		}
+		return false;
+	}
 }
