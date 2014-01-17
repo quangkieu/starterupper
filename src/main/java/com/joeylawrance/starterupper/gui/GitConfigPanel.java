@@ -33,9 +33,11 @@ public class GitConfigPanel extends JPanel {
 	private int row;
 	
 	/**
-	 * Create a form text area with a label, tooltip and validator.
+	 * Create a form text field with a label, tooltip, placeholder and validator.
 	 * 
-	 * @param name The label for the form element
+	 * When the field loses focus, and assuming there's no problems, save the changes.
+	 * 
+	 * @param name The label for the text field
 	 * @param tooltip A tooltip / placeholder
 	 * @param validator The input validator
 	 */
@@ -68,6 +70,13 @@ public class GitConfigPanel extends JPanel {
 		row++;
 	}
 	
+	/**
+	 * The user interface for a GitUserModel.
+	 * It fires a "hasProblems" property change event if any field in it has problems.
+	 * 
+	 * @param gitUserModel
+	 * @throws Exception
+	 */
 	public GitConfigPanel(GitUserModel gitUserModel) throws Exception {
 		gitConfig = gitUserModel;
 		setLayout(new MigLayout("", "[45px,right][grow]", "[51.00][11.00,top][][][][][][][][][][grow,top]"));

@@ -19,8 +19,6 @@ import com.joeylawrance.starterupper.model.interfaces.UserModel;
  */
 public class GitUserModel implements UserModel {
 	static final Logger logger = LoggerFactory.getLogger(GitUserModel.class);
-	public GitUserModel() {
-	}
 	private static class SingletonHolder {
 		public static final FileBasedConfig INSTANCE;
 		static {

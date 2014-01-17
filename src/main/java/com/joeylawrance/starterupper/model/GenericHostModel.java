@@ -199,7 +199,9 @@ public class GenericHostModel extends GitUserModel implements HostModel {
 	public boolean nameTaken() {
 		try {
 			client.load(window, String.format(profileURL, getUsername()));
+			logger.info("Loaded {}", String.format(profileURL, getUsername()));
 		} catch (FailingHttpStatusCodeException e) {
+			logger.info("Load failed. Status code: {}", e.getMessage());
 			return true;
 		} catch (WebWindowNotFoundException e) {
 			logger.error("Couldn't find window.");
