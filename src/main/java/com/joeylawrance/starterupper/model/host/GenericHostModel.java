@@ -29,7 +29,7 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	final String window;
 	final URL logo;
 	final String description;
-	private static enum HostAction {
+	public static enum HostAction {
 		signup, login, reset, logout, profile;
 	}
 	private HashMap<HostAction, String> urls = new HashMap<HostAction, String>();
@@ -52,51 +52,17 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	public WebHelper getClient() {
 		return client;
 	}
-	
-	public void setSignupURL(String url) {
-		urls.put(HostAction.signup, url);
+	public void setURL(HostAction action, String url) {
+		urls.put(action, url);
 	}
-
-	public String getSignupURL() {
-		return urls.get(HostAction.signup);
-	}
-
-	public void setLoginURL(String url) {
-		urls.put(HostAction.login, url);
-	}
-	
-	public String getLoginURL() {
-		return urls.get(HostAction.login);
-	}
-
-	public void setLogoutURL(String url) {
-		urls.put(HostAction.logout, url);
-	}
-	
-	public String getLogoutURL() {
-		return urls.get(HostAction.logout);
-	}
-	
-	public void setResetURL(String url) {
-		urls.put(HostAction.reset, url);
-	}
-	
-	public String getResetURL() {
-		return urls.get(HostAction.reset);
-	}
-
-	public void setProfileURL(String url) {
-		urls.put(HostAction.profile, url);
-	}
-
-	public String getProfileURL() {
-		return urls.get(HostAction.profile);
+	public String getURL(HostAction action) {
+		return urls.get(action);
 	}
 
 	@Override
 	public boolean signUp() {
 		try {
-			client.load(window,getSignupURL());
+			client.load(window,getURL(HostAction.signup));
 		} catch (Exception e) {
 			logger.error("Unable to load signup page.");
 		}
@@ -107,16 +73,14 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	@Override
 	public boolean login() {
 		try {
-			client.load(window,getLoginURL());
-		} catch (Exception e) {
+			client.load(window,getURL(HostAction.login));
+		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to load login page.");
 			return false;
 		}
 		client.fillForm(window, map);
 		client.submitForm(window,"Sign in|Log in");
-		System.out.println(getLoginURL());
-		System.out.println(client.getPageUrl(window));
-		boolean successful = !getLoginURL().equals(client.getPageUrl(window));
+		boolean successful = !getURL(HostAction.login).equals(client.getPageUrl(window));
 		if (successful) {
 			storeUsername();
 		}
@@ -134,10 +98,10 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	@Override
 	public void forgotPassword() {
 		try {
-			client.load(window, getResetURL());
+			client.load(window, getURL(HostAction.reset));
 			client.fillForm(window, map);
 			client.submitForm(window, "reset|password|submit");
-		} catch (Exception e) {
+		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to load forgot password page");
 		}
 	}
@@ -180,8 +144,8 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	@Override
 	public void logout() {
 		try {
-			client.load(window,getLogoutURL());
-		} catch (Exception e) {
+			client.load(window,getURL(HostAction.logout));
+		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to logout.");
 		}
 	}
@@ -189,8 +153,8 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	@Override
 	public boolean nameTaken() {
 		try {
-			client.load(window, String.format(getProfileURL(), getUsername()));
-			logger.info("Loaded {}", String.format(getProfileURL(), getUsername()));
+			client.load(window, String.format(getURL(HostAction.profile), getUsername()));
+			logger.info("Loaded {}", String.format(getURL(HostAction.profile), getUsername()));
 		} catch (FailingHttpStatusCodeException e) {
 			logger.info("Load failed. Status code: {}", e.getMessage());
 			return true;

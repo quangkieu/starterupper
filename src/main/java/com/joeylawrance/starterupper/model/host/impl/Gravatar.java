@@ -30,10 +30,10 @@ public class Gravatar extends GenericHostModel {
 	private File profilePicture;
 	public Gravatar() {
 		super("Gravatar", Gravatar.class.getResource("/Gravatar.png"), "Gravatar hosts your profile picture across the web.");
-		setLoginURL("https://wordpress.com/wp-login.php");
-		setProfileURL("http://en.gravatar.com/%s");
-		setSignupURL("https://signup.wordpress.com/signup/?user=1");
-		setResetURL("http://wordpress.com/wp-login.php?action=lostpassword");
+		setURL(GenericHostModel.HostAction.login,"https://wordpress.com/wp-login.php");
+		setURL(GenericHostModel.HostAction.profile,"http://en.gravatar.com/%s");
+		setURL(GenericHostModel.HostAction.signup,"https://signup.wordpress.com/signup/?user=1");
+		setURL(GenericHostModel.HostAction.reset,"http://wordpress.com/wp-login.php?action=lostpassword");
 		profilePicture = new File(System.getProperty("user.home"),"me.jpg");
 	}
 	public File getProfilePicture() {
