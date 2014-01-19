@@ -59,12 +59,11 @@ public class GitUserMap implements Map<GitUserMap.Profile, String> {
 	}
 	private void setCustomProperty(String section, String subsection, String key, String value) {
 		// Don't save anything outside the purview of the git user model.
-		if (set.contains(key)) {
-			// Save changes only if necessary.
-			if (!getCustomProperty(section, subsection, key).equals(value)) {
-				getConfig().setString(section, subsection, key, value);
-				save();
-			}
+		// Save changes only if necessary.
+		if (!getCustomProperty(section, subsection, key).equals(value)) {
+			logger.info("git config --global user.{} {}", key, value);
+			getConfig().setString(section, subsection, key, value);
+			save();
 		}
 	}
 	private void save() {

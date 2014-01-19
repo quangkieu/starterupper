@@ -108,6 +108,7 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 
 	@Override
 	public void setUsername(String username) {
+		logger.info("{} username changed to {}", getHostName(), username);
 		map.put("Username", username);
 	}
 
