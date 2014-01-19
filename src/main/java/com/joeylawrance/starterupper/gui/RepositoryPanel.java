@@ -20,6 +20,7 @@ public class RepositoryPanel extends JPanel {
 	private JTable table;
 	public RepositoryPanel() {
 		setLayout(new MigLayout("", "[][grow]", "[][][][][100.00,grow][][][]"));
+		setName("Repository setup");
 		
 		JLabel lblRepositoryLocation = new JLabel("Upstream repository");
 		add(lblRepositoryLocation, "cell 0 0,alignx right");

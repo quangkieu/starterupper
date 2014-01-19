@@ -55,6 +55,7 @@ public class HostConfigPanel extends JPanel {
 
 	public HostConfigPanel(final HostModel model) {
 		this.model = model;
+		setName(model.getHostName());
 		setLayout(new MigLayout("", "[48px][86px,grow]", "[76.00][][20px][][23px][]"));
 		
 		JLabel logo = new JLabel();

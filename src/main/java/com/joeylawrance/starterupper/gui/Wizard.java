@@ -139,9 +139,9 @@ public class Wizard extends JFrame {
 		// Center on the screen
 		this.setLocationRelativeTo(null);
 	}
-	public void addStep(String name, JPanel card) {
-		steps.addElement(name);
-		panel.add(card, name);
+	public void addStep(JPanel card) {
+		steps.addElement(card.getName());
+		panel.add(card, card.getName());
 		card.addPropertyChangeListener("hasProblems", new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent hasProblem) {

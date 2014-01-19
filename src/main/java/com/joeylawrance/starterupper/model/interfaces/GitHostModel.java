@@ -9,12 +9,6 @@ package com.joeylawrance.starterupper.model.interfaces;
  */
 public interface GitHostModel extends HostModel {
 	/**
-	 * Set the public key.
-	 * 
-	 * @param key
-	 */
-	public void setPublicKey(String key);
-	/**
 	 * Share the user's public key with the project host.
 	 * 
 	 * Call setPublicKey first.

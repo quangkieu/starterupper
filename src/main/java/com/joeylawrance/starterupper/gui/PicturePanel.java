@@ -22,6 +22,7 @@ public class PicturePanel extends JPanel {
 	CameraPanel camPanel;
 	public PicturePanel(GravatarModel model) {
 		setLayout(new MigLayout("", "[320.00,grow]", "[][240.00][grow][]"));
+		setName("Profile picture");
 		
 		add(new JLabel("Smile! Take a picture and share it to associate names and faces."), "cell 0 0,alignx center");
 

@@ -20,14 +20,15 @@ import org.netbeans.validation.api.ui.swing.ValidationPanel;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Map;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.joeylawrance.starterupper.model.GitUserModel;
+import com.joeylawrance.starterupper.model.GitUserMap;
 
 @SuppressWarnings("serial")
 public class GitConfigPanel extends JPanel {
-	private final GitUserModel gitConfig;
+	private final Map<GitUserMap.Profile, String> gitConfig;
 	private SwingValidationGroup fieldValidator = SwingValidationGroup.create();
 	
 	private int row;
@@ -41,9 +42,9 @@ public class GitConfigPanel extends JPanel {
 	 * @param tooltip A tooltip / placeholder
 	 * @param validator The input validator
 	 */
-	private void addForm(String name, String tooltip, final Validator<String> validator) {
+	private void addForm(String name, final GitUserMap.Profile key, String tooltip, final Validator<String> validator) {
 		add(new JLabel(name), String.format("cell 0 %s,alignx trailing", row));
-		final JTextField field = new JTextField(gitConfig.getByName(name));
+		final JTextField field = new JTextField(gitConfig.get(key));
 		field.setName(name);
 		fieldValidator.add(field, validator);
 		field.addFocusListener(new FocusListener() {
@@ -57,7 +58,7 @@ public class GitConfigPanel extends JPanel {
 				Problems problems = new Problems();
 				validator.validate(problems, field.getName(), field.getText());
 				if (!problems.hasFatal()) {
-					gitConfig.setByName(field.getName(), field.getText().trim());
+					gitConfig.put(key, field.getText().trim());
 				}
 			}
 			
@@ -77,8 +78,9 @@ public class GitConfigPanel extends JPanel {
 	 * @param gitUserModel
 	 * @throws Exception
 	 */
-	public GitConfigPanel(GitUserModel gitUserModel) throws Exception {
+	public GitConfigPanel(Map<GitUserMap.Profile, String> gitUserModel) throws Exception {
 		gitConfig = gitUserModel;
+		setName("Name & email");
 		setLayout(new MigLayout("", "[45px,right][grow]", "[51.00][11.00,top][][][][][][][][][][grow,top]"));
 		
 		JLabel logo = new JLabel();
@@ -88,11 +90,11 @@ public class GitConfigPanel extends JPanel {
 		add(new JLabel("Enter your name, username and email for git and hosting services."), "cell 1 1");
 		row = 2;
 		
-		addForm("First name", "Enter your first name (e.g., John).", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Last name", "Enter your last name (e.g., Smith).", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Full name", "Enter your first and last name (e.g., John Smith).", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Username", "Enter your preferred username for project hosts (e.g., smithj).", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE)));
-		addForm("Email address", "Enter your .edu email address.", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE,StringValidators.EMAIL_ADDRESS)));
+		addForm("First name", GitUserMap.Profile.firstname, "Enter your first name (e.g., John).", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
+		addForm("Last name", GitUserMap.Profile.lastname, "Enter your last name (e.g., Smith).", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
+		addForm("Full name", GitUserMap.Profile.name, "Enter your first and last name (e.g., John Smith).", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
+		addForm("Username", GitUserMap.Profile.defaultname, "Enter your preferred username for project hosts (e.g., smithj).", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE)));
+		addForm("Email address", GitUserMap.Profile.email, "Enter your .edu email address.", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE,StringValidators.EMAIL_ADDRESS)));
 
 		add(fieldValidator.createProblemLabel(), String.format("cell 1 %s,growx", row));
 		

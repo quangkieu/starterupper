@@ -8,7 +8,7 @@ import java.net.URL;
  * @author Joey Lawrance
  *
  */
-public interface HostModel extends UserModel {
+public interface HostModel {
 	/**
 	 * Get the logo for this host.
 	 */
@@ -35,6 +35,16 @@ public interface HostModel extends UserModel {
 	 * @return
 	 */
 	public String getPassword();
+	/**
+	 * Set the username for this host.
+	 * @param password
+	 */
+	public void setUsername(String username);
+	/**
+	 * Get the username for this host.
+	 * @return
+	 */
+	public String getUsername();
 	/**
 	 * Sign up for the host.
 	 * @return Whether the sign up was successful.

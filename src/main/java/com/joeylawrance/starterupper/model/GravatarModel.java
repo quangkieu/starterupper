@@ -16,6 +16,9 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.joeylawrance.starterupper.model.GitUserMap.Profile;
+import com.joeylawrance.starterupper.util.ObservableMap;
+import com.joeylawrance.starterupper.util.ObservableMapListener;
 import com.timgroup.jgravatar.Gravatar;
 import com.timgroup.jgravatar.GravatarDefaultImage;
 import com.timgroup.jgravatar.GravatarRating;
@@ -36,25 +39,6 @@ public class GravatarModel extends GenericHostModel {
 	}
 	public File getProfilePicture() {
 		return profilePicture;
-	}
-	@Override
-	public void setEmail(String email) {
-		super.setEmail(email);
-		// Now that we know their email, let's see if the user already has a Gravatar
-		if (!profilePicture.exists()) {
-			gravatar = new Gravatar()
-			.setSize(240)
-			.setRating(GravatarRating.GENERAL_AUDIENCES)
-			.setDefaultImage(GravatarDefaultImage.IDENTICON);
-			byte[] jpg = gravatar.download(email);
-			try {
-				ImageIO.write(toBufferedImage(new ImageIcon(jpg).getImage()),
-						"jpg",
-						profilePicture);
-			} catch (IOException e) {
-				logger.error("Unable to save gravatar to file.");
-			}
-		}
 	}
 	/**
 	 * Converts a given Image into a BufferedImage
@@ -85,7 +69,7 @@ public class GravatarModel extends GenericHostModel {
 		// XML-RPC sucks
 		// https://en.gravatar.com/site/implement/xmlrpc/
 		MessageDigest md = MessageDigest.getInstance("MD5");
-		String thedigest = new String(md.digest(this.getEmail().toLowerCase().getBytes()));
+		String thedigest = new String(md.digest(getMap().get("Email").toLowerCase().getBytes()));
 		SecureXmlRpcClient rpc = new SecureXmlRpcClient(String.format("https://secure.gravatar.com/xmlrpc?user=%s",thedigest));
 		byte[] imageData = FileUtils.readFileToByteArray(profilePicture);
 		Vector parameters = new Vector();
@@ -93,5 +77,26 @@ public class GravatarModel extends GenericHostModel {
 		parameters.add(0);
 		parameters.add(getPassword());
 		Object result = rpc.execute("grav.saveData", parameters);
+	}
+	@Override
+	public void mapKeyValueChanged(ObservableMap<Profile, String> map, Profile key, String value) {
+		super.mapKeyValueChanged(map, key, value);
+		if (key == Profile.email) {
+			// Now that we know their email, let's see if the user already has a Gravatar
+			if (!profilePicture.exists()) {
+				gravatar = new Gravatar()
+				.setSize(240)
+				.setRating(GravatarRating.GENERAL_AUDIENCES)
+				.setDefaultImage(GravatarDefaultImage.IDENTICON);
+				byte[] jpg = gravatar.download(value);
+				try {
+					ImageIO.write(toBufferedImage(new ImageIcon(jpg).getImage()),
+							"jpg",
+							profilePicture);
+				} catch (IOException e) {
+					logger.error("Unable to save gravatar to file.");
+				}
+			}
+		}
 	}
 }

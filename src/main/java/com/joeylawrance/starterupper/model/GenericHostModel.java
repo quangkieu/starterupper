@@ -3,13 +3,18 @@ package com.joeylawrance.starterupper.model;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebWindowNotFoundException;
+import com.joeylawrance.starterupper.model.GitUserMap.Profile;
 import com.joeylawrance.starterupper.model.interfaces.HostModel;
+import com.joeylawrance.starterupper.util.ObservableMap;
+import com.joeylawrance.starterupper.util.ObservableMapListener;
 
 /**
  * Generically log in, sign up, or reset the password for a host.
@@ -17,8 +22,9 @@ import com.joeylawrance.starterupper.model.interfaces.HostModel;
  * @author Joey Lawrance
  *
  */
-public class GenericHostModel extends GitUserModel implements HostModel {
+public class GenericHostModel implements HostModel, ObservableMapListener<GitUserMap.Profile, String> {
 	private final Logger logger = LoggerFactory.getLogger(GenericHostModel.class);
+	private final Preferences prefs = Preferences.userNodeForPackage(getClass());
 	WebHelper client;
 	final String window;
 	final URL logo;
@@ -28,9 +34,12 @@ public class GenericHostModel extends GitUserModel implements HostModel {
 	String resetURL;
 	String logoutURL;
 	String profileURL;
-	String username;
 	
-	protected HashMap<String, String> map = new HashMap<String, String>();
+	private HashMap<String, String> map = new HashMap<String, String>();
+	
+	public Map<String, String> getMap() {
+		return map;
+	}
 	
 	public GenericHostModel(String window, URL logo, String description) {
 		this.window = window;
@@ -38,6 +47,7 @@ public class GenericHostModel extends GitUserModel implements HostModel {
 		this.description = description;
 		client = new WebHelper();
 		client.newWindow(window);
+		loadUsername();
 	}
 	
 	public WebHelper getClient() {
@@ -76,9 +86,17 @@ public class GenericHostModel extends GitUserModel implements HostModel {
 		System.out.println(client.getPageUrl(window));
 		boolean successful = !loginURL.equals(client.getPageUrl(window));
 		if (successful) {
-			setCustomProperty("starterupper", window, "login", getUsername());
+			storeUsername();
 		}
 		return successful;
+	}
+	
+	private void storeUsername() {
+		prefs.node(window).put("login", getUsername());
+	}
+	
+	private void loadUsername() {
+		setUsername(prefs.node(window).get("login", getUsername()));
 	}
 
 	@Override
@@ -90,34 +108,14 @@ public class GenericHostModel extends GitUserModel implements HostModel {
 
 	@Override
 	public void setUsername(String username) {
-		this.username = username;
 		map.put("Username", username);
 	}
 
 	@Override
 	public String getUsername() {
-		if (username == null) {
-			setUsername(getCustomProperty("starterupper", window, "login"));
-		}
-		if (username == null) {
-			setUsername(super.getUsername());
-		}
-		return username;
+		return map.get("Username");
 	}
 	
-	@Override
-	public void setEmail(String email) {
-		map.put("Email", email);
-	}
-	
-	@Override
-	public String getEmail() {
-		if (map.get("Email") == null) {
-			setEmail(super.getEmail());
-		}
-		return map.get("Email");
-	}
-
 	@Override
 	public void setPassword(String password) {
 		map.put("Password", password);
@@ -126,22 +124,6 @@ public class GenericHostModel extends GitUserModel implements HostModel {
 	@Override
 	public String getPassword() {
 		return map.get("Password");
-	}
-
-	@Override
-	public void setFirstname(String firstname) {
-		map.put("First name", firstname);
-	}
-
-	@Override
-	public void setLastname(String lastname) {
-		map.put("Last name", lastname);
-	}
-
-	@Override
-	public void setFullname(String fullname) {
-		map.put("Name", fullname);
-		map.put("Full name", fullname);
 	}
 
 	@Override
@@ -157,33 +139,6 @@ public class GenericHostModel extends GitUserModel implements HostModel {
 	@Override
 	public String getDescription() {
 		return description;
-	}
-
-	@Override
-	public String getFirstname() {
-		return null;
-	}
-
-	@Override
-	public String getLastname() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getFullname() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getByName(String name) {
-		return map.get(name);
-	}
-
-	@Override
-	public void setByName(String name, String value) {
-		map.put(name, value);
 	}
 
 	@Override
@@ -209,5 +164,37 @@ public class GenericHostModel extends GitUserModel implements HostModel {
 			logger.error("Couldn't connect to the network.");
 		}
 		return false;
+	}
+
+	@Override
+	public void mapKeyAdded(ObservableMap<Profile, String> map, Profile key) {
+	}
+	@Override
+	public void mapKeyRemoved(ObservableMap<Profile, String> map, Profile key,
+			String value) {
+	}
+	@Override
+	public void mapKeyValueChanged(ObservableMap<Profile, String> map,
+			Profile key, String value) {
+		switch (key) {
+		case email:
+			getMap().put("Email", value);
+			break;
+		case firstname:
+			getMap().put("First name", value);
+			break;
+		case lastname:
+			getMap().put("Last name", value);
+			break;
+		case name:
+			getMap().put("Name", value);
+			break;
+		case defaultname:
+			if (getUsername() == null)
+				setUsername(value);
+			break;
+		default:
+			break;
+		}
 	}
 }

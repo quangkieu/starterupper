@@ -13,12 +13,12 @@ import com.joeylawrance.starterupper.model.interfaces.GitHostModel;
  *
  */
 public class GenericGitHostModel extends GenericHostModel implements GitHostModel {
-
 	private String publicKeyURL;
 	Properties token;
 
 	public GenericGitHostModel(String window, URL logo, String description) {
 		super(window, logo, description);
+		getMap().put("Key", KeyConfig.getInstance().getPublicKey());
 	}
 	
 	protected void setPublicKeyURL(String publicKeyURL) {
@@ -28,13 +28,8 @@ public class GenericGitHostModel extends GenericHostModel implements GitHostMode
 	@Override
 	public void sharePublicKey() throws Exception {
 		client.load(window, publicKeyURL);
-		map.put("Title", String.format("StarterUpper (%s) @ %s", System.getProperty("os.name"), InetAddress.getLocalHost().getHostName()));
-		client.fillForm(window, map);
+		getMap().put("Title", String.format("StarterUpper (%s) @ %s", System.getProperty("os.name"), InetAddress.getLocalHost().getHostName()));
+		client.fillForm(window, getMap());
 		client.submitForm(window, "Add key");
-	}
-	
-	@Override
-	public void setPublicKey(String key) {
-		map.put("Key", key);
 	}
 }
