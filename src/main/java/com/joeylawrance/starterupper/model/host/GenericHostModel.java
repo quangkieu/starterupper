@@ -82,6 +82,7 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 		client.submitForm(window,"Sign in|Log in");
 		boolean successful = !getURL(HostAction.login).equals(client.getPageUrl(window));
 		if (successful) {
+			logger.info("Successfully logged into {}", getHostName());
 			storeUsername();
 		}
 		return successful;
@@ -101,6 +102,7 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 			client.load(window, getURL(HostAction.reset));
 			client.fillForm(window, map);
 			client.submitForm(window, "reset|password|submit");
+			logger.info("Password reset for {} sent.", getHostName());
 		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to load forgot password page");
 		}
@@ -154,15 +156,16 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	@Override
 	public boolean nameTaken() {
 		try {
+			if (loadUsername() != null) return true;
 			client.load(window, String.format(getURL(HostAction.profile), getUsername()));
 			logger.info("Loaded {}", String.format(getURL(HostAction.profile), getUsername()));
 		} catch (FailingHttpStatusCodeException e) {
 			logger.info("Load failed. Status code: {}", e.getMessage());
-			return true;
+			return false;
 		} catch (IOException e) {
 			logger.error("Couldn't connect to the network.");
 		}
-		return false;
+		return true;
 	}
 
 	@Override
@@ -189,6 +192,7 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 			getMap().put("Name", value);
 			break;
 		case defaultname:
+			// Don't bother changing the name to the default if we've logged in successfully before.
 			if (loadUsername() == null)
 				setUsername(value);
 			break;
