@@ -1,6 +1,7 @@
 package com.joeylawrance.starterupper.model;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
@@ -27,6 +30,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  *
  */
 public class WebHelper {
+	private final Logger logger = LoggerFactory.getLogger(WebHelper.class);
 	static {
 	    LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 
@@ -50,7 +54,7 @@ public class WebHelper {
 		return (HtmlPage) getWebClient().getWebWindowByName(window).getEnclosedPage();
 	}
 
-	public void fillForm(String window, Map<String, String> map) throws Exception {
+	public void fillForm(String window, Map<String, String> map) {
 		final HtmlPage page = getPageInWindow(window);
 		List<?> inputs = page.getByXPath("//form//input[@placeholder]");
 		List<?> labels = page.getByXPath("//form//label[@for]");
@@ -74,7 +78,7 @@ public class WebHelper {
 		}
 	}
 	
-	public void submitForm(String window, String submitLabel) throws IOException {
+	public void submitForm(String window, String submitLabel) {
 		final HtmlPage page = getPageInWindow(window);
 		List<?> inputs = page.getByXPath("//form//input[@type='submit']|//form//button[@type='submit']");
 		
@@ -83,7 +87,11 @@ public class WebHelper {
 			HtmlElement htmlElement = (HtmlElement) input;
 			Matcher matcher = pattern.matcher(htmlElement.asText());
 			if (matcher.find()) {
-				htmlElement.click();
+				try {
+					htmlElement.click();
+				} catch (IOException e) {
+					logger.error("Unable to click on {} submit button for {}", submitLabel, window);
+				}
 				break;
 			}
 		}
@@ -93,9 +101,17 @@ public class WebHelper {
 		getWebClient().openWindow(null, name);
 	}
 	
-	public Page load(String window, String url) throws FailingHttpStatusCodeException, WebWindowNotFoundException, IOException {
-		WebRequest request = new WebRequest(new URL(url));
-		return getWebClient().getPage(getWebClient().getWebWindowByName(window), request);
+	public Page load(String window, String url) throws FailingHttpStatusCodeException, IOException {
+		WebRequest request;
+		try {
+			request = new WebRequest(new URL(url));
+			return getWebClient().getPage(getWebClient().getWebWindowByName(window), request);
+		} catch (MalformedURLException e) {
+			logger.error("Malformed URL: {}", url);
+		} catch (WebWindowNotFoundException e) {
+			logger.error("Unable to find window for {}", window);
+		}
+		return null;
 	}
 	
 	public String getPageUrl(String window) {

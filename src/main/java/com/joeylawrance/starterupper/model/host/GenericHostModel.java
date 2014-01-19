@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.WebWindowNotFoundException;
 import com.joeylawrance.starterupper.model.GitUserMap;
 import com.joeylawrance.starterupper.model.WebHelper;
 import com.joeylawrance.starterupper.model.GitUserMap.Profile;
@@ -95,15 +94,24 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	}
 
 	@Override
-	public boolean signUp() throws Exception {
-		client.load(window,getSignupURL());
+	public boolean signUp() {
+		try {
+			client.load(window,getSignupURL());
+		} catch (Exception e) {
+			logger.error("Unable to load signup page.");
+		}
 		client.fillForm(window, map);
 		return false;
 	}
 
 	@Override
-	public boolean login() throws Exception {
-		client.load(window,getLoginURL());
+	public boolean login() {
+		try {
+			client.load(window,getLoginURL());
+		} catch (Exception e) {
+			logger.error("Unable to load login page.");
+			return false;
+		}
 		client.fillForm(window, map);
 		client.submitForm(window,"Sign in|Log in");
 		System.out.println(getLoginURL());
@@ -124,10 +132,14 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	}
 
 	@Override
-	public void forgotPassword() throws Exception {
-		client.load(window, getResetURL());
-		client.fillForm(window, map);
-		client.submitForm(window, "reset|password|submit");
+	public void forgotPassword() {
+		try {
+			client.load(window, getResetURL());
+			client.fillForm(window, map);
+			client.submitForm(window, "reset|password|submit");
+		} catch (Exception e) {
+			logger.error("Unable to load forgot password page");
+		}
 	}
 
 	@Override
@@ -166,8 +178,12 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	}
 
 	@Override
-	public void logout() throws Exception {
-		client.load(window,getLogoutURL());
+	public void logout() {
+		try {
+			client.load(window,getLogoutURL());
+		} catch (Exception e) {
+			logger.error("Unable to logout.");
+		}
 	}
 
 	@Override
@@ -178,8 +194,6 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 		} catch (FailingHttpStatusCodeException e) {
 			logger.info("Load failed. Status code: {}", e.getMessage());
 			return true;
-		} catch (WebWindowNotFoundException e) {
-			logger.error("Couldn't find window.");
 		} catch (IOException e) {
 			logger.error("Couldn't connect to the network.");
 		}

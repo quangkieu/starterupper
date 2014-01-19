@@ -50,23 +50,23 @@ public interface HostModel {
 	 * @return Whether the sign up was successful.
 	 * @throws Exception
 	 */
-	public boolean signUp() throws Exception;
+	public boolean signUp();
 	/**
 	 * Log into the host.
 	 * @return Whether the login was successful.
 	 * @throws Exception
 	 */
-	public boolean login() throws Exception;
+	public boolean login();
 	/**
 	 * Log out of the host.
 	 * @throws Exception
 	 */
-	public void logout() throws Exception;
+	public void logout();
 	/**
 	 * Reset the password for the host.
 	 * @throws Exception
 	 */
-	public void forgotPassword() throws Exception;
+	public void forgotPassword();
 	/**
 	 * Determine whether the username is taken
 	 * @return
