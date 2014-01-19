@@ -5,11 +5,11 @@ import com.joeylawrance.starterupper.gui.HostConfigPanel;
 import com.joeylawrance.starterupper.gui.PicturePanel;
 import com.joeylawrance.starterupper.gui.RepositoryPanel;
 import com.joeylawrance.starterupper.gui.Wizard;
-import com.joeylawrance.starterupper.model.BitbucketModel;
-import com.joeylawrance.starterupper.model.GitHubModel;
-import com.joeylawrance.starterupper.model.GitLabModel;
 import com.joeylawrance.starterupper.model.GitUserMap;
-import com.joeylawrance.starterupper.model.GravatarModel;
+import com.joeylawrance.starterupper.model.host.impl.Bitbucket;
+import com.joeylawrance.starterupper.model.host.impl.GitHub;
+import com.joeylawrance.starterupper.model.host.impl.GitLab;
+import com.joeylawrance.starterupper.model.host.impl.Gravatar;
 import com.joeylawrance.starterupper.util.ObservableMap;
 
 public class Main {
@@ -17,13 +17,13 @@ public class Main {
     	GitUserMap user = new GitUserMap();
     	ObservableMap<GitUserMap.Profile, String> map = new ObservableMap<GitUserMap.Profile, String>(user);
 
-    	GravatarModel gravatar = new GravatarModel();
+    	Gravatar gravatar = new Gravatar();
     	map.addObservableMapListener(gravatar);
-    	BitbucketModel bb = new BitbucketModel();
+    	Bitbucket bb = new Bitbucket();
     	map.addObservableMapListener(bb);
-    	GitHubModel gh = new GitHubModel();
+    	GitHub gh = new GitHub();
     	map.addObservableMapListener(gh);
-    	GitLabModel gl = new GitLabModel();
+    	GitLab gl = new GitLab();
     	map.addObservableMapListener(gl);
     	map.fire();
 

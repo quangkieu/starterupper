@@ -16,7 +16,7 @@ import javax.swing.event.AncestorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.joeylawrance.starterupper.model.interfaces.HostModel;
+import com.joeylawrance.starterupper.model.host.HostModel;
 
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;

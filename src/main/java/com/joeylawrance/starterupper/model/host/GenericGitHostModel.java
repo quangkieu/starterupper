@@ -1,10 +1,10 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.host;
 
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.Properties;
 
-import com.joeylawrance.starterupper.model.interfaces.GitHostModel;
+import com.joeylawrance.starterupper.model.KeyConfig;
 
 /**
  * Generically share public key with host.

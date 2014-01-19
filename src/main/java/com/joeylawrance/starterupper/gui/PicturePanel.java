@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.joeylawrance.starterupper.model.GravatarModel;
+import com.joeylawrance.starterupper.model.host.impl.Gravatar;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -20,7 +20,7 @@ public class PicturePanel extends JPanel {
 	final JButton takePicture;
 	final JButton discardPicture;
 	CameraPanel camPanel;
-	public PicturePanel(GravatarModel model) {
+	public PicturePanel(Gravatar model) {
 		setLayout(new MigLayout("", "[320.00,grow]", "[][240.00][grow][]"));
 		setName("Profile picture");
 		

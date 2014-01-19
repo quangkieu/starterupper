@@ -1,4 +1,4 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.host.impl;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -17,20 +17,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.joeylawrance.starterupper.model.GitUserMap.Profile;
+import com.joeylawrance.starterupper.model.host.GenericHostModel;
 import com.joeylawrance.starterupper.util.ObservableMap;
-import com.joeylawrance.starterupper.util.ObservableMapListener;
-import com.timgroup.jgravatar.Gravatar;
 import com.timgroup.jgravatar.GravatarDefaultImage;
 import com.timgroup.jgravatar.GravatarRating;
 
 import helma.xmlrpc.secure.SecureXmlRpcClient;
 
-public class GravatarModel extends GenericHostModel {
-	private final Logger logger = LoggerFactory.getLogger(GravatarModel.class);
-	private Gravatar gravatar;
+public class Gravatar extends GenericHostModel {
+	private final Logger logger = LoggerFactory.getLogger(Gravatar.class);
+	private com.timgroup.jgravatar.Gravatar gravatar;
 	private File profilePicture;
-	public GravatarModel() {
-		super("Gravatar", GravatarModel.class.getResource("/Gravatar.png"), "Gravatar hosts your profile picture across the web.");
+	public Gravatar() {
+		super("Gravatar", Gravatar.class.getResource("/Gravatar.png"), "Gravatar hosts your profile picture across the web.");
 		setLoginURL("https://wordpress.com/wp-login.php");
 		setProfileURL("http://en.gravatar.com/%s");
 		setSignupURL("https://signup.wordpress.com/signup/?user=1");
@@ -84,7 +83,7 @@ public class GravatarModel extends GenericHostModel {
 		if (key == Profile.email) {
 			// Now that we know their email, let's see if the user already has a Gravatar
 			if (!profilePicture.exists()) {
-				gravatar = new Gravatar()
+				gravatar = new com.timgroup.jgravatar.Gravatar()
 				.setSize(240)
 				.setRating(GravatarRating.GENERAL_AUDIENCES)
 				.setDefaultImage(GravatarDefaultImage.IDENTICON);

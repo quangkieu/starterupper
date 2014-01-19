@@ -1,9 +1,11 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.host.impl;
 
-public class GitHubModel extends GenericGitHostRepositoryModel {
+import com.joeylawrance.starterupper.model.host.GenericGitHostRepositoryModel;
 
-	public GitHubModel() {
-		super("GitHub", GitHubModel.class.getResource("/github.png"), "GitHub hosts five free private repositories for students.");
+public class GitHub extends GenericGitHostRepositoryModel {
+
+	public GitHub() {
+		super("GitHub", GitHub.class.getResource("/github.png"), "GitHub hosts five free private repositories for students.");
 		setLoginURL("https://github.com/login");
 		setLogoutURL("https://github.com/logout");
 		setProfileURL("https://github.com/%s");

@@ -1,9 +1,11 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.host.impl;
 
-public class BitbucketModel extends GenericGitHostRepositoryModel {
+import com.joeylawrance.starterupper.model.host.GenericGitHostRepositoryModel;
 
-	public BitbucketModel() {
-		super("Bitbucket", BitbucketModel.class.getResource("/bitbucket.png"), "Bitbucket hosts unlimited free private git repositories.");
+public class Bitbucket extends GenericGitHostRepositoryModel {
+
+	public Bitbucket() {
+		super("Bitbucket", Bitbucket.class.getResource("/bitbucket.png"), "Bitbucket hosts unlimited free private git repositories.");
 		setLoginURL("https://bitbucket.org/account/signin/");
 		setProfileURL("https://bitbucket.org/%s");
 		setLogoutURL("https://bitbucket.org/account/signout/");

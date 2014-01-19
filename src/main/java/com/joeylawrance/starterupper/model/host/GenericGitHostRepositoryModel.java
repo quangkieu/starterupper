@@ -1,8 +1,6 @@
-package com.joeylawrance.starterupper.model;
+package com.joeylawrance.starterupper.model.host;
 
 import java.net.URL;
-
-import com.joeylawrance.starterupper.model.interfaces.GitHostRepositoryModel;
 
 public class GenericGitHostRepositoryModel extends GenericGitHostModel implements
 		GitHostRepositoryModel {
