@@ -1,12 +1,9 @@
 package com.joeylawrance.starterupper.model.host.impl;
 
-import java.util.Properties;
-
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.joeylawrance.starterupper.model.host.GenericGitHostRepository;
 import com.joeylawrance.starterupper.model.host.GenericHost;
-
 
 public class GitLab extends GenericGitHostRepository {
 	
@@ -20,14 +17,6 @@ public class GitLab extends GenericGitHostRepository {
 		setPublicKeyURL("https://gitlab.com/profile/keys/new");
 		setRepositoryCreateURL("https://gitlab.com/projects/new");
 		setCollaboratorURL("https://gitlab.com/%s/%s/team_members/new");
-	}
-
-	public void saveToken(Properties p) throws Exception {
-		final String tokenPage = "https://gitlab.com/profile/account";
-		getClient().load(getHostName(), tokenPage);
-		
-		HtmlPage page = getClient().getPageInWindow(getHostName());
-		p.setProperty("gitlab.token", page.getElementById("token").getAttribute("value"));
 	}
 
 	public boolean signUp(String username, String password) throws Exception {
