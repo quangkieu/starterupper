@@ -9,6 +9,7 @@ public class GitLab extends GenericGitHostRepository {
 	
 	public GitLab() {
 		super("GitLab Cloud", GitLab.class.getResource("/gitlab.png"), "GitLab Cloud is an open source git project host.");
+		setHost("gitlab.com");
 		setURL(GenericHost.HostAction.login,"https://gitlab.com/users/sign_in");
 		setURL(GenericHost.HostAction.logout,"https://gitlab.com/users/sign_out");
 		setURL(GenericHost.HostAction.profile,"https://gitlab.com/u/%s");

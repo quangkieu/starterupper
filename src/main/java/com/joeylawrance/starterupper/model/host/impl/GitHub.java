@@ -7,6 +7,7 @@ public class GitHub extends GenericGitHostRepository {
 
 	public GitHub() {
 		super("GitHub", GitHub.class.getResource("/github.png"), "GitHub hosts five free private repositories for students.");
+		setHost("github.com");
 		setURL(GenericHost.HostAction.login,"https://github.com/login");
 		setURL(GenericHost.HostAction.logout,"https://github.com/logout");
 		setURL(GenericHost.HostAction.profile,"https://github.com/%s");

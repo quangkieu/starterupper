@@ -21,6 +21,7 @@ public class GenericGitHost extends GenericHost implements GitHost {
 	private final Logger logger = LoggerFactory.getLogger(GitHost.class);
 	private String publicKeyURL;
 	Properties token;
+	private String host;
 
 	public GenericGitHost(String window, URL logo, String description) {
 		super(window, logo, description);
@@ -29,6 +30,10 @@ public class GenericGitHost extends GenericHost implements GitHost {
 	
 	protected void setPublicKeyURL(String publicKeyURL) {
 		this.publicKeyURL = publicKeyURL;
+	}
+	
+	protected void setHost(String host) {
+		this.host = host;
 	}
 	
 	@Override
@@ -41,5 +46,10 @@ public class GenericGitHost extends GenericHost implements GitHost {
 		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to share public key with {}", window);
 		}
+	}
+
+	@Override
+	public boolean testLogin() {
+		return KeyConfig.getInstance().testLogin(host);
 	}
 }

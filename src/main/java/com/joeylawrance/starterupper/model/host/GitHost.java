@@ -10,10 +10,11 @@ package com.joeylawrance.starterupper.model.host;
 public interface GitHost extends Host {
 	/**
 	 * Share the user's public key with the project host.
-	 * 
-	 * Call setPublicKey first.
-	 * 
-	 * @throws Exception if the key is not set.
 	 */
 	public void sharePublicKey();
+	/**
+	 * Did we share the public key yet?
+	 * @return Whether we shared the public key yet.
+	 */
+	public boolean testLogin();
 }
