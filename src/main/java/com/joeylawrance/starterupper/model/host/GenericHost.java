@@ -22,8 +22,8 @@ import com.joeylawrance.starterupper.util.ObservableMapListener;
  * @author Joey Lawrance
  *
  */
-public class GenericHostModel implements HostModel, ObservableMapListener<GitUserMap.Profile, String> {
-	private final Logger logger = LoggerFactory.getLogger(GenericHostModel.class);
+public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profile, String> {
+	private final Logger logger = LoggerFactory.getLogger(GenericHost.class);
 	private final Preferences prefs = Preferences.userNodeForPackage(getClass());
 	WebHelper client;
 	final String window;
@@ -33,14 +33,14 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 		signup, login, reset, logout, profile;
 	}
 	private HashMap<HostAction, String> urls = new HashMap<HostAction, String>();
-	
+	private boolean loggedIn = false;
 	private HashMap<String, String> map = new HashMap<String, String>();
 	
 	public Map<String, String> getMap() {
 		return map;
 	}
 	
-	public GenericHostModel(String window, URL logo, String description) {
+	public GenericHost(String window, URL logo, String description) {
 		this.window = window;
 		this.logo = logo;
 		this.description = description;
@@ -80,12 +80,12 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 		}
 		client.fillForm(window, map);
 		client.submitForm(window,"Sign in|Log in");
-		boolean successful = !getURL(HostAction.login).equals(client.getPageUrl(window));
-		if (successful) {
+		loggedIn = !getURL(HostAction.login).equals(client.getPageUrl(window));
+		if (loggedIn) {
 			logger.info("Successfully logged into {}", getHostName());
 			storeUsername();
 		}
-		return successful;
+		return loggedIn;
 	}
 	
 	private void storeUsername() {
@@ -148,24 +148,10 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 	public void logout() {
 		try {
 			client.load(window,getURL(HostAction.logout));
+			loggedIn = false;
 		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to logout.");
 		}
-	}
-
-	@Override
-	public boolean nameTaken() {
-		try {
-			if (loadUsername() != null) return true;
-			client.load(window, String.format(getURL(HostAction.profile), getUsername()));
-			logger.info("Loaded {}", String.format(getURL(HostAction.profile), getUsername()));
-		} catch (FailingHttpStatusCodeException e) {
-			logger.info("Load failed. Status code: {}", e.getMessage());
-			return false;
-		} catch (IOException e) {
-			logger.error("Couldn't connect to the network.");
-		}
-		return true;
 	}
 
 	@Override
@@ -192,12 +178,23 @@ public class GenericHostModel implements HostModel, ObservableMapListener<GitUse
 			getMap().put("Name", value);
 			break;
 		case defaultname:
-			// Don't bother changing the name to the default if we've logged in successfully before.
-			if (loadUsername() == null)
+			// Don't clobber the name to the default if we've logged in successfully before.
+			if (!haveLoggedInBefore()) {
 				setUsername(value);
+			}
 			break;
 		default:
 			break;
 		}
+	}
+
+	@Override
+	public boolean loggedIn() {
+		return loggedIn;
+	}
+
+	@Override
+	public boolean haveLoggedInBefore() {
+		return loadUsername() != null;
 	}
 }

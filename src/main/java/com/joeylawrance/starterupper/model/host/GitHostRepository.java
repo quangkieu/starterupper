@@ -7,8 +7,8 @@ package com.joeylawrance.starterupper.model.host;
  * @author Joey Lawrance
  *
  */
-public interface GitHostRepositoryModel extends GitHostModel {
+public interface GitHostRepository extends GitHost {
 	public void setPrivateRepositoryName(String name);
-	public boolean addCollaboratorToRepository(String username) throws Exception;
-	public boolean createPrivateRepository() throws Exception;
+	public boolean addCollaboratorToRepository(String username);
+	public boolean createPrivateRepository();
 }

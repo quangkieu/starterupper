@@ -81,7 +81,7 @@ public class GitConfigPanel extends JPanel {
 	public GitConfigPanel(Map<GitUserMap.Profile, String> gitUserModel) throws Exception {
 		gitConfig = gitUserModel;
 		setName("Name & email");
-		setLayout(new MigLayout("", "[45px,right][grow]", "[51.00][11.00,top][][][][][][][][][][grow,top]"));
+		setLayout(new MigLayout("", "[70.00px,right][grow]", "[76.00][11.00,top][][][][][][][][][][grow,top]"));
 		
 		JLabel logo = new JLabel();
 		logo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(GitConfigPanel.class.getResource("/Git.png"))));

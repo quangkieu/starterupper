@@ -8,7 +8,7 @@ import java.net.URL;
  * @author Joey Lawrance
  *
  */
-public interface HostModel {
+public interface Host {
 	/**
 	 * Get the logo for this host.
 	 */
@@ -58,6 +58,16 @@ public interface HostModel {
 	 */
 	public boolean login();
 	/**
+	 * Whether we have logged in before.
+	 * @return
+	 */
+	public boolean haveLoggedInBefore();
+	/**
+	 * Whether we are currently logged into the host.
+	 * @return
+	 */
+	public boolean loggedIn();
+	/**
 	 * Log out of the host.
 	 * @throws Exception
 	 */
@@ -67,9 +77,4 @@ public interface HostModel {
 	 * @throws Exception
 	 */
 	public void forgotPassword();
-	/**
-	 * Determine whether the username is taken
-	 * @return
-	 */
-	public boolean nameTaken();
 }

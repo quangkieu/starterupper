@@ -6,8 +6,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
-import java.awt.Font;
-
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.event.AncestorEvent;
@@ -16,7 +14,7 @@ import javax.swing.event.AncestorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.joeylawrance.starterupper.model.host.HostModel;
+import com.joeylawrance.starterupper.model.host.Host;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -32,43 +30,38 @@ public class HostConfigPanel extends JPanel {
 	static final Logger logger = LoggerFactory.getLogger(HostConfigPanel.class);
 	private final JTextField username;
 	final JPasswordField passwordField;
+	private JLabel status;
 	private JButton signUp;
 	private JButton logIn;
-	private HostModel model;
-
-	private void checkNameTaken() {
-		new SwingWorker<Boolean, Void>() {
-			@Override
-			protected Boolean doInBackground() throws Exception {
-				return model.nameTaken();
-			}
-			@Override
-			public void done() {
-				try {
-					boolean taken = get();
-					signUp.setEnabled(!taken);
-					logIn.setEnabled(taken);
-				} catch (InterruptedException e) {
-					logger.info("Username taken check interrupted.");
-				} catch (ExecutionException e) {
-					logger.info("Username taken check encountered a problem: {}", e.getMessage());
-				}
-			}
-		}.execute();
+	private JButton forgotPassword;
+	private Host model;
+	
+	private void enableFields(boolean enable) {
+		username.setEnabled(enable && !model.haveLoggedInBefore());
+		passwordField.setEnabled(enable);
+		signUp.setEnabled(enable && !model.haveLoggedInBefore());
+		logIn.setEnabled(enable);
+		forgotPassword.setEnabled(enable);
 	}
 
 	private void doLogin() {
 		new SwingWorker<Boolean, Void>() {
 			@Override
 			protected Boolean doInBackground() throws Exception {
+				status.setText("Please wait, logging in...");
+				enableFields(false);
 				return model.login();
 			}
 			@Override
 			public void done() {
 				try {
 					boolean loggedIn = get();
-					username.setEnabled(!loggedIn);
-					passwordField.setEnabled(!loggedIn);
+					enableFields(!loggedIn);
+					if (loggedIn) {
+						status.setText(String.format("Logged in to %s.", model.getHostName()));
+					} else {
+						status.setText(String.format("Login failed."));
+					}
 				} catch (InterruptedException e) {
 					logger.info("Login interrupted.");
 				} catch (ExecutionException e) {
@@ -82,12 +75,21 @@ public class HostConfigPanel extends JPanel {
 		new SwingWorker<Boolean, Void>() {
 			@Override
 			protected Boolean doInBackground() throws Exception {
+				status.setText("Please wait, signing up for a new account...");
+				enableFields(false);
 				return model.signUp();
 			}
 			@Override
 			public void done() {
 				try {
 					boolean signedUp = get();
+					enableFields(!signedUp);
+					logIn.setEnabled(true);
+					if (signedUp) {
+						status.setText(String.format("Check your inbox for instructions to finish the signup. Then, come back here to log in.", model.getHostName()));
+					} else {
+						status.setText(String.format("Unable to create a new account. Try a different username or a stronger password."));
+					}
 				} catch (InterruptedException e) {
 					logger.info("Signup interrupted.");
 				} catch (ExecutionException e) {
@@ -100,6 +102,7 @@ public class HostConfigPanel extends JPanel {
 		new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
+				status.setText("Please wait, sending password reset request...");
 				model.forgotPassword();
 				return null;
 			}
@@ -107,6 +110,7 @@ public class HostConfigPanel extends JPanel {
 			public void done() {
 				try {
 					get();
+					status.setText("Check your inbox for a password reset email with instructions.");
 				} catch (InterruptedException e) {
 					logger.info("Forgot password interrupted.");
 				} catch (ExecutionException e) {
@@ -115,11 +119,10 @@ public class HostConfigPanel extends JPanel {
 			}
 		}.execute();
 	}
-	public HostConfigPanel(final HostModel model) {
+	public HostConfigPanel(final Host model) {
 		this.model = model;
 		setName(model.getHostName());
-		checkNameTaken();
-		setLayout(new MigLayout("", "[48px][86px,grow]", "[76.00][][20px][][23px][]"));
+		setLayout(new MigLayout("", "[70px][grow]", "[76.00][][20px][][23px][]"));
 
 		JLabel logo = new JLabel();
 		logo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
@@ -129,30 +132,28 @@ public class HostConfigPanel extends JPanel {
 		description.setText(model.getDescription());
 		add(description, "cell 1 1");
 
-		JLabel lblNewLabel = new JLabel("Username");
-		add(lblNewLabel, "cell 0 2,alignx left,aligny center");
+		add(new JLabel("Username"), "cell 0 2,alignx trailing");
 
 		username = new JTextField(model.getUsername());
+		username.setName("Username");
 		username.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				model.setUsername(username.getText().trim());
-				checkNameTaken();
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				model.setUsername(username.getText().trim());
-				checkNameTaken();
 			}
 		});
-		add(username, "cell 1 2,growx,aligny top");
+		add(username, "cell 1 2,growx");
 		username.setColumns(10);
 
-		JLabel label_1 = new JLabel("Password");
-		add(label_1, "cell 0 3");
+		add(new JLabel("Password"), "cell 0 3,alignx trailing");
 
 		passwordField = new JPasswordField();
+		passwordField.setName("Password");
 		passwordField.addFocusListener(new FocusListener() {
 
 			@Override
@@ -188,11 +189,7 @@ public class HostConfigPanel extends JPanel {
 		});
 		add(logIn, "cell 1 4");
 
-		JLabel lblSignUpIf = new JLabel(" ");
-		lblSignUpIf.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		add(lblSignUpIf, "cell 1 5");
-
-		JButton forgotPassword = new JButton("Forgot password");
+		forgotPassword = new JButton("Forgot password");
 		forgotPassword.setToolTipText("Click if you need to reset your password via email.");
 		forgotPassword.addActionListener(new ActionListener() {
 			@Override
@@ -201,14 +198,14 @@ public class HostConfigPanel extends JPanel {
 			}
 		});
 		add(forgotPassword, "cell 1 4");
+
+		status = new JLabel();
+		add(status, "growx,cell 1 5");
 		this.addAncestorListener(new AncestorListener() {
 			// We need to update the view to reflect model changes (if any)
-			// figure out if the username is taken already once we're visible.
 			@Override
 			public void ancestorAdded(AncestorEvent arg0) {
-				logger.info("{} configuration visible", model.getHostName());
 				username.setText(model.getUsername());
-				checkNameTaken();
 			}
 			@Override
 			public void ancestorMoved(AncestorEvent arg0) {
@@ -217,5 +214,6 @@ public class HostConfigPanel extends JPanel {
 			public void ancestorRemoved(AncestorEvent arg0) {
 			}
 		});
+		enableFields(true);
 	}
 }
