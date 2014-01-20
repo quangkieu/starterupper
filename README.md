@@ -1,10 +1,9 @@
 # Starter Upper
 
-Undergraduate computer science students and faculty typically use Blackboard, Moodle, or email for work submission.
-Although software developers typically submit work using git, few faculty adopt git in the classroom, depriving students of practical experience.
-Getting started with git in the classroom can be tedious and error-prone when students misinterpret written instructions, which is why I wrote Starter Upper.
+Although software developers typically use git for work, few undergraduate computer science faculty adopt git in the classroom for work submission, thereby depriving students of practical experience.
+While Blackboard or Moodle are easy to deploy, getting started with git in the classroom can be tedious and error-prone when students inevitably misinterpret written instructions, which is why I wrote Starter Upper.
 Starter Upper helps students set up accounts and repositories flawlessly on Git project hosting services with minimal time and overhead.
-With any luck, faculty who use this program will move to using [Git on the cloud in the classroom](http://db.grinnell.edu/sigcse/sigcse2013/Program/viewAcceptedProposal.pdf?sessionType=paper&sessionNumber=257).
+With any luck, faculty who use this program will use [Git on the cloud in the classroom](http://db.grinnell.edu/sigcse/sigcse2013/Program/viewAcceptedProposal.pdf?sessionType=paper&sessionNumber=257).
 
 # What Starter Upper does
 
