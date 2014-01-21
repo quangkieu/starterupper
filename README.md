@@ -1,6 +1,6 @@
 # Starter Upper
 
-Few undergraduate computer science faculty use git for work submission, even though experience with git would benefit students' careers in software development.
+Few undergraduate computer science faculty use git for work submission, even though that would benefit students' careers in software development.
 Getting started is the hardest part of using git in the classroom, which is why I wrote Starter Upper.
 Starter Upper helps students set up accounts and repositories on Git project hosting services with minimal time and overhead to facilitate adoption of [Git on the cloud in the classroom](http://db.grinnell.edu/sigcse/sigcse2013/Program/viewAcceptedProposal.pdf?sessionType=paper&sessionNumber=257).
 
