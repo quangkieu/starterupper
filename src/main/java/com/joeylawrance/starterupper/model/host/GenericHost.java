@@ -2,6 +2,7 @@ package com.joeylawrance.starterupper.model.host;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -29,12 +30,10 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 	final String window;
 	final URL logo;
 	final String description;
-	public static enum HostAction {
-		signup, login, reset, logout, profile;
-	}
 	private HashMap<HostAction, String> urls = new HashMap<HostAction, String>();
 	private boolean loggedIn = false;
 	private HashMap<String, String> map = new HashMap<String, String>();
+	private ArrayList<HostListener> listeners = new ArrayList<HostListener>();
 	
 	public Map<String, String> getMap() {
 		return map;
@@ -84,6 +83,7 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 		if (loggedIn) {
 			logger.info("Successfully logged into {}", getHostName());
 			storeUsername();
+			fireAction(HostAction.login);
 		}
 		return loggedIn;
 	}
@@ -103,6 +103,7 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 			client.fillForm(window, map);
 			client.submitForm(window, "reset|password|submit");
 			logger.info("Password reset for {} sent.", getHostName());
+			fireAction(HostAction.reset);
 		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to load forgot password page");
 		}
@@ -149,6 +150,7 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 		try {
 			client.load(window,getURL(HostAction.logout));
 			loggedIn = false;
+			fireAction(HostAction.logout);
 		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to logout.");
 		}
@@ -196,5 +198,16 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 	@Override
 	public boolean haveLoggedInBefore() {
 		return loadUsername() != null;
+	}
+
+	public void fireAction(HostAction action) {
+		for (HostListener listener : listeners) {
+			listener.actionPerformed(this, action);
+		}
+	}
+	
+	@Override
+	public void addHostListener(HostListener listener) {
+		listeners.add(listener);
 	}
 }

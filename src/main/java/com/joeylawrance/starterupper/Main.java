@@ -35,7 +35,7 @@ public class Main {
 		w.addStep(new HostConfigPanel(bb));
 		w.addStep(new HostConfigPanel(gh));
 		w.addStep(new HostConfigPanel(gl));
-		w.addStep(new RepositoryPanel());
+		w.addStep(new RepositoryPanel(bb, gh, gl));
 
     	w.setVisible(true);
     }

@@ -54,18 +54,19 @@ public class HostConfigPanel extends JPanel {
 			}
 			@Override
 			public void done() {
+				boolean loggedIn = false;
 				try {
-					boolean loggedIn = get();
-					enableFields(!loggedIn);
-					if (loggedIn) {
-						status.setText(String.format("Logged in to %s.", model.getHostName()));
-					} else {
-						status.setText(String.format("Login failed."));
-					}
+					loggedIn = get();
 				} catch (InterruptedException e) {
 					logger.info("Login interrupted.");
 				} catch (ExecutionException e) {
 					logger.info("Login encountered a problem: {}", e.getMessage());
+				}
+				enableFields(!loggedIn);
+				if (loggedIn) {
+					status.setText(String.format("Logged in to %s.", model.getHostName()));
+				} else {
+					status.setText(String.format("Login failed."));
 				}
 			}
 		}.execute();
@@ -81,19 +82,20 @@ public class HostConfigPanel extends JPanel {
 			}
 			@Override
 			public void done() {
+				boolean signedUp = false;
 				try {
-					boolean signedUp = get();
-					enableFields(!signedUp);
-					logIn.setEnabled(true);
-					if (signedUp) {
-						status.setText(String.format("Check your inbox for instructions to finish the signup. Then, come back here to log in.", model.getHostName()));
-					} else {
-						status.setText(String.format("Unable to create a new account. Try a different username or a stronger password."));
-					}
+					signedUp = get();
 				} catch (InterruptedException e) {
 					logger.info("Signup interrupted.");
 				} catch (ExecutionException e) {
 					logger.info("Signup encountered a problem: {}", e.getMessage());
+				}
+				enableFields(!signedUp);
+				logIn.setEnabled(true);
+				if (signedUp) {
+					status.setText(String.format("Check your inbox for instructions to finish the signup. Then, come back here to log in.", model.getHostName()));
+				} else {
+					status.setText(String.format("Unable to create a new account. Try a different username or a stronger password."));
 				}
 			}
 		}.execute();

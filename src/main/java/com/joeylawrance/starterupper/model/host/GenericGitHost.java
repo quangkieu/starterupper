@@ -35,6 +35,9 @@ public class GenericGitHost extends GenericHost implements GitHost {
 	protected void setHost(String host) {
 		this.host = host;
 	}
+	protected String getHost() {
+		return host;
+	}
 	
 	@Override
 	public void sharePublicKey() {

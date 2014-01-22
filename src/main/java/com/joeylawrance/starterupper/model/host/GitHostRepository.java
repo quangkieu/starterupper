@@ -8,7 +8,25 @@ package com.joeylawrance.starterupper.model.host;
  *
  */
 public interface GitHostRepository extends GitHost {
-	public void setPrivateRepositoryName(String name);
-	public boolean addCollaboratorToRepository(String username);
-	public boolean createPrivateRepository();
+	/**
+	 * Get the SSH url for the repository.
+	 * @return
+	 */
+	String getRepositoryURL(); 
+	/**
+	 * Set the name of the private repository.
+	 * @param name
+	 */
+	void setPrivateRepositoryName(String name);
+	/**
+	 * Add a collaborator to this repository.
+	 * @param username
+	 * @return
+	 */
+	boolean addCollaboratorToRepository(String username);
+	/**
+	 * Create the private repository.
+	 * @return
+	 */
+	boolean createPrivateRepository();
 }

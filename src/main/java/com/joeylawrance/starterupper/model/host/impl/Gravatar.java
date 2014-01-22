@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.joeylawrance.starterupper.model.GitUserMap.Profile;
 import com.joeylawrance.starterupper.model.host.GenericHost;
+import com.joeylawrance.starterupper.model.host.HostAction;
 import com.joeylawrance.starterupper.util.ObservableMap;
 import com.timgroup.jgravatar.GravatarDefaultImage;
 import com.timgroup.jgravatar.GravatarRating;
@@ -30,10 +31,9 @@ public class Gravatar extends GenericHost {
 	private File profilePicture;
 	public Gravatar() {
 		super("Gravatar", Gravatar.class.getResource("/Gravatar.png"), "Gravatar (part of Wordpress.com) hosts your profile picture across the web.");
-		setURL(GenericHost.HostAction.login,"https://wordpress.com/wp-login.php");
-		setURL(GenericHost.HostAction.profile,"http://en.gravatar.com/%s");
-		setURL(GenericHost.HostAction.signup,"https://signup.wordpress.com/signup/?user=1");
-		setURL(GenericHost.HostAction.reset,"http://wordpress.com/wp-login.php?action=lostpassword");
+		setURL(HostAction.login,"https://wordpress.com/wp-login.php");
+		setURL(HostAction.signup,"https://signup.wordpress.com/signup/?user=1");
+		setURL(HostAction.reset,"http://wordpress.com/wp-login.php?action=lostpassword");
 		profilePicture = new File(System.getProperty("user.home"),"me.jpg");
 	}
 	public File getProfilePicture() {

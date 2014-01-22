@@ -39,13 +39,14 @@ public class GitClient {
 	 * @return Whether we were able to setup the upstream properly.
 	 */
 	public boolean setUpstreamRepository(String repositoryURL) {
-		Pattern pattern = Pattern.compile("(//|@)(.*)/(.*)/(.*?)(\\.git)?$");
+		Pattern pattern = Pattern.compile("(//|@)(.*)[/:](.*)/(.+?)(\\.git)?$");
 		Matcher matcher = pattern.matcher(repositoryURL);
 		if (matcher.find()) {
 			upstreamRepositoryHost = matcher.group(2);
 			upstreamRepositoryOwner = matcher.group(3);
 			upstreamRepositoryName = matcher.group(4);
 			this.upstreamRepositoryURL = String.format("git@%s:%s/%s.git", upstreamRepositoryHost, upstreamRepositoryOwner, upstreamRepositoryName);
+			localRepositoryLocation = new File(new File(System.getProperty("user.home")),upstreamRepositoryName);
 			return true;
 		}
 		return false;
@@ -69,6 +70,14 @@ public class GitClient {
 	 */
 	public void setLocalRepositoryLocation(File path) {
 		this.localRepositoryLocation = path;
+	}
+	
+	/**
+	 * Get the local repository location.
+	 * @return The repository location
+	 */
+	public File getLocalRepositoryLocation() {
+		return this.localRepositoryLocation;
 	}
 	
 	/**

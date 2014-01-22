@@ -2,6 +2,7 @@ package com.joeylawrance.starterupper.model.host;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,9 @@ public class GenericGitHostRepository extends GenericGitHost implements
 		GitHostRepository {
 	private final Logger logger = LoggerFactory.getLogger(GenericGitHostRepository.class);
 
-	String repositoryCreateURL;
-	String collaboratorURL;
+	private String repositoryCreateURL;
+	private String collaboratorURL;
+	private String repositoryName;
 	
 	public GenericGitHostRepository(String window, URL logo, String description) {
 		super(window, logo, description);
@@ -24,14 +26,16 @@ public class GenericGitHostRepository extends GenericGitHost implements
 	}
 
 	public void setCollaboratorURL(String collaboratorURL) {
-		this.collaboratorURL = String.format(collaboratorURL, getUsername(), getMap().get("Repository name"));
+		this.collaboratorURL = collaboratorURL;
 	}
 
 	@Override
 	public void setPrivateRepositoryName(String name) {
-		// By this time, hopefully we've set up the user's full name.
-		getMap().put("Name", name);
-		getMap().put("Repository name", name);
+		repositoryName = name;
+	}
+
+	private String getPrivateRepositoryName() {
+		return repositoryName;
 	}
 
 	@Override
@@ -50,18 +54,21 @@ public class GenericGitHostRepository extends GenericGitHost implements
 	@Override
 	public boolean addCollaboratorToRepository(String username) {
 		try {
-			client.load(window, collaboratorURL);
-			// This sucks. I need to rethink how I do this.
-			// FIXME: Ahem: just use a different map, populated from the existing map. duh
-			getMap().remove("Username");
-			getMap().put("user|friend", username);
-			client.fillForm(window, getMap());
+			client.load(window, String.format(collaboratorURL, getUsername(), getPrivateRepositoryName()));
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("user|friend", username);
+			client.fillForm(window, map);
 			client.submitForm(window, "Add");
 		} catch (FailingHttpStatusCodeException | IOException e) {
-			logger.error("Unable to add collaborator {} to private repository {} on {}", username, getMap().get("Name"), window);
+			logger.error("Unable to add collaborator {} to private repository {} on {}", getUsername(), getPrivateRepositoryName(), window);
 			return false;
 		}
 		return !client.getPageUrl(window).equals(collaboratorURL);
+	}
+
+	@Override
+	public String getRepositoryURL() {
+		return String.format("git@%s:%s/%s",getHost(), getUsername(), getPrivateRepositoryName());
 	}
 
 }

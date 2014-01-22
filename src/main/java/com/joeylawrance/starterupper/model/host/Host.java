@@ -10,71 +10,76 @@ import java.net.URL;
  */
 public interface Host {
 	/**
+	 * Add a listener for host events.
+	 * @param listener
+	 */
+	void addHostListener(HostListener listener);
+	/**
 	 * Get the logo for this host.
 	 */
-	public URL getLogo();
+	URL getLogo();
 	/**
 	 * Get the host name.
 	 * 
 	 * @return The name of this host.
 	 */
-	public String getHostName();
+	String getHostName();
 	/**
 	 * Get a description of the host.
 	 * 
 	 * @return A description of this host.
 	 */
-	public String getDescription();
+	String getDescription();
 	/**
 	 * Set the password for this host.
 	 * @param password
 	 */
-	public void setPassword(String password);
+	void setPassword(String password);
 	/**
 	 * Get the password for this host.
 	 * @return
 	 */
-	public String getPassword();
+	String getPassword();
 	/**
 	 * Set the username for this host.
 	 * @param password
 	 */
-	public void setUsername(String username);
+	void setUsername(String username);
 	/**
 	 * Get the username for this host.
 	 * @return
 	 */
-	public String getUsername();
+	String getUsername();
 	/**
 	 * Sign up for the host.
 	 * @return Whether the sign up was successful.
 	 * @throws Exception
 	 */
-	public boolean signUp();
+	boolean signUp();
 	/**
 	 * Log into the host.
 	 * @return Whether the login was successful.
 	 * @throws Exception
 	 */
-	public boolean login();
+	boolean login();
 	/**
 	 * Whether we have logged in before.
 	 * @return
 	 */
-	public boolean haveLoggedInBefore();
+	boolean haveLoggedInBefore();
 	/**
 	 * Whether we are currently logged into the host.
 	 * @return
 	 */
-	public boolean loggedIn();
+	boolean loggedIn();
 	/**
 	 * Log out of the host.
 	 * @throws Exception
 	 */
-	public void logout();
+	void logout();
 	/**
 	 * Reset the password for the host.
 	 * @throws Exception
 	 */
-	public void forgotPassword();
+	void forgotPassword();
 }

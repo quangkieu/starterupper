@@ -157,7 +157,7 @@ public class Wizard extends JFrame {
 		list.addListSelectionListener(selectionListener);
 		
 		if (hasProblems) {
-			status.setText(String.format("You need to address any errors in the form above%s before continuing.", (currentIndex > 0) ? " or go back":""));
+			status.setText(String.format("Fix all problems%s before continuing.", (currentIndex > 0) ? " or go back":""));
 		} else {
 			status.setText("");
 		}
