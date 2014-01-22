@@ -170,7 +170,7 @@ public class HostConfigPanel extends JPanel {
 		add(passwordField, "cell 1 3,growx");
 
 		signUp = new JButton("Sign up");
-		signUp.setToolTipText("Sign up if you do not already have an account.");
+		signUp.setToolTipText("Sign up if you do not already have an account");
 		signUp.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -180,7 +180,7 @@ public class HostConfigPanel extends JPanel {
 		add(signUp, "flowx,cell 1 4");
 
 		logIn = new JButton("Log in");
-		logIn.setToolTipText("Log in if you already have an account.");
+		logIn.setToolTipText("Log in if you already have an account");
 		logIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -190,7 +190,7 @@ public class HostConfigPanel extends JPanel {
 		add(logIn, "cell 1 4");
 
 		forgotPassword = new JButton("Forgot password");
-		forgotPassword.setToolTipText("Click if you need to reset your password via email.");
+		forgotPassword.setToolTipText("Click if you need to reset your password via email");
 		forgotPassword.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
