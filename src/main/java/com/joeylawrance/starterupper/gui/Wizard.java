@@ -27,7 +27,6 @@ import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.border.EmptyBorder;
-import java.awt.Color;
 
 @SuppressWarnings("serial")
 public class Wizard extends JFrame {
@@ -100,7 +99,6 @@ public class Wizard extends JFrame {
 		navigationControls.setLayout(new MigLayout("", "[14.00px,grow,fill][55px][55px][59px]", "[30.00px]"));
 		
 		status = new JLabel();
-		status.setForeground(Color.RED);
 		navigationControls.add(status, "flowx,cell 0 0");
 
 		navigationControls.add(Box.createHorizontalGlue(), "cell 0 0,alignx left,aligny center");
@@ -159,7 +157,7 @@ public class Wizard extends JFrame {
 		list.addListSelectionListener(selectionListener);
 		
 		if (hasProblems) {
-			status.setText(String.format("You need to complete the form above%s before continuing.", (currentIndex > 0) ? " or go back":""));
+			status.setText(String.format("You need to address any errors in the form above%s before continuing.", (currentIndex > 0) ? " or go back":""));
 		} else {
 			status.setText("");
 		}
@@ -175,10 +173,10 @@ public class Wizard extends JFrame {
 		CardLayout panelLayout = (CardLayout) panel.getLayout();
 		String name = steps.getElementAt(index);
 		stepTitle.setText(name);
+		hasProblems = false;
 		panelLayout.show(panel, name);
 		currentIndex = index;
 		updateState();
-		// update State used to be here. I'm thinking we need to bring it back and have a flag set for whether there's a problem now.
 	}
 	private void goNext() {
 		gotoStep(currentIndex+1);
