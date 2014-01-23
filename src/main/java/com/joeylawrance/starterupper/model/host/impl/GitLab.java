@@ -8,7 +8,7 @@ import com.joeylawrance.starterupper.model.host.HostAction;
 public class GitLab extends GenericGitHostRepository {
 	
 	public GitLab() {
-		super("GitLab Cloud", GitLab.class.getResource("/gitlab.png"), "GitLab Cloud is an open source git project host.");
+		super("GitLab", GitLab.class.getResource("/gitlab.png"), "GitLab Cloud is an open source git project host.");
 		setHost("gitlab.com");
 		setURL(HostAction.login,"https://gitlab.com/users/sign_in");
 		setURL(HostAction.logout,"https://gitlab.com/users/sign_out");

@@ -124,9 +124,14 @@ public class Wizard extends JFrame {
 			}
 		});
 		finishButton.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
+				// Disable everything. We're done!
+				backButton.setEnabled(false);
+				nextButton.setEnabled(false);
+				finishButton.setEnabled(false);
+				list.setEnabled(false);
 			}
 		});
 
@@ -183,5 +188,8 @@ public class Wizard extends JFrame {
 	}
 	private void goBack() {
 		gotoStep(currentIndex-1);
+	}
+	public void addActionListener(ActionListener l) {
+		finishButton.addActionListener(l);
 	}
 }

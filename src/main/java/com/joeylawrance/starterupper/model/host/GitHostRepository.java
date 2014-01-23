@@ -12,7 +12,12 @@ public interface GitHostRepository extends GitHost {
 	 * Get the SSH url for the repository.
 	 * @return
 	 */
-	String getRepositoryURL(); 
+	String getRepositoryURL();
+	/**
+	 * Get the URL for the repository web page.
+	 * @return
+	 */
+	String getRepositoryWebPage();
 	/**
 	 * Set the name of the private repository.
 	 * @param name

@@ -42,33 +42,43 @@ public class GenericGitHostRepository extends GenericGitHost implements
 	public boolean createPrivateRepository() {
 		try {
 			client.load(window,repositoryCreateURL);
-			client.fillForm(window, getMap());
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("Name", repositoryName);
+			client.fillForm(window, map);
 			client.submitForm(window,"Create");
+			logger.info("Created repository '{}' on {}", repositoryName, window);
 		} catch (FailingHttpStatusCodeException | IOException e) {
-			logger.error("Unable to create private repository {} on {}", getMap().get("Name"), window);
+			logger.error("Unable to create private repository '{}' on {}", repositoryName, window);
 			return false;
 		}
-		return !client.getPageUrl(window).equals(repositoryCreateURL);
+		return true; //!client.getPageUrl(window).equals(repositoryCreateURL);
 	}
 
 	@Override
 	public boolean addCollaboratorToRepository(String username) {
 		try {
 			client.load(window, String.format(collaboratorURL, getUsername(), getPrivateRepositoryName()));
+			System.out.println(client.getPageUrl(window));
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("user|friend", username);
 			client.fillForm(window, map);
 			client.submitForm(window, "Add");
+			logger.info("Added collaborator {} to {} on {}", username, getPrivateRepositoryName(), window);
 		} catch (FailingHttpStatusCodeException | IOException e) {
-			logger.error("Unable to add collaborator {} to private repository {} on {}", getUsername(), getPrivateRepositoryName(), window);
+			logger.error("Unable to add collaborator {} to {} on {}", username, getPrivateRepositoryName(), window);
 			return false;
 		}
-		return !client.getPageUrl(window).equals(collaboratorURL);
+		return true; //!client.getPageUrl(window).equals(collaboratorURL);
 	}
 
 	@Override
 	public String getRepositoryURL() {
-		return String.format("git@%s:%s/%s",getHost(), getUsername(), getPrivateRepositoryName());
+		return String.format("git@%s:%s/%s.git",getHost(), getUsername(), getPrivateRepositoryName());
+	}
+
+	@Override
+	public String getRepositoryWebPage() {
+		return String.format("https://%s/%s/%s",getHost(), getUsername(), getPrivateRepositoryName());
 	}
 
 }

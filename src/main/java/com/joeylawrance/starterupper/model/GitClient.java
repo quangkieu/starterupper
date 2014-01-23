@@ -45,7 +45,8 @@ public class GitClient {
 			upstreamRepositoryHost = matcher.group(2);
 			upstreamRepositoryOwner = matcher.group(3);
 			upstreamRepositoryName = matcher.group(4);
-			this.upstreamRepositoryURL = String.format("git@%s:%s/%s.git", upstreamRepositoryHost, upstreamRepositoryOwner, upstreamRepositoryName);
+			// Use HTTPS upstream URL in case we clone from a different host than the one we use.
+			this.upstreamRepositoryURL = String.format("https://%s/%s/%s.git", upstreamRepositoryHost, upstreamRepositoryOwner, upstreamRepositoryName);
 			localRepositoryLocation = new File(new File(System.getProperty("user.home")),upstreamRepositoryName);
 			return true;
 		}
