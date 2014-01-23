@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.joeylawrance.starterupper.model.GitClient;
+import com.joeylawrance.starterupper.model.host.GitHost;
 import com.joeylawrance.starterupper.model.host.GitHostRepository;
 import com.joeylawrance.starterupper.model.host.Host;
 import com.joeylawrance.starterupper.model.host.HostAction;
@@ -210,8 +211,6 @@ public class RepositoryPanel extends JPanel implements HostListener, ActionListe
 			@Override
 			protected Void doInBackground() throws Exception {
 				int stepsize = 100 / (3 + 3 * remoteCounter);
-				
-				// Shouldn't take too long...
 				status.setText("Initializing git repository and remotes...");
 				client.initRepository();
 				for (GitHostRepository model : models) {
@@ -223,7 +222,7 @@ public class RepositoryPanel extends JPanel implements HostListener, ActionListe
 					}
 				}
 				bumpProgress(stepsize);
-				
+
 				status.setText("Cloning upstream repository...");
 				client.cloneUpstreamRepository();
 				bumpProgress(stepsize);
@@ -242,7 +241,7 @@ public class RepositoryPanel extends JPanel implements HostListener, ActionListe
 						model.createPrivateRepository();
 						bumpProgress(stepsize);
 						
-						status.setText(String.format("Sharing private repository '%' on %s with '%s'...", client.getUpstreamRepositoryName(), model.getHostName(), client.getUpstreamRepositoryOwner()));
+						status.setText(String.format("Sharing private repository '%s' on %s with '%s'...", client.getUpstreamRepositoryName(), model.getHostName(), client.getUpstreamRepositoryOwner()));
 						model.addCollaboratorToRepository(client.getUpstreamRepositoryOwner());
 						bumpProgress(stepsize);
 					}

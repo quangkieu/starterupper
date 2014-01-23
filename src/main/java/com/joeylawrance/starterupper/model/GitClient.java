@@ -1,11 +1,16 @@
 package com.joeylawrance.starterupper.model;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.slf4j.Logger;
@@ -85,10 +90,14 @@ public class GitClient {
 	 * git init, more or less.
 	 * @throws Exception
 	 */
-	public void initRepository() throws Exception {
-		Git.init().setDirectory(localRepositoryLocation).setBare(false).call();
-		git = Git.open(localRepositoryLocation);
-		config = git.getRepository().getConfig();
+	public void initRepository() {
+		try {
+			Git.init().setDirectory(localRepositoryLocation).setBare(false).call();
+			git = Git.open(localRepositoryLocation);
+			config = git.getRepository().getConfig();
+		} catch (GitAPIException | IOException e) {
+			logger.error("Unable to initialize repository. {}",e.getMessage());
+		}
 	}
 	
 	/**
@@ -98,10 +107,14 @@ public class GitClient {
 	 * @param url
 	 * @throws Exception
 	 */
-	public void addRemote(String name, String url) throws Exception {
+	public void addRemote(String name, String url) {
 		config.setString("remote", name, "url", url);
 		config.setString("remote", name, "fetch", String.format("+refs/heads/*:refs/remotes/%s/*", name));
-		config.save();
+		try {
+			config.save();
+		} catch (IOException e) {
+			logger.error("Unable to save remote. {}", e.getMessage());
+		}
 	}
 
 	/**
@@ -129,13 +142,20 @@ public class GitClient {
 	
 	/**
 	 * Push to all remotes.
-	 * 
-	 * @throws Exception
 	 */
-	public void pushAll() throws Exception {
-		List<RemoteConfig> remotes = RemoteConfig.getAllRemoteConfigs(git.getRepository().getConfig());
-		for (RemoteConfig remote : remotes) {
-			git.push().setRemote(remote.getName()).call();
+	public void pushAll() {
+		List<RemoteConfig> remotes;
+		try {
+			remotes = RemoteConfig.getAllRemoteConfigs(git.getRepository().getConfig());
+			for (RemoteConfig remote : remotes) {
+				try {
+					git.push().setRemote(remote.getName()).call();
+				} catch (GitAPIException e) {
+					logger.error("Encountered a problem with the push. {}", e.getMessage());
+				}
+			}
+		} catch (URISyntaxException e) {
+			logger.error("Unable to load remotes for repository. {}", e.getMessage());
 		}
 	}
 }

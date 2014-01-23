@@ -46,6 +46,7 @@ public class GenericGitHost extends GenericHost implements GitHost {
 			getMap().put("Title", String.format("StarterUpper (%s) @ %s", System.getProperty("os.name"), InetAddress.getLocalHost().getHostName()));
 			client.fillForm(window, getMap());
 			client.submitForm(window, "Add key");
+			logger.info("Shared public key with {}", window);
 		} catch (FailingHttpStatusCodeException | IOException e) {
 			logger.error("Unable to share public key with {}", window);
 		}
@@ -53,6 +54,7 @@ public class GenericGitHost extends GenericHost implements GitHost {
 
 	@Override
 	public boolean testLogin() {
+		logger.info("Testing SSH credentials for {}", window);
 		return KeyConfig.getInstance().testLogin(host);
 	}
 }
