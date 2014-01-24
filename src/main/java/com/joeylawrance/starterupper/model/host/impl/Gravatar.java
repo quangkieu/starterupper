@@ -21,6 +21,7 @@ import com.joeylawrance.starterupper.model.host.GenericHost;
 import com.joeylawrance.starterupper.model.host.HostAction;
 import com.joeylawrance.starterupper.util.ObservableMap;
 import com.timgroup.jgravatar.GravatarDefaultImage;
+import com.timgroup.jgravatar.GravatarDownloadException;
 import com.timgroup.jgravatar.GravatarRating;
 
 import helma.xmlrpc.secure.SecureXmlRpcClient;
@@ -80,6 +81,7 @@ public class Gravatar extends GenericHost {
 	@Override
 	public void mapKeyValueChanged(ObservableMap<Profile, String> map, Profile key, String value) {
 		super.mapKeyValueChanged(map, key, value);
+		if (value == null) return;
 		if (key == Profile.email) {
 			// Now that we know their email, let's see if the user already has a Gravatar
 			if (!profilePicture.exists()) {
@@ -87,13 +89,15 @@ public class Gravatar extends GenericHost {
 				.setSize(240)
 				.setRating(GravatarRating.GENERAL_AUDIENCES)
 				.setDefaultImage(GravatarDefaultImage.IDENTICON);
-				byte[] jpg = gravatar.download(value);
 				try {
+					byte[] jpg = gravatar.download(value);
 					ImageIO.write(toBufferedImage(new ImageIcon(jpg).getImage()),
 							"jpg",
 							profilePicture);
 				} catch (IOException e) {
 					logger.error("Unable to save gravatar to file.");
+				} catch (GravatarDownloadException e) {
+					logger.error(String.format("No gravatar found for %s.", value));
 				}
 			}
 		}
