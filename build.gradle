@@ -7,6 +7,8 @@ apply plugin: 'sonar-runner'
 mainClassName = "com.joeylawrance.starterupper.Main"
 version = '0.0.1'
 description = 'Starter Upper: Quick git project setup for the classroom.'
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
 
 repositories {
 	mavenCentral()

@@ -47,7 +47,10 @@ public class GenericGitHostRepository extends GenericGitHost implements
 			client.fillForm(window, map);
 			client.submitForm(window,"Create");
 			logger.info("Created repository '{}' on {}", repositoryName, window);
-		} catch (FailingHttpStatusCodeException | IOException e) {
+		} catch (FailingHttpStatusCodeException e) {
+			logger.error("Unable to create private repository '{}' on {}", repositoryName, window);
+			return false;
+		} catch (IOException e) {
 			logger.error("Unable to create private repository '{}' on {}", repositoryName, window);
 			return false;
 		}
@@ -64,7 +67,9 @@ public class GenericGitHostRepository extends GenericGitHost implements
 			client.fillForm(window, map);
 			client.submitForm(window, "Add");
 			logger.info("Added collaborator {} to {} on {}", username, getPrivateRepositoryName(), window);
-		} catch (FailingHttpStatusCodeException | IOException e) {
+		} catch (FailingHttpStatusCodeException e) {
+			logger.error("Unable to add collaborator {} to {} on {}", username, getPrivateRepositoryName(), window);
+		} catch (IOException e) {
 			logger.error("Unable to add collaborator {} to {} on {}", username, getPrivateRepositoryName(), window);
 			return false;
 		}

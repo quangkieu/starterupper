@@ -261,7 +261,9 @@ public class RepositoryPanel extends JPanel implements HostListener, ActionListe
 									Desktop.getDesktop().browse(new URI(model.getRepositoryWebPage()));
 								}
 							}
-						} catch (URISyntaxException | IOException ex) {
+						} catch (URISyntaxException ex) {
+							logger.error("There's something wrong with the private repository URL {}", ex);
+						} catch (IOException ex) {
 							logger.error("There's something wrong with the private repository URL {}", ex);
 						}
 					}

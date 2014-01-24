@@ -73,7 +73,9 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 	public boolean login() {
 		try {
 			client.load(window,getURL(HostAction.login));
-		} catch (FailingHttpStatusCodeException | IOException e) {
+		} catch (FailingHttpStatusCodeException e) {
+			logger.error("Unable to load login page.");
+		} catch (IOException e) {
 			logger.error("Unable to load login page.");
 			return false;
 		}
@@ -104,7 +106,9 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 			client.submitForm(window, "reset|password|submit");
 			logger.info("Password reset for {} sent.", getHostName());
 			fireAction(HostAction.reset);
-		} catch (FailingHttpStatusCodeException | IOException e) {
+		} catch (FailingHttpStatusCodeException e) {
+			logger.error("Unable to load forgot password page");
+		} catch (IOException e) {
 			logger.error("Unable to load forgot password page");
 		}
 	}
@@ -151,7 +155,9 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 			client.load(window,getURL(HostAction.logout));
 			loggedIn = false;
 			fireAction(HostAction.logout);
-		} catch (FailingHttpStatusCodeException | IOException e) {
+		} catch (FailingHttpStatusCodeException e) {
+			logger.error("Unable to logout.");
+		} catch (IOException e) {
 			logger.error("Unable to logout.");
 		}
 	}

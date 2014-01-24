@@ -47,7 +47,9 @@ public class GenericGitHost extends GenericHost implements GitHost {
 			client.fillForm(window, getMap());
 			client.submitForm(window, "Add key");
 			logger.info("Shared public key with {}", window);
-		} catch (FailingHttpStatusCodeException | IOException e) {
+		} catch (FailingHttpStatusCodeException e) {
+			logger.error("Unable to share public key with {}", window);
+		} catch (IOException e) {
 			logger.error("Unable to share public key with {}", window);
 		}
 	}

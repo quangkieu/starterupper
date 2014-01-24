@@ -95,7 +95,9 @@ public class GitClient {
 			Git.init().setDirectory(localRepositoryLocation).setBare(false).call();
 			git = Git.open(localRepositoryLocation);
 			config = git.getRepository().getConfig();
-		} catch (GitAPIException | IOException e) {
+		} catch (GitAPIException e) {
+			logger.error("Unable to initialize repository. {}",e.getMessage());
+		} catch (IOException e) {
 			logger.error("Unable to initialize repository. {}",e.getMessage());
 		}
 	}
