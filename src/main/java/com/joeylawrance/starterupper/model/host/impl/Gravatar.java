@@ -30,6 +30,10 @@ public class Gravatar extends GenericHost {
 	private final Logger logger = LoggerFactory.getLogger(Gravatar.class);
 	private com.timgroup.jgravatar.Gravatar gravatar;
 	private File profilePicture;
+
+	/**
+	 * Default constructor
+	 */
 	public Gravatar() {
 		super("Gravatar", Gravatar.class.getResource("/Gravatar.png"), "Gravatar (part of Wordpress.com) hosts your profile picture across the web.");
 		setURL(HostAction.login,"https://wordpress.com/wp-login.php");
@@ -37,6 +41,11 @@ public class Gravatar extends GenericHost {
 		setURL(HostAction.reset,"http://wordpress.com/wp-login.php?action=lostpassword");
 		profilePicture = new File(System.getProperty("user.home"),"me.jpg");
 	}
+
+	/**
+	 * Returns the profile picture from gravatar
+	 * @return The profile picture from gravatar
+	 */
 	public File getProfilePicture() {
 		return profilePicture;
 	}
@@ -64,6 +73,11 @@ public class Gravatar extends GenericHost {
 		// Return the buffered image
 		return bimage;
 	}
+
+	/**
+	 * Uploads the current profileImage to gravatar.
+	 * @throws Exception In case it failed
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void uploadPicture() throws Exception {
 		// XML-RPC sucks
@@ -89,13 +103,29 @@ public class Gravatar extends GenericHost {
 				.setSize(240)
 				.setRating(GravatarRating.GENERAL_AUDIENCES)
 				.setDefaultImage(GravatarDefaultImage.IDENTICON);
+
+				// I know this looks weird, and it's a bit slower because java has to
+				// `realloc` for the downloaded bytes, but it's the best way to catch
+				// jpg not working.
+				//
+				// OpenJDK doesn't come with a native jpg encoder, so try it with jpg first,
+				// then with png.
+				byte[] bytes = new byte[0];
 				try {
-					byte[] jpg = gravatar.download(value);
-					ImageIO.write(toBufferedImage(new ImageIcon(jpg).getImage()),
+					bytes = gravatar.download(value);
+					ImageIO.write(toBufferedImage(new ImageIcon(bytes).getImage()),
 							"jpg",
 							profilePicture);
 				} catch (IOException e) {
-					logger.error("Unable to save gravatar to file.");
+					logger.error("Unable to save gravatar to file, attempting as png");
+
+					try {
+					ImageIO.write(toBufferedImage(new ImageIcon(bytes).getImage()),
+							"png",
+							profilePicture);
+					} catch (IOException ex) {
+						logger.error("Couldn't save gravatar to a file, tried twice");
+					}
 				} catch (GravatarDownloadException e) {
 					logger.error(String.format("No gravatar found for %s.", value));
 				}

@@ -10,21 +10,25 @@ import net.miginfocom.swing.MigLayout;
 import com.joeylawrance.starterupper.model.host.impl.Gravatar;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 
 import java.awt.Color;
+import java.io.*;
 
 @SuppressWarnings("serial")
 public class PicturePanel extends JPanel {
 	final JButton sharePicture;
 	final JButton takePicture;
 	final JButton discardPicture;
+	final JButton uploadPicture;
 	CameraPanel camPanel;
+
 	public PicturePanel(Gravatar model) {
-		setLayout(new MigLayout("", "[320.00,grow]", "[][240.00][grow][]"));
+		setLayout(new MigLayout("", "[640.00,grow]", "[][480.00][grow][]"));
 		setName("Profile picture");
 		
-		add(new JLabel("Smile! Take a picture and share it to associate names and faces."), "cell 0 0,alignx center");
+		add(new JLabel("Smile! Take a picture and share it to associate names and faces, or upload one."), "cell 0 0,alignx center");
 
 		camPanel = new CameraPanel(model.getProfilePicture());
 		add(camPanel, "cell 0 1,alignx center");
@@ -35,6 +39,7 @@ public class PicturePanel extends JPanel {
 		
 		takePicture = new JButton("Take");
 		takePicture.setToolTipText("Take a picture.");
+		takePicture.setEnabled( camPanel.isRunning() );
 		takePicture.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -43,6 +48,7 @@ public class PicturePanel extends JPanel {
 					sharePicture.setEnabled(true);
 					discardPicture.setEnabled(true);
 					takePicture.setEnabled(false);
+					uploadPicture.setEnabled(false);
 				} catch (Exception e) {
 					// set error
 				}
@@ -65,6 +71,7 @@ public class PicturePanel extends JPanel {
 					sharePicture.setEnabled(false);
 					discardPicture.setEnabled(false);
 					takePicture.setEnabled(true);
+					uploadPicture.setEnabled(true);
 				} catch (Exception e) {
 					// set error
 				}
@@ -80,5 +87,40 @@ public class PicturePanel extends JPanel {
 		JLabel error = new JLabel("");
 		error.setForeground(Color.RED);
 		add(error, "cell 0 3,alignx center");
+
+		uploadPicture = new JButton( "Browse..." );
+		uploadPicture.setToolTipText( "Browse for a picture on your hard drive" );
+		uploadPicture.setEnabled( !model.getProfilePicture().exists() );
+
+		uploadPicture.addActionListener( new ActionListener() 
+		{
+			@Override
+			public void actionPerformed( ActionEvent arg0 )
+			{
+				try
+				{
+					JFileChooser fileChooser = new JFileChooser();
+					int returnValue = fileChooser.showOpenDialog( new JPanel() );
+
+					if( returnValue == JFileChooser.APPROVE_OPTION )
+					{
+						File file = fileChooser.getSelectedFile();
+						camPanel.setImage( file );
+
+						takePicture.setEnabled( false );
+						discardPicture.setEnabled( true );
+						sharePicture.setEnabled( true );
+					}
+				}
+				catch (Exception e)
+				{
+					// set error
+				}
+			}
+		} );
+
+		// Nick: Not sure if this fixes a bug, or is just annoying.
+		repaint();
+		panel.add( uploadPicture );
 	}
 }
