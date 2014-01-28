@@ -2,7 +2,6 @@ package com.joeylawrance.starterupper.model.host;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.Preferences;
@@ -11,11 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.joeylawrance.starterupper.model.GitUserMap;
+import com.google.common.eventbus.Subscribe;
+import com.joeylawrance.starterupper.model.ConfigChanged;
+import com.joeylawrance.starterupper.model.Event;
 import com.joeylawrance.starterupper.model.WebHelper;
-import com.joeylawrance.starterupper.model.GitUserMap.Profile;
-import com.joeylawrance.starterupper.util.ObservableMap;
-import com.joeylawrance.starterupper.util.ObservableMapListener;
 
 /**
  * Generically log in, sign up, or reset the password for a host.
@@ -23,7 +21,7 @@ import com.joeylawrance.starterupper.util.ObservableMapListener;
  * @author Joey Lawrance
  *
  */
-public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profile, String> {
+public class GenericHost implements Host {
 	private final Logger logger = LoggerFactory.getLogger(GenericHost.class);
 	private final Preferences prefs = Preferences.userNodeForPackage(getClass());
 	WebHelper client;
@@ -33,7 +31,6 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 	private HashMap<HostAction, String> urls = new HashMap<HostAction, String>();
 	private boolean loggedIn = false;
 	private HashMap<String, String> map = new HashMap<String, String>();
-	private ArrayList<HostListener> listeners = new ArrayList<HostListener>();
 	
 	public Map<String, String> getMap() {
 		return map;
@@ -46,6 +43,7 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 		client = new WebHelper();
 		client.newWindow(window);
 		setUsername(loadUsername());
+		Event.getBus().register(this);
 	}
 	
 	public WebHelper getClient() {
@@ -85,7 +83,7 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 		if (loggedIn) {
 			logger.info("Successfully logged into {}", getHostName());
 			storeUsername();
-			fireAction(HostAction.login);
+			Event.getBus().post(new HostPerformedAction(this, HostAction.login));
 		}
 		return loggedIn;
 	}
@@ -105,7 +103,7 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 			client.fillForm(window, map);
 			client.submitForm(window, "reset|password|submit");
 			logger.info("Password reset for {} sent.", getHostName());
-			fireAction(HostAction.reset);
+			Event.getBus().post(new HostPerformedAction(this, HostAction.reset));
 		} catch (FailingHttpStatusCodeException e) {
 			logger.error("Unable to load forgot password page");
 		} catch (IOException e) {
@@ -154,7 +152,7 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 		try {
 			client.load(window,getURL(HostAction.logout));
 			loggedIn = false;
-			fireAction(HostAction.logout);
+			Event.getBus().post(new HostPerformedAction(this, HostAction.logout));
 		} catch (FailingHttpStatusCodeException e) {
 			logger.error("Unable to logout.");
 		} catch (IOException e) {
@@ -162,33 +160,25 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 		}
 	}
 
-	@Override
-	public void mapKeyAdded(ObservableMap<Profile, String> map, Profile key) {
-	}
-	@Override
-	public void mapKeyRemoved(ObservableMap<Profile, String> map, Profile key,
-			String value) {
-	}
-	@Override
-	public void mapKeyValueChanged(ObservableMap<Profile, String> map,
-			Profile key, String value) {
-		switch (key) {
+	@Subscribe
+	public void updateInternalConfiguration(ConfigChanged event) {
+		switch (event.key) {
 		case email:
-			getMap().put("Email", value);
+			getMap().put("Email", event.value);
 			break;
 		case firstname:
-			getMap().put("First name", value);
+			getMap().put("First name", event.value);
 			break;
 		case lastname:
-			getMap().put("Last name", value);
+			getMap().put("Last name", event.value);
 			break;
 		case name:
-			getMap().put("Name", value);
+			getMap().put("Name", event.value);
 			break;
 		case defaultname:
 			// Don't clobber the name to the default if we've logged in successfully before.
 			if (!haveLoggedInBefore()) {
-				setUsername(value);
+				setUsername(event.value);
 			}
 			break;
 		default:
@@ -204,16 +194,5 @@ public class GenericHost implements Host, ObservableMapListener<GitUserMap.Profi
 	@Override
 	public boolean haveLoggedInBefore() {
 		return loadUsername() != null;
-	}
-
-	public void fireAction(HostAction action) {
-		for (HostListener listener : listeners) {
-			listener.actionPerformed(this, action);
-		}
-	}
-	
-	@Override
-	public void addHostListener(HostListener listener) {
-		listeners.add(listener);
 	}
 }

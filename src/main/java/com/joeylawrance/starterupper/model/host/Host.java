@@ -10,11 +10,6 @@ import java.net.URL;
  */
 public interface Host {
 	/**
-	 * Add a listener for host events.
-	 * @param listener
-	 */
-	void addHostListener(HostListener listener);
-	/**
 	 * Get the logo for this host.
 	 */
 	URL getLogo();
