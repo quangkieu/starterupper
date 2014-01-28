@@ -119,7 +119,7 @@ public class PicturePanel extends JPanel {
 		// If we just took a picture (or a picture is now available)...
 		if (take) {
 			takePicture.setText("Clear");
-			takePicture.setToolTipText("Discard picture");
+			takePicture.setToolTipText("Discard profile picture on this computer");
 			sharePicture.setEnabled(model.getProfilePicture().exists() && model.loggedIn());
 			take = false;
 		// If we just discarded the picture (or none was available)...
@@ -127,7 +127,7 @@ public class PicturePanel extends JPanel {
 			take = camPanel.canTakePicture();
 			if (take) {
 				takePicture.setText("Take");
-				takePicture.setToolTipText("Take picture");
+				takePicture.setToolTipText("Take a picture using your computer's webcam");
 				sharePicture.setEnabled(false);
 			}
 		}

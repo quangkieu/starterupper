@@ -105,7 +105,7 @@ public class CameraPanel extends JPanel {
 			} else {
 				panel.start();
 				started = true;
-			} 
+			}
 		} else if (!image.exists()) {
 			layout.show(this, empty.getName());
 		}
