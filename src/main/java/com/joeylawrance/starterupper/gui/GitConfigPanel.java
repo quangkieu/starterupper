@@ -20,15 +20,14 @@ import org.netbeans.validation.api.ui.swing.ValidationPanel;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Map;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.joeylawrance.starterupper.model.GitUserMap;
+import com.joeylawrance.starterupper.model.GitConfig;
 
 @SuppressWarnings("serial")
 public class GitConfigPanel extends JPanel {
-	private final Map<GitUserMap.Profile, String> gitConfig;
+	GitConfig gitConfig;
 	private SwingValidationGroup fieldValidator = SwingValidationGroup.create();
 	
 	private int row;
@@ -42,7 +41,7 @@ public class GitConfigPanel extends JPanel {
 	 * @param tooltip A tooltip / placeholder
 	 * @param validator The input validator
 	 */
-	private void addForm(String name, final GitUserMap.Profile key, String tooltip, final Validator<String> validator) {
+	private void addForm(String name, final GitConfig.Profile key, String tooltip, final Validator<String> validator) {
 		add(new JLabel(name), String.format("cell 0 %s,alignx trailing", row));
 		final JTextField field = new JTextField(gitConfig.get(key));
 		field.setName(name);
@@ -78,8 +77,8 @@ public class GitConfigPanel extends JPanel {
 	 * @param gitUserModel
 	 * @throws Exception
 	 */
-	public GitConfigPanel(Map<GitUserMap.Profile, String> gitUserModel) throws Exception {
-		gitConfig = gitUserModel;
+	public GitConfigPanel(GitConfig gitConfig) throws Exception {
+		this.gitConfig = gitConfig;
 		setName("Name & email");
 		setLayout(new MigLayout("", "[70.00px,right][grow]", "[76.00][11.00,top][][][][][][][][][][grow,top]"));
 		
@@ -90,11 +89,11 @@ public class GitConfigPanel extends JPanel {
 		add(new JLabel("Enter your name, username and email for git and hosting services."), "cell 1 1");
 		row = 2;
 		
-		addForm("First name", GitUserMap.Profile.firstname, "Enter your first name (e.g., John)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Last name", GitUserMap.Profile.lastname, "Enter your last name (e.g., Smith)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Full name", GitUserMap.Profile.name, "Enter your first and last name (e.g., John Smith)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Username", GitUserMap.Profile.defaultname, "Enter your preferred username for project hosts (e.g., smithj)", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE)));
-		addForm("Email address", GitUserMap.Profile.email, "Enter your .edu email address", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE,StringValidators.EMAIL_ADDRESS)));
+		addForm("First name", GitConfig.Profile.firstname, "Enter your first name (e.g., John)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
+		addForm("Last name", GitConfig.Profile.lastname, "Enter your last name (e.g., Smith)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
+		addForm("Full name", GitConfig.Profile.name, "Enter your first and last name (e.g., John Smith)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
+		addForm("Username", GitConfig.Profile.defaultname, "Enter your preferred username for project hosts (e.g., smithj)", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE)));
+		addForm("Email address", GitConfig.Profile.email, "Enter your .edu email address", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE,StringValidators.EMAIL_ADDRESS)));
 
 		add(fieldValidator.createProblemLabel(), String.format("cell 1 %s,growx", row));
 		

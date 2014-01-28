@@ -9,6 +9,9 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -38,15 +41,15 @@ import org.netbeans.validation.api.ui.swing.ValidationPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.Subscribe;
+import com.joeylawrance.starterupper.model.Event;
 import com.joeylawrance.starterupper.model.GitClient;
-import com.joeylawrance.starterupper.model.host.GitHost;
 import com.joeylawrance.starterupper.model.host.GitHostRepository;
-import com.joeylawrance.starterupper.model.host.Host;
 import com.joeylawrance.starterupper.model.host.HostAction;
-import com.joeylawrance.starterupper.model.host.HostListener;
+import com.joeylawrance.starterupper.model.host.HostPerformedAction;
 
 @SuppressWarnings("serial")
-public class RepositoryPanel extends JPanel implements HostListener, ActionListener {
+public class RepositoryPanel extends JPanel implements ActionListener {
 	private final Logger logger = LoggerFactory.getLogger(RepositoryPanel.class);
 	private JTextField upstream;
 	private JTextField local;
@@ -58,17 +61,16 @@ public class RepositoryPanel extends JPanel implements HostListener, ActionListe
 	JLabel status;
 	int remoteCounter = 0;
 	final GitClient client;
-	final GitHostRepository[] models;
+	final Set<GitHostRepository> models;
 	public RepositoryPanel(final GitHostRepository... models) {
 		setLayout(new MigLayout("", "[70px,right][grow]", "[][][100.00][][][]"));
 		setName("Repository setup");
-		this.models = models;
+		this.models = new HashSet<GitHostRepository>();
+		this.models.addAll(Arrays.asList(models));
 
 		client = new GitClient();
 		// Listen to login events
-		for (GitHostRepository model : models) {
-			model.addHostListener(this);
-		}
+		Event.getBus().register(this);
 		
 		String hint;
 		
@@ -193,10 +195,10 @@ public class RepositoryPanel extends JPanel implements HostListener, ActionListe
 	/**
 	 * Add to remotes whenever the user logs in to a host.
 	 */
-	@Override
-	public void actionPerformed(Host host, HostAction action) {
-		if (action == HostAction.login) {
-			remotes.addElement(host.getHostName());
+	@Subscribe
+	public void userLoggedIn(HostPerformedAction event) {
+		if (event.action == HostAction.login && models.contains(event.host)) {
+			remotes.addElement(event.host.getHostName());
 			remoteCounter++;
 		}
 	}

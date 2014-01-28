@@ -7,120 +7,129 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.google.common.eventbus.Subscribe;
+import com.joeylawrance.starterupper.model.Event;
+import com.joeylawrance.starterupper.model.host.HostAction;
+import com.joeylawrance.starterupper.model.host.HostPerformedAction;
 import com.joeylawrance.starterupper.model.host.impl.Gravatar;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.Color;
-import java.io.*;
+import java.io.File;
 
 @SuppressWarnings("serial")
 public class PicturePanel extends JPanel {
 	final JButton sharePicture;
 	final JButton takePicture;
-	final JButton discardPicture;
-	final JButton uploadPicture;
+	final JButton browsePicture;
+	
+	final Gravatar model;
 	CameraPanel camPanel;
+	boolean take;
 
-	public PicturePanel(Gravatar model) {
+	public PicturePanel(final Gravatar model) {
 		setLayout(new MigLayout("", "[640.00,grow]", "[][480.00][grow][]"));
+		this.model = model;
 		setName("Profile picture");
-		
-		add(new JLabel("Smile! Take a picture and share it to associate names and faces, or upload one."), "cell 0 0,alignx center");
+
+		add(new JLabel("Smile! Take a picture or browse for one and share it."), "cell 0 0,alignx center");
 
 		camPanel = new CameraPanel(model.getProfilePicture());
 		add(camPanel, "cell 0 1,alignx center");
-		
+
 		JPanel panel = new JPanel();
 		add(panel, "cell 0 2,alignx center,growy");
 		panel.setLayout(new MigLayout("", "[][][]", "[]"));
-		
-		takePicture = new JButton("Take");
-		takePicture.setToolTipText("Take a picture.");
-		takePicture.setEnabled( camPanel.isRunning() );
+
+		// takePicture is stateful: it switches between Take and Clear in the UI
+		takePicture = new JButton();
+		take = model.getProfilePicture().exists();
 		takePicture.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					camPanel.take();
-					sharePicture.setEnabled(true);
-					discardPicture.setEnabled(true);
+				if (take) {
 					takePicture.setEnabled(false);
-					uploadPicture.setEnabled(false);
-				} catch (Exception e) {
-					// set error
-				}
-			}
-			
-		});
-		
-		panel.add(takePicture, "cell 0 0");
-		
-		discardPicture = new JButton("Discard");
-		discardPicture.setToolTipText("Discard picture.");
-		discardPicture.setEnabled(model.getProfilePicture().exists());
-		panel.add(discardPicture, "cell 1 0");
-		discardPicture.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					camPanel.discard();
-					sharePicture.setEnabled(false);
-					discardPicture.setEnabled(false);
+					camPanel.take();
 					takePicture.setEnabled(true);
-					uploadPicture.setEnabled(true);
-				} catch (Exception e) {
-					// set error
+				} else {
+					takePicture.setEnabled(false);
+					camPanel.discard();
+					takePicture.setEnabled(camPanel.canTakePicture());
 				}
+				updateState();
 			}
-			
 		});
-		
+
+		panel.add(takePicture, "cell 0 0");
+
 		sharePicture = new JButton("Share");
-		sharePicture.setToolTipText("Share picture via Gravatar.");
-		sharePicture.setEnabled(model.getProfilePicture().exists());
+		sharePicture.setToolTipText("Share picture via Gravatar");
+		sharePicture.setEnabled(false);
 		panel.add(sharePicture, "cell 2 0");
-		
-		JLabel error = new JLabel("");
-		error.setForeground(Color.RED);
-		add(error, "cell 0 3,alignx center");
 
-		uploadPicture = new JButton( "Browse..." );
-		uploadPicture.setToolTipText( "Browse for a picture on your hard drive" );
-		uploadPicture.setEnabled( !model.getProfilePicture().exists() );
+		browsePicture = new JButton( "Browse..." );
+		browsePicture.setToolTipText( "Browse for a picture on your computer" );
+		browsePicture.setEnabled( true );
 
-		uploadPicture.addActionListener( new ActionListener() 
+		browsePicture.addActionListener( new ActionListener() 
 		{
 			@Override
 			public void actionPerformed( ActionEvent arg0 )
 			{
-				try
-				{
-					JFileChooser fileChooser = new JFileChooser();
-					int returnValue = fileChooser.showOpenDialog( new JPanel() );
+				JFileChooser fileChooser = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("All Image Files (*.jpg, *.png, *.bmp, *.gif)", "jpg", "png", "bmp", "gif");
+				fileChooser.setFileFilter(filter);
+				int returnValue = fileChooser.showOpenDialog( new JPanel() );
 
-					if( returnValue == JFileChooser.APPROVE_OPTION )
-					{
-						File file = fileChooser.getSelectedFile();
-						camPanel.setImage( file );
-
-						takePicture.setEnabled( false );
-						discardPicture.setEnabled( true );
-						sharePicture.setEnabled( true );
-					}
-				}
-				catch (Exception e)
+				if( returnValue == JFileChooser.APPROVE_OPTION )
 				{
-					// set error
+					File file = fileChooser.getSelectedFile();
+					camPanel.setImage( file );
+					take = true;
+					takePicture.setEnabled(true);
+					updateState();
 				}
 			}
 		} );
+		panel.add( browsePicture, "cell 1 0" );
+		
+		JLabel error = new JLabel("");
+		error.setForeground(Color.RED);
+		add(error, "cell 0 3,alignx center");
+		
+		updateState();
 
-		// Nick: Not sure if this fixes a bug, or is just annoying.
-		repaint();
-		panel.add( uploadPicture );
+		Event.getBus().register(this);
+	}
+	/**
+	 * Enable the share button when we log into gravatar.
+	 * @param event
+	 */
+	@Subscribe
+	public void gravatarLoggedIn(HostPerformedAction event) {
+		if (event.host.equals(model) && event.action == HostAction.login) {
+			sharePicture.setEnabled(model.getProfilePicture().exists());
+		}
+	}
+	private void updateState() {
+		// If we just took a picture (or a picture is now available)...
+		if (take) {
+			takePicture.setText("Clear");
+			takePicture.setToolTipText("Discard picture");
+			sharePicture.setEnabled(model.getProfilePicture().exists() && model.loggedIn());
+			take = false;
+		// If we just discarded the picture (or none was available)...
+		} else {
+			take = camPanel.canTakePicture();
+			if (take) {
+				takePicture.setText("Take");
+				takePicture.setToolTipText("Take picture");
+				sharePicture.setEnabled(false);
+			}
+		}
 	}
 }

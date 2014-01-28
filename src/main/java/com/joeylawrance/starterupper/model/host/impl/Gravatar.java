@@ -16,10 +16,12 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.joeylawrance.starterupper.model.GitUserMap.Profile;
+import com.google.common.eventbus.Subscribe;
+import com.joeylawrance.starterupper.model.ConfigChanged;
+import com.joeylawrance.starterupper.model.Event;
+import com.joeylawrance.starterupper.model.GitConfig.Profile;
 import com.joeylawrance.starterupper.model.host.GenericHost;
 import com.joeylawrance.starterupper.model.host.HostAction;
-import com.joeylawrance.starterupper.util.ObservableMap;
 import com.timgroup.jgravatar.GravatarDefaultImage;
 import com.timgroup.jgravatar.GravatarDownloadException;
 import com.timgroup.jgravatar.GravatarRating;
@@ -39,7 +41,8 @@ public class Gravatar extends GenericHost {
 		setURL(HostAction.login,"https://wordpress.com/wp-login.php");
 		setURL(HostAction.signup,"https://signup.wordpress.com/signup/?user=1");
 		setURL(HostAction.reset,"http://wordpress.com/wp-login.php?action=lostpassword");
-		profilePicture = new File(System.getProperty("user.home"),"me.jpg");
+		profilePicture = new File(System.getProperty("user.home"),".starterupper-profile-picture.png");
+		Event.getBus().register(this);
 	}
 
 	/**
@@ -92,11 +95,10 @@ public class Gravatar extends GenericHost {
 		parameters.add(getPassword());
 		Object result = rpc.execute("grav.saveData", parameters);
 	}
-	@Override
-	public void mapKeyValueChanged(ObservableMap<Profile, String> map, Profile key, String value) {
-		super.mapKeyValueChanged(map, key, value);
-		if (value == null) return;
-		if (key == Profile.email) {
+	@Subscribe
+	public void checkForExistingGravatar(ConfigChanged event) {
+		if (event.value == null) return;
+		if (event.key == Profile.email) {
 			// Now that we know their email, let's see if the user already has a Gravatar
 			if (!profilePicture.exists()) {
 				gravatar = new com.timgroup.jgravatar.Gravatar()
@@ -104,30 +106,17 @@ public class Gravatar extends GenericHost {
 				.setRating(GravatarRating.GENERAL_AUDIENCES)
 				.setDefaultImage(GravatarDefaultImage.IDENTICON);
 
-				// I know this looks weird, and it's a bit slower because java has to
-				// `realloc` for the downloaded bytes, but it's the best way to catch
-				// jpg not working.
-				//
-				// OpenJDK doesn't come with a native jpg encoder, so try it with jpg first,
-				// then with png.
-				byte[] bytes = new byte[0];
+				// OpenJDK doesn't come with a native jpg encoder, so we'll just use png.
+				byte[] bytes;
 				try {
-					bytes = gravatar.download(value);
-					ImageIO.write(toBufferedImage(new ImageIcon(bytes).getImage()),
-							"jpg",
-							profilePicture);
-				} catch (IOException e) {
-					logger.error("Unable to save gravatar to file, attempting as png");
-
-					try {
+					bytes = gravatar.download(event.value);
 					ImageIO.write(toBufferedImage(new ImageIcon(bytes).getImage()),
 							"png",
 							profilePicture);
-					} catch (IOException ex) {
-						logger.error("Couldn't save gravatar to a file, tried twice");
-					}
+				} catch (IOException e) {
+					logger.error("Couldn't save gravatar to a file");
 				} catch (GravatarDownloadException e) {
-					logger.error(String.format("No gravatar found for %s.", value));
+					logger.error(String.format("No gravatar found for %s.", event.value));
 				}
 			}
 		}
