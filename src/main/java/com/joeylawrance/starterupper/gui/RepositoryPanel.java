@@ -9,6 +9,9 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JPanel;
 
@@ -58,11 +61,12 @@ public class RepositoryPanel extends JPanel implements ActionListener {
 	JLabel status;
 	int remoteCounter = 0;
 	final GitClient client;
-	final GitHostRepository[] models;
+	final Set<GitHostRepository> models;
 	public RepositoryPanel(final GitHostRepository... models) {
 		setLayout(new MigLayout("", "[70px,right][grow]", "[][][100.00][][][]"));
 		setName("Repository setup");
-		this.models = models;
+		this.models = new HashSet<GitHostRepository>();
+		this.models.addAll(Arrays.asList(models));
 
 		client = new GitClient();
 		// Listen to login events
@@ -193,7 +197,7 @@ public class RepositoryPanel extends JPanel implements ActionListener {
 	 */
 	@Subscribe
 	public void userLoggedIn(HostPerformedAction event) {
-		if (event.action == HostAction.login) {
+		if (event.action == HostAction.login && models.contains(event.host)) {
 			remotes.addElement(event.host.getHostName());
 			remoteCounter++;
 		}
