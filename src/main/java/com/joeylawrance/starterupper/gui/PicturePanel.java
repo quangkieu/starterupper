@@ -83,7 +83,7 @@ public class PicturePanel extends JPanel {
 						} else {
 							status.setText("Unable to upload picture to Gravatar.");
 						}
-						take = camPanel.canTakePicture();
+						take = true;
 						takePicture.setEnabled(take);
 						browsePicture.setEnabled(true);
 						updateState();
@@ -114,7 +114,7 @@ public class PicturePanel extends JPanel {
 				{
 					camPanel.setImage( file );
 					take = true;
-					takePicture.setEnabled(true);
+					takePicture.setEnabled(take);
 					updateState();
 				}
 			}
