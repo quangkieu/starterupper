@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
+import javax.swing.border.TitledBorder;
 
 @SuppressWarnings("serial")
 public class CameraPanel extends JPanel {
@@ -48,6 +49,7 @@ public class CameraPanel extends JPanel {
 	 * @param image A buffer for the webcam
 	 */
 	public CameraPanel(Webcam webcam, File image) {
+		setBorder(new TitledBorder(null, "Camera", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		// There's three states to this panel: the cam, snapshot, or empty (no cam or image).
 		layout = new CardLayout(0,0);
 		setLayout(layout);
