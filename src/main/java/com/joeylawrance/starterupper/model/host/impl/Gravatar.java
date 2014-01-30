@@ -39,7 +39,7 @@ public class Gravatar extends GenericHost {
 	 * Default constructor
 	 */
 	public Gravatar() {
-		super("Gravatar", Gravatar.class.getResource("/Gravatar.png"), "Gravatar (part of Wordpress.com) hosts your profile picture across the web.");
+		super("Gravatar", Gravatar.class.getResource("/Gravatar.png"), "Gravatar (part of Wordpress.com) hosts profile pictures.");
 		setURL(HostAction.login,"https://wordpress.com/wp-login.php");
 		setURL(HostAction.signup,"https://signup.wordpress.com/signup/?user=1");
 		setURL(HostAction.reset,"http://wordpress.com/wp-login.php?action=lostpassword");
