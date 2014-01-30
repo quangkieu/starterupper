@@ -58,9 +58,9 @@ public class HostConfigPanel extends JPanel {
 				try {
 					loggedIn = get();
 				} catch (InterruptedException e) {
-					logger.info("Login interrupted.");
+					logger.info("Login interrupted.", e.fillInStackTrace());
 				} catch (ExecutionException e) {
-					logger.info("Login encountered a problem: {}", e.getMessage());
+					logger.info("Login encountered a problem.", e.fillInStackTrace());
 				}
 				enableFields(!loggedIn);
 				if (loggedIn) {
@@ -86,9 +86,9 @@ public class HostConfigPanel extends JPanel {
 				try {
 					signedUp = get();
 				} catch (InterruptedException e) {
-					logger.info("Signup interrupted.");
+					logger.info("Signup interrupted.", e.fillInStackTrace());
 				} catch (ExecutionException e) {
-					logger.info("Signup encountered a problem: {}", e.getMessage());
+					logger.info("Signup encountered a problem: {}", e.fillInStackTrace());
 				}
 				enableFields(!signedUp);
 				logIn.setEnabled(true);
@@ -114,9 +114,9 @@ public class HostConfigPanel extends JPanel {
 					get();
 					status.setText("Check your inbox for a password reset email with instructions.");
 				} catch (InterruptedException e) {
-					logger.info("Forgot password interrupted.");
+					logger.info("Forgot password interrupted.", e.fillInStackTrace());
 				} catch (ExecutionException e) {
-					logger.info("Forgot password encountered a problem: {}", e.getMessage());
+					logger.info("Forgot password encountered a problem. ", e.fillInStackTrace());
 				}
 			}
 		}.execute();

@@ -264,9 +264,9 @@ public class RepositoryPanel extends JPanel implements ActionListener {
 								}
 							}
 						} catch (URISyntaxException ex) {
-							logger.error("There's something wrong with the private repository URL {}", ex);
+							logger.error("There's something wrong with the private repository URL.", ex.fillInStackTrace());
 						} catch (IOException ex) {
-							logger.error("There's something wrong with the private repository URL {}", ex);
+							logger.error("There's something wrong with the private repository URL.", ex.fillInStackTrace());
 						}
 					}
 				});

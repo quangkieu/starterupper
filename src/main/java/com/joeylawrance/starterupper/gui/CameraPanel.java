@@ -145,7 +145,7 @@ public class CameraPanel extends JPanel {
 				layout.show(this, snapshot.getName());
 				stop(false);
 			} catch (Exception e) {
-				logger.error("Unable to save image. {}", e.toString());
+				logger.error("Unable to save image.", e.fillInStackTrace());
 				layout.show(this, empty.getName());
 			}
 		}
@@ -158,7 +158,7 @@ public class CameraPanel extends JPanel {
 		try {
 			image.delete();
 		} catch (Exception e) {
-			logger.error("Unable to delete image. {}", e.toString());
+			logger.error("Unable to delete image.", e.fillInStackTrace());
 		}
 		start();
 	}
@@ -177,7 +177,7 @@ public class CameraPanel extends JPanel {
 			snapshot.setIcon(new ImageIcon(scaledImg));
 			layout.show(this, snapshot.getName());
 		} catch (IOException e) {
-			logger.error("Unable to save profile image. {}", e.toString());
+			logger.error("Unable to save profile image. {}", e.fillInStackTrace());
 		}
 	}
 }

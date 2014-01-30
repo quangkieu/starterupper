@@ -71,6 +71,7 @@ public class PicturePanel extends JPanel {
 		sharePicture.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				camPanel.stop(true);
 				takePicture.setEnabled(false);
 				browsePicture.setEnabled(false);
 				sharePicture.setEnabled(false);
