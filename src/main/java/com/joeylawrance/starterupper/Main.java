@@ -13,23 +13,25 @@ import com.joeylawrance.starterupper.model.host.impl.Gravatar;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+    	GitConfig config = new GitConfig();
     	Gravatar gravatar = new Gravatar();
-    	Bitbucket bb = new Bitbucket();
-    	GitHub gh = new GitHub();
-    	GitLab gl = new GitLab();
 
+    	// Create the Wizard UI
     	Wizard w = new Wizard();
-    	
-		w.addStep(new GitConfigPanel(new GitConfig()));
+		w.addStep(new GitConfigPanel(config));
 		w.addStep(new HostConfigPanel(gravatar));
 		w.addStep(new PicturePanel(gravatar));
-		w.addStep(new HostConfigPanel(bb));
-		w.addStep(new HostConfigPanel(gh));
-		w.addStep(new HostConfigPanel(gl));
-		RepositoryPanel repo = new RepositoryPanel(bb, gh, gl);
+		w.addStep(new HostConfigPanel(new Bitbucket()));
+		w.addStep(new HostConfigPanel(new GitHub()));
+		w.addStep(new HostConfigPanel(new GitLab()));
+		RepositoryPanel repo = new RepositoryPanel();
 		w.addStep(repo);
 		w.addActionListener(repo);
+		
+		// Tell all the hosts about the git configuration.
+		config.postConfiguration();
 
+		// Show
     	w.setVisible(true);
     }
 }

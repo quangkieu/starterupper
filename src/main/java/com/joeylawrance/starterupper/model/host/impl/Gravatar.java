@@ -101,7 +101,7 @@ public class Gravatar extends GenericHost {
 			ImageIO.write(cropped, "png", temp);
 			byte[] imageData = FileUtils.readFileToByteArray(temp);
 			
-			// The 1990's called. They want their types back.
+			// The 1990's called. They want their types back. Create our parameters for Gravatar
 			Hashtable parameters = new Hashtable();
 			parameters.put("data",new String(Base64.encodeBase64(imageData)));
 			parameters.put("rating", new Integer(0));
@@ -111,20 +111,25 @@ public class Gravatar extends GenericHost {
 			
 			// Upload the image
 			Object result = client.execute("grav.saveData", parameterBag);
+			System.out.println(result);
 			
 			if (result instanceof Boolean) {
-				throw new Exception("Failed to save image.");
+				logger.error("Failed to save image.");
 			} else if (result instanceof String) {
 				// Now, set the gravatar to be the image we just uploaded.
 				parameterBag.clear();
-				String userimage = result.toString();
 				parameters.clear();
+				
+				// Create parameters for setting the default user image
+				String userimage = result.toString();
 				parameters.put("userimage", userimage);
 				Vector addresses = new Vector();
 				addresses.add(email);
 				parameters.put("addresses", addresses);
 				parameters.put("password",getPassword());
 				parameterBag.add(parameters);
+				
+				// Set the default user image to what we just uploaded
 				client.execute("grav.useUserimage", parameterBag);
 			}
 			return true;
@@ -133,6 +138,10 @@ public class Gravatar extends GenericHost {
 		}
 		return false;
 	}
+	/**
+	 * When the Git configuration email is set, let's try to download their Gravatar.
+	 * @param event
+	 */
 	@Subscribe
 	public void checkForExistingGravatar(ConfigChanged event) {
 		if (event.value == null) return;

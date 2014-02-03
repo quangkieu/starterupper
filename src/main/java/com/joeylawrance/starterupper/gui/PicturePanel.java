@@ -80,7 +80,7 @@ public class PicturePanel extends JPanel {
 					protected Void doInBackground() throws Exception {
 						status.setText("Uploading picture to Gravatar...");
 						if (model.uploadPicture()) {
-							status.setText("Uploaded picture to Gravatar.");							
+							status.setText("Uploaded picture to Gravatar.");
 						} else {
 							status.setText("Unable to upload picture to Gravatar.");
 						}
