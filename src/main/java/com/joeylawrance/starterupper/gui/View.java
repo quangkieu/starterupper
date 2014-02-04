@@ -1,11 +1,11 @@
 package com.joeylawrance.starterupper.gui;
 
-import javax.swing.JComponent;
-
 public interface View {
 	/**
-	 * Get the JComponent associated with this view.
-	 * @return
+	 * Get the component associated with the name.
+	 * @param name The component to retrieve.
+	 * @param klass The type of the component to retrieve.
+	 * @return A component with the given name. If null, return the entire view.
 	 */
-	JComponent getAssociatedJComponent();
+	<T> T getComponent(String name, Class<T> klass);
 }

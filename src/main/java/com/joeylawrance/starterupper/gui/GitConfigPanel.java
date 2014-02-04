@@ -1,8 +1,6 @@
 package com.joeylawrance.starterupper.gui;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -18,7 +16,7 @@ import net.miginfocom.swing.MigLayout;
  *
  */
 @SuppressWarnings("serial")
-public class GitConfigPanel extends JPanel implements View {
+public class GitConfigPanel extends ExtendedJPanel {
 	/**
 	 * The user interface for a GitUserModel.
 	 * It fires a "hasProblems" property change event if any field in it has problems.
@@ -67,10 +65,5 @@ public class GitConfigPanel extends JPanel implements View {
 		field.setName(GitConfigKey.organization.name());
 		field.setToolTipText("School name");
 		add(field, "cell 1 5,growx");
-	}
-
-	@Override
-	public JComponent getAssociatedJComponent() {
-		return this;
 	}
 }

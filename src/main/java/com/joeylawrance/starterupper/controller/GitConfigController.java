@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
@@ -38,15 +39,15 @@ public class GitConfigController {
 		p.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				view.getAssociatedJComponent().firePropertyChange("hasProblems", !p.isFatalProblem(), p.isFatalProblem());
+				view.getComponent(null, JPanel.class).firePropertyChange("hasProblems", !p.isFatalProblem(), p.isFatalProblem());
 			}
 		});
 
 		// We need to tell the wizard whether we've got problems as soon as we're visible.
-		view.getAssociatedJComponent().addAncestorListener(new AncestorListener() {
+		view.getComponent(null, JPanel.class).addAncestorListener(new AncestorListener() {
 			@Override
 			public void ancestorAdded(AncestorEvent arg0) {
-				view.getAssociatedJComponent().firePropertyChange("hasProblems", !p.isFatalProblem(), p.isFatalProblem());
+				view.getComponent(null, JPanel.class).firePropertyChange("hasProblems", !p.isFatalProblem(), p.isFatalProblem());
 			}
 			@Override
 			public void ancestorMoved(AncestorEvent arg0) {
@@ -57,7 +58,7 @@ public class GitConfigController {
 		});
 
 		// Setup validators
-		for (Component c : view.getAssociatedJComponent().getComponents()) {
+		for (Component c : view.getComponent(null, JPanel.class).getComponents()) {
 			if (c instanceof JTextField) {
 				JTextField field = (JTextField) c;
 				Validator<String> validator = StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING);
