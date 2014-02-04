@@ -1,5 +1,6 @@
 package com.joeylawrance.starterupper;
 
+import com.joeylawrance.starterupper.controller.GitConfigController;
 import com.joeylawrance.starterupper.gui.GitConfigPanel;
 import com.joeylawrance.starterupper.gui.HostConfigPanel;
 import com.joeylawrance.starterupper.gui.PicturePanel;
@@ -13,12 +14,15 @@ import com.joeylawrance.starterupper.model.host.impl.Gravatar;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-    	GitConfig config = new GitConfig();
-    	Gravatar gravatar = new Gravatar();
-
     	// Create the Wizard UI
     	Wizard w = new Wizard();
-		w.addStep(new GitConfigPanel(config));
+    	
+    	GitConfig config = new GitConfig();
+    	GitConfigPanel configPanel = new GitConfigPanel();
+    	new GitConfigController(configPanel, config);
+    	Gravatar gravatar = new Gravatar();
+
+		w.addStep(configPanel);
 		w.addStep(new HostConfigPanel(gravatar));
 		w.addStep(new PicturePanel(gravatar));
 		w.addStep(new HostConfigPanel(new Bitbucket()));

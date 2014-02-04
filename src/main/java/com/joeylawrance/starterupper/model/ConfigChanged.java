@@ -1,11 +1,14 @@
 package com.joeylawrance.starterupper.model;
 
-import com.joeylawrance.starterupper.model.GitConfig.Profile;
 
+/**
+ * An event for whenever the git configuration changes.
+ *
+ */
 public class ConfigChanged {
-	public Profile key;
-	public String value;
-	public ConfigChanged(Profile key, String value) {
+	public final GitConfigKey key;
+	public final String value;
+	public ConfigChanged(GitConfigKey key, String value) {
 		this.key = key;
 		this.value = value;
 	}

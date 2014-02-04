@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.Subscribe;
 import com.joeylawrance.starterupper.model.ConfigChanged;
 import com.joeylawrance.starterupper.model.Event;
-import com.joeylawrance.starterupper.model.GitConfig.Profile;
+import com.joeylawrance.starterupper.model.GitConfigKey;
 import com.joeylawrance.starterupper.model.host.GenericHost;
 import com.joeylawrance.starterupper.model.host.HostAction;
 import com.timgroup.jgravatar.GravatarDefaultImage;
@@ -145,7 +145,7 @@ public class Gravatar extends GenericHost {
 	@Subscribe
 	public void checkForExistingGravatar(ConfigChanged event) {
 		if (event.value == null) return;
-		if (event.key == Profile.email) {
+		if (event.key == GitConfigKey.email) {
 			// Now that we know their email, let's see if the user already has a Gravatar
 			if (!profilePicture.exists()) {
 				gravatar = new com.timgroup.jgravatar.Gravatar()

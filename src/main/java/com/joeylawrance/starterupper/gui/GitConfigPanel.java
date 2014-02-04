@@ -1,75 +1,24 @@
 package com.joeylawrance.starterupper.gui;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-import org.jdesktop.swingx.prompt.PromptSupport;
-import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.netbeans.validation.api.ValidatorUtils;
-import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
-import org.netbeans.validation.api.ui.swing.SwingValidationGroup;
-import org.netbeans.validation.api.ui.swing.ValidationPanel;
+import com.joeylawrance.starterupper.model.GitConfigKey;
 
 import java.awt.Toolkit;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.joeylawrance.starterupper.model.GitConfig;
 
+/**
+ * GitConfigPanel is just a view into ~/.gitconfig
+ *
+ */
 @SuppressWarnings("serial")
-public class GitConfigPanel extends JPanel {
-	GitConfig gitConfig;
-	private SwingValidationGroup fieldValidator = SwingValidationGroup.create();
-	
-	private int row;
-	
-	/**
-	 * Create a form text field with a label, tooltip, placeholder and validator.
-	 * 
-	 * When the field loses focus, and assuming there's no problems, save the changes.
-	 * 
-	 * @param name The label for the text field
-	 * @param tooltip A tooltip / placeholder
-	 * @param validator The input validator
-	 */
-	private void addForm(String name, final GitConfig.Profile key, String tooltip, final Validator<String> validator) {
-		add(new JLabel(name), String.format("cell 0 %s,alignx trailing", row));
-		final JTextField field = new JTextField(gitConfig.get(key));
-		field.setName(name);
-		fieldValidator.add(field, validator);
-		field.addFocusListener(new FocusListener() {
-
-			@Override
-			public void focusGained(FocusEvent arg0) {
-			}
-
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				Problems problems = new Problems();
-				validator.validate(problems, field.getName(), field.getText());
-				if (!problems.hasFatal()) {
-					gitConfig.put(key, field.getText().trim());
-				}
-			}
-			
-		});
-		PromptSupport.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT, field);
-		PromptSupport.setPrompt(tooltip, field);
-		field.setToolTipText(tooltip);
-		field.setColumns(10);
-		add(field, String.format("cell 1 %s,growx",row));
-		row++;
-	}
-	
+public class GitConfigPanel extends JPanel implements View {
 	/**
 	 * The user interface for a GitUserModel.
 	 * It fires a "hasProblems" property change event if any field in it has problems.
@@ -77,46 +26,51 @@ public class GitConfigPanel extends JPanel {
 	 * @param gitUserModel
 	 * @throws Exception
 	 */
-	public GitConfigPanel(GitConfig gitConfig) throws Exception {
-		this.gitConfig = gitConfig;
+	public GitConfigPanel() throws Exception {
 		setName("Name & email");
-		setLayout(new MigLayout("", "[70.00px,right][grow]", "[76.00][11.00,top][][][][][][][][][][grow,top]"));
+		setLayout(new MigLayout("", "[70.00px,right][grow]", "[76.00][11.00,top][][][][][][][][grow,top]"));
 		
 		JLabel logo = new JLabel();
 		logo.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(GitConfigPanel.class.getResource("/Git.png"))));
 		add(logo, "cell 1 0");
 		
-		add(new JLabel("Enter your name, username and email for git and hosting services."), "cell 1 1");
-		row = 2;
+		add(new JLabel("Enter your profile information for git and hosting services."), "cell 1 1");
 		
-		addForm("First name", GitConfig.Profile.firstname, "Enter your first name (e.g., John)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Last name", GitConfig.Profile.lastname, "Enter your last name (e.g., Smith)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Full name", GitConfig.Profile.name, "Enter your first and last name (e.g., John Smith)", StringValidators.trimString(StringValidators.REQUIRE_NON_EMPTY_STRING));
-		addForm("Username", GitConfig.Profile.defaultname, "Enter your preferred username for project hosts (e.g., smithj)", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE)));
-		addForm("Email address", GitConfig.Profile.email, "Enter your .edu email address", StringValidators.trimString(ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,StringValidators.NO_WHITESPACE,StringValidators.EMAIL_ADDRESS)));
-
-		add(fieldValidator.createProblemLabel(), String.format("cell 1 %s,growx", row));
+		add(new JLabel("Name"), "cell 0 2,alignx trailing");
 		
-		final ValidationPanel p = new ValidationPanel(fieldValidator);
-		p.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				GitConfigPanel.this.firePropertyChange("hasProblems", !p.isFatalProblem(), p.isFatalProblem());
-			}
-		});
+		JTextField field = new JTextField();
+		field.setName(GitConfigKey.firstname.name());
+		field.setToolTipText("First name (e.g., John)");
+		field.setColumns(10);
+		add(field, "flowx,cell 1 2,growx");
+		
+		field = new JTextField();
+		field.setName(GitConfigKey.lastname.name());
+		field.setToolTipText("Last name (e.g., Smith)");
+		field.setColumns(10);
+		add(field, "cell 1 2,growx");
 
-		this.addAncestorListener(new AncestorListener() {
-			// We need to tell the wizard whether we've got problems as soon as we're visible.
-			@Override
-			public void ancestorAdded(AncestorEvent arg0) {
-				GitConfigPanel.this.firePropertyChange("hasProblems", !p.isFatalProblem(), p.isFatalProblem());
-			}
-			@Override
-			public void ancestorMoved(AncestorEvent arg0) {
-			}
-			@Override
-			public void ancestorRemoved(AncestorEvent arg0) {
-			}
-		});
+		add(new JLabel("Username"), "cell 0 3,alignx trailing");
+		field = new JTextField();
+		field.setName(GitConfigKey.defaultname.name());
+		field.setToolTipText("Preferred username (e.g., smithj)");
+		add(field, "cell 1 3,growx");
+		
+		add(new JLabel("Email address"), "cell 0 4,alignx trailing");
+		field = new JTextField();
+		field.setName(GitConfigKey.email.name());
+		field.setToolTipText("Your .edu email address");
+		add(field, "cell 1 4,growx");
+		
+		add(new JLabel("School"), "cell 0 5,alignx trailing");
+		field = new JTextField();
+		field.setName(GitConfigKey.organization.name());
+		field.setToolTipText("School name");
+		add(field, "cell 1 5,growx");
+	}
+
+	@Override
+	public JComponent getAssociatedJComponent() {
+		return this;
 	}
 }
