@@ -25,7 +25,7 @@ public class GitConfigPanel extends ExtendedJPanel {
 	 * @throws Exception
 	 */
 	public GitConfigPanel() throws Exception {
-		setName("Name & email");
+		setName("About me");
 		setLayout(new MigLayout("", "[70.00px,right][grow]", "[76.00][11.00,top][][][][][][][][grow,top]"));
 		
 		JLabel logo = new JLabel();

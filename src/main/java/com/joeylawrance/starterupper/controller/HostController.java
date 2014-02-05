@@ -13,16 +13,21 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 
 import com.google.common.eventbus.Subscribe;
 import com.joeylawrance.starterupper.gui.HostPanel;
 import com.joeylawrance.starterupper.gui.View;
+import com.joeylawrance.starterupper.model.ConfigChanged;
 import com.joeylawrance.starterupper.model.Event;
+import com.joeylawrance.starterupper.model.GitConfigKey;
 import com.joeylawrance.starterupper.model.host.Host;
 import com.joeylawrance.starterupper.model.host.HostPerformedAction;
 
+/**
+ * Updates the associated Host model and HostPanel view.
+ * 
+ * @author Joey Lawrance
+ */
 public class HostController {
 	private final Host model;
 	private JTextField username;
@@ -56,19 +61,6 @@ public class HostController {
 		forgotPassword = view.getComponent(HostPanel.Controls.forgot, JButton.class);
 		status = view.getComponent(HostPanel.Controls.status, JLabel.class);
 		username.setText(model.getUsername());
-		view.getComponent(null, JPanel.class).addAncestorListener(new AncestorListener() {
-			// We need to update the view to reflect model changes (if any)
-			@Override
-			public void ancestorAdded(AncestorEvent arg0) {
-				view.getComponent(HostPanel.Controls.username, JTextField.class).setText(model.getUsername());
-			}
-			@Override
-			public void ancestorMoved(AncestorEvent arg0) {
-			}
-			@Override
-			public void ancestorRemoved(AncestorEvent arg0) {
-			}
-		});
 
 		username.addFocusListener(new FocusListener() {
 			@Override
@@ -143,7 +135,7 @@ public class HostController {
 			if (event.successful) {
 				status.setText(String.format("Logged in to %s.", model.getHostName()));
 			} else {
-				status.setText(String.format("Login failed."));
+				status.setText("Login failed.");
 			}
 			break;
 		case reset:
@@ -153,13 +145,19 @@ public class HostController {
 			enableFields(!event.successful);
 			logIn.setEnabled(true);
 			if (event.successful) {
-				status.setText(String.format("Check your inbox for instructions to finish the signup. Then, come back here to log in.", model.getHostName()));
+				status.setText("Check your inbox for instructions to finish the signup. Then, come back here to log in.");
 			} else {
-				status.setText(String.format("Unable to create a new account. Try a different username or a stronger password."));
+				status.setText("Unable to create a new account. Try a different username or a stronger password.");
 			}
 			break;
 		default:
 			break;
+		}
+	}
+	@Subscribe
+	public void configChanged(ConfigChanged event) {
+		if (event.key.equals(GitConfigKey.defaultname)) {
+			username.setText(model.getUsername());
 		}
 	}
 }
