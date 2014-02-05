@@ -2,6 +2,7 @@ package com.joeylawrance.starterupper;
 
 import com.joeylawrance.starterupper.controller.GitConfigController;
 import com.joeylawrance.starterupper.controller.HostController;
+import com.joeylawrance.starterupper.controller.RepositoryController;
 import com.joeylawrance.starterupper.gui.GitConfigPanel;
 import com.joeylawrance.starterupper.gui.HostPanel;
 import com.joeylawrance.starterupper.gui.PicturePanel;
@@ -31,7 +32,7 @@ public class Main {
 		w.addStep(new HostController(new HostPanel(), new GitLab()).getPanel());
 		RepositoryPanel repo = new RepositoryPanel();
 		w.addStep(repo);
-		w.addActionListener(repo);
+		w.addActionListener(new RepositoryController(repo));
 		
 		// Tell all the hosts about the git configuration.
 		config.postConfiguration();
