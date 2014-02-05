@@ -51,15 +51,15 @@ public class HostController {
 		this.model = model;
 		this.view = view;
 		view.getComponent(null, JPanel.class).setName(model.getHostName());
-		view.getComponent(HostPanel.Controls.logo, JLabel.class).setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
-		view.getComponent(HostPanel.Controls.description, JLabel.class).setText(model.getDescription());
+		view.getComponent(HostPanel.Controls.LOGO, JLabel.class).setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
+		view.getComponent(HostPanel.Controls.DESCRIPTION, JLabel.class).setText(model.getDescription());
 
-		username = view.getComponent(HostPanel.Controls.username, JTextField.class);
-		password = view.getComponent(HostPanel.Controls.password, JPasswordField.class);
-		signUp = view.getComponent(HostPanel.Controls.signup, JButton.class);
-		logIn = view.getComponent(HostPanel.Controls.login, JButton.class);
-		forgotPassword = view.getComponent(HostPanel.Controls.forgot, JButton.class);
-		status = view.getComponent(HostPanel.Controls.status, JLabel.class);
+		username = view.getComponent(HostPanel.Controls.USERNAME, JTextField.class);
+		password = view.getComponent(HostPanel.Controls.PASSWORD, JPasswordField.class);
+		signUp = view.getComponent(HostPanel.Controls.SIGNUP, JButton.class);
+		logIn = view.getComponent(HostPanel.Controls.LOGIN, JButton.class);
+		forgotPassword = view.getComponent(HostPanel.Controls.FORGOT, JButton.class);
+		status = view.getComponent(HostPanel.Controls.STATUS, JLabel.class);
 		username.setText(model.getUsername());
 
 		username.addFocusListener(new FocusListener() {
@@ -129,6 +129,7 @@ public class HostController {
 	}
 	@Subscribe
 	public void setStatus(HostPerformedAction event) {
+		if (!event.host.equals(this.model)) return;
 		switch (event.action) {
 		case login:
 			enableFields(!event.successful);
