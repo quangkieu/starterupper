@@ -24,7 +24,7 @@ public class GitConfigPanel extends ExtendedJPanel {
 	 * @param gitUserModel
 	 * @throws Exception
 	 */
-	public GitConfigPanel() throws Exception {
+	public GitConfigPanel() {
 		setName("About me");
 		setLayout(new MigLayout("", "[70.00px,right][grow]", "[76.00][11.00,top][][][][][][][][grow,top]"));
 		

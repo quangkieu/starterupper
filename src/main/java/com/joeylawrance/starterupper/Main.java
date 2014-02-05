@@ -15,7 +15,7 @@ import com.joeylawrance.starterupper.model.host.impl.GitLab;
 import com.joeylawrance.starterupper.model.host.impl.Gravatar;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
     	// Create the Wizard UI
     	Wizard w = new Wizard();
     	

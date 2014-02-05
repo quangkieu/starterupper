@@ -93,33 +93,33 @@ public class Gravatar extends GenericHost {
 			md = MessageDigest.getInstance("MD5");
 			String thedigest = Hex.encodeHexString(md.digest(email.getBytes()));
 			SecureXmlRpcClient client = new SecureXmlRpcClient(String.format("https://secure.gravatar.com/xmlrpc?user=%s",thedigest));
-			
+
 			// Crop the image down to the center for that square look.
 			BufferedImage bi = ImageIO.read(profilePicture);
 			BufferedImage cropped = bi.getSubimage(40, 0, 240, 240);
 			File temp = File.createTempFile("profile", ".png");
 			ImageIO.write(cropped, "png", temp);
 			byte[] imageData = FileUtils.readFileToByteArray(temp);
-			
+
 			// The 1990's called. They want their types back. Create our parameters for Gravatar
 			Hashtable parameters = new Hashtable();
 			parameters.put("data",new String(Base64.encodeBase64(imageData)));
-			parameters.put("rating", new Integer(0));
+			parameters.put("rating", Integer.valueOf(0));
 			parameters.put("password",getPassword());
 			Vector parameterBag = new Vector();
 			parameterBag.add(parameters);
-			
+
 			// Upload the image
 			Object result = client.execute("grav.saveData", parameterBag);
-			System.out.println(result);
-			
+			logger.info("Saved user image {}.",result);
+
 			if (result instanceof Boolean) {
 				logger.error("Failed to save image.");
 			} else if (result instanceof String) {
 				// Now, set the gravatar to be the image we just uploaded.
 				parameterBag.clear();
 				parameters.clear();
-				
+
 				// Create parameters for setting the default user image
 				String userimage = result.toString();
 				parameters.put("userimage", userimage);
@@ -128,7 +128,7 @@ public class Gravatar extends GenericHost {
 				parameters.put("addresses", addresses);
 				parameters.put("password",getPassword());
 				parameterBag.add(parameters);
-				
+
 				// Set the default user image to what we just uploaded
 				client.execute("grav.useUserimage", parameterBag);
 			}
@@ -144,27 +144,27 @@ public class Gravatar extends GenericHost {
 	 */
 	@Subscribe
 	public void checkForExistingGravatar(ConfigChanged event) {
-		if (event.value == null) return;
-		if (event.key == GitConfigKey.email) {
-			// Now that we know their email, let's see if the user already has a Gravatar
-			if (!profilePicture.exists()) {
-				gravatar = new com.timgroup.jgravatar.Gravatar()
-				.setSize(240)
-				.setRating(GravatarRating.GENERAL_AUDIENCES)
-				.setDefaultImage(GravatarDefaultImage.IDENTICON);
+		if (event.value == null) {
+			return;
+		}
+		// Now that we know their email, let's see if the user already has a Gravatar
+		if (event.key == GitConfigKey.email && !profilePicture.exists()) {
+			gravatar = new com.timgroup.jgravatar.Gravatar()
+			.setSize(240)
+			.setRating(GravatarRating.GENERAL_AUDIENCES)
+			.setDefaultImage(GravatarDefaultImage.IDENTICON);
 
-				// OpenJDK doesn't come with a native jpg encoder, so we'll just use png.
-				byte[] bytes;
-				try {
-					bytes = gravatar.download(event.value);
-					ImageIO.write(toBufferedImage(new ImageIcon(bytes).getImage()),
-							"png",
-							profilePicture);
-				} catch (IOException e) {
-					logger.error("Couldn't save gravatar to a file.", e);
-				} catch (GravatarDownloadException e) {
-					logger.error("No gravatar found for {}.", event.value, e);
-				}
+			// OpenJDK doesn't come with a native jpg encoder, so we'll just use png.
+			byte[] bytes;
+			try {
+				bytes = gravatar.download(event.value);
+				ImageIO.write(toBufferedImage(new ImageIcon(bytes).getImage()),
+						"png",
+						profilePicture);
+			} catch (IOException e) {
+				logger.error("Couldn't save gravatar to a file.", e);
+			} catch (GravatarDownloadException e) {
+				logger.error("No gravatar found for {}.", event.value, e);
 			}
 		}
 	}

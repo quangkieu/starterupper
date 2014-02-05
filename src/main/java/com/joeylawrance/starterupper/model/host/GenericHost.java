@@ -13,6 +13,7 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.google.common.eventbus.Subscribe;
 import com.joeylawrance.starterupper.model.ConfigChanged;
 import com.joeylawrance.starterupper.model.Event;
+import com.joeylawrance.starterupper.model.GitConfigKey;
 import com.joeylawrance.starterupper.model.WebHelper;
 
 /**
@@ -28,9 +29,9 @@ public class GenericHost implements Host {
 	final String window;
 	final URL logo;
 	final String description;
-	private HashMap<HostAction, String> urls = new HashMap<HostAction, String>();
+	private Map<HostAction, String> urls = new HashMap<HostAction, String>();
 	private boolean loggedIn = false;
-	private HashMap<String, String> map = new HashMap<String, String>();
+	private Map<String, String> map = new HashMap<String, String>();
 	
 	public Map<String, String> getMap() {
 		return map;
@@ -167,27 +168,12 @@ public class GenericHost implements Host {
 
 	@Subscribe
 	public void updateInternalConfiguration(ConfigChanged event) {
-		switch (event.key) {
-		case email:
-			getMap().put("Email", event.value);
-			break;
-		case firstname:
-			getMap().put("First name", event.value);
-			break;
-		case lastname:
-			getMap().put("Last name", event.value);
-			break;
-		case name:
-			getMap().put("Name", event.value);
-			break;
-		case defaultname:
-			// Don't clobber the name to the default if we've logged in successfully before.
+		if (event.key.equals(GitConfigKey.defaultname)) {
 			if (!haveLoggedInBefore()) {
 				setUsername(event.value);
 			}
-			break;
-		default:
-			break;
+		} else {
+			getMap().put(event.key.formElement(), event.value);
 		}
 	}
 

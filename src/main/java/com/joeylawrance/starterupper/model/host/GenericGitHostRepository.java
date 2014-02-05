@@ -61,7 +61,6 @@ public class GenericGitHostRepository extends GenericGitHost implements
 	public boolean addCollaboratorToRepository(String username) {
 		try {
 			client.load(window, String.format(collaboratorURL, getUsername(), getPrivateRepositoryName()));
-			System.out.println(client.getPageUrl(window));
 			HashMap<String, String> map = new HashMap<String, String>();
 			map.put("user|friend", username);
 			client.fillForm(window, map);

@@ -8,7 +8,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.CanceledException;
+import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidConfigurationException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.slf4j.Logger;
@@ -27,14 +35,14 @@ public class GitClient {
 	String upstreamRepositoryOwner;
 	String upstreamRepositoryName;
 	File localRepositoryLocation;
-	
+
 	StoredConfig config;
 	Git git;
-	
+
 	public GitClient() {
-		
+
 	}
-	
+
 	/**
 	 * Sets the upstream repository, using the provided URL.
 	 * 
@@ -59,7 +67,7 @@ public class GitClient {
 	public String getUpstreamRepositoryOwner() {
 		return upstreamRepositoryOwner;
 	}
-	
+
 	public String getUpstreamRepositoryHost() {
 		return upstreamRepositoryHost;
 	}
@@ -75,7 +83,7 @@ public class GitClient {
 	public void setLocalRepositoryLocation(File path) {
 		this.localRepositoryLocation = path;
 	}
-	
+
 	/**
 	 * Get the local repository location.
 	 * @return The repository location
@@ -83,7 +91,7 @@ public class GitClient {
 	public File getLocalRepositoryLocation() {
 		return this.localRepositoryLocation;
 	}
-	
+
 	/**
 	 * git init, more or less.
 	 * @throws Exception
@@ -99,7 +107,7 @@ public class GitClient {
 			logger.error("Unable to initialize repository.", e);
 		}
 	}
-	
+
 	/**
 	 * git remote add name url
 	 * 
@@ -123,23 +131,44 @@ public class GitClient {
 	 * git remote add upstream upstreamURL
 	 * git pull upstream master
 	 * 
-	 * @throws Exception
 	 */
-	public void cloneUpstreamRepository() throws Exception {
+	public void cloneUpstreamRepository() {
 		addRemote("upstream",upstreamRepositoryURL);
-		
-		// JGit is too hard, so I'll temporarily set the remote to upstream
-		config.setString("branch", "master", "remote", "upstream");
-		config.setString("branch", "master", "merge", "refs/heads/master");
-		config.save();
-		
-		git.pull().call();
 
-		// And... now we're back go pulling from origin by default, like normal people.
-		config.setString("branch", "master", "remote", "origin");
-		config.save();
+		try {
+			// JGit is too hard, so I'll temporarily set the remote to upstream
+			config.setString("branch", "master", "remote", "upstream");
+			config.setString("branch", "master", "merge", "refs/heads/master");
+			config.save();
+
+			git.pull().call();
+
+			// And... now we're back go pulling from origin by default, like normal people.
+			config.setString("branch", "master", "remote", "origin");
+			config.save();
+		} catch (IOException e) {
+			logger.error("Unable to save repository configuration.", e);
+		} catch (WrongRepositoryStateException e) {
+			logger.error("Unable to pull.", e);
+		} catch (InvalidConfigurationException e) {
+			logger.error("Unable to pull.", e);
+		} catch (DetachedHeadException e) {
+			logger.error("Unable to pull.", e);
+		} catch (InvalidRemoteException e) {
+			logger.error("Unable to pull.", e);
+		} catch (CanceledException e) {
+			logger.error("Unable to pull.", e);
+		} catch (RefNotFoundException e) {
+			logger.error("Unable to pull.", e);
+		} catch (NoHeadException e) {
+			logger.error("Unable to pull.", e);
+		} catch (TransportException e) {
+			logger.error("Unable to pull.", e);
+		} catch (GitAPIException e) {
+			logger.error("Unable to pull.", e);
+		}
 	}
-	
+
 	/**
 	 * Push to all remotes.
 	 */

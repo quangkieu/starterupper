@@ -66,7 +66,7 @@ public class GitConfig {
 	 * @param key
 	 * @return the value associated with the key in ~/.gitconfig
 	 */
-	public String get(GitConfigKey key) {
+	public final String get(GitConfigKey key) {
 		return getCustomProperty("user", null, key.toString());
 	}
 	/**
@@ -75,8 +75,10 @@ public class GitConfig {
 	 * @param value
 	 * @return the new value stored in ~/.gitconfig
 	 */
-	public String put(GitConfigKey key, String value) {
-		if (value == null) return value;
+	public final String put(GitConfigKey key, String value) {
+		if (value == null) {
+			return value;
+		}
 		setCustomProperty("user", null, key, value);
 		// Set the user.name from "firstname lastname"
 		if (key.equals(GitConfigKey.firstname) || key.equals(GitConfigKey.lastname)) {

@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.Box;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.Font;
 import java.awt.Dimension;
@@ -28,8 +29,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.border.EmptyBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @SuppressWarnings("serial")
 public class Wizard extends JFrame {
+	private final Logger logger = LoggerFactory.getLogger(Wizard.class);
+
 	private JLabel stepTitle;
 	private JButton backButton;
 	private JButton nextButton;
@@ -44,9 +50,19 @@ public class Wizard extends JFrame {
 	private JPanel horizontalBox;
 	private JLabel status;
 	{
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			logger.error("Cannot set proper look and feel.", e);
+		} catch (InstantiationException e) {
+			logger.error("Cannot set proper look and feel.", e);
+		} catch (IllegalAccessException e) {
+			logger.error("Cannot set proper look and feel.", e);
+		} catch (UnsupportedLookAndFeelException e) {
+			logger.error("Cannot set proper look and feel.", e);
+		}
 	}
-	public Wizard() throws Exception {
+	public Wizard() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Wizard.class.getResource("/Start.png")));
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Starter Upper");

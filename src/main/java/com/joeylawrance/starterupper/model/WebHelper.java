@@ -72,9 +72,9 @@ public class WebHelper {
 				Matcher matcher = pattern.matcher(htmlLabel.asText());
 				if (matcher.find()) {
 					HtmlElement element = htmlLabel.getReferencedElement();
-					if (element.getNodeName().equalsIgnoreCase("textarea")) {
+					if ("textarea".equalsIgnoreCase(element.getNodeName())) {
 						element.setTextContent(map.get(key));
-					} else if (element.getNodeName().equalsIgnoreCase("input")) {
+					} else if ("input".equalsIgnoreCase(element.getNodeName())) {
 						HtmlInput htmlInput = (HtmlInput) element;
 						htmlInput.setValueAttribute(map.get(key));
 					}
