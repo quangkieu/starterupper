@@ -26,9 +26,9 @@ public class GitConfig {
 				INSTANCE.load();
 				logger.info("Loaded global .gitconfig file.");
 			} catch (IOException e) {
-				logger.error("Can't read global .gitconfig file, even though it exists.");
+				logger.error("Can't read global .gitconfig file, even though it exists.", e);
 			} catch (ConfigInvalidException e) {
-				logger.error("Global .gitignore file is improperly formatted.");
+				logger.error("Global .gitignore file is improperly formatted.", e);
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class GitConfig {
 			getConfig().save();
 			logger.info("Saved changes to .gitconfig.");
 		} catch (Exception e) {
-			logger.error("Sorry, another program has locked your .gitconfig file in {}.", System.getProperty("user.home"));
+			logger.error("Sorry, another program has locked your .gitconfig file in {}.", System.getProperty("user.home"), e);
 		}
 	}
 	/**

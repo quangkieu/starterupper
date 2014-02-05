@@ -48,15 +48,15 @@ public class GenericGitHost extends GenericHost implements GitHost {
 			client.submitForm(window, "Add key");
 			logger.info("Shared public key with {}", window);
 		} catch (FailingHttpStatusCodeException e) {
-			logger.error("Unable to share public key with {}", window);
+			logger.error("Unable to share public key with {}.", window, e);
 		} catch (IOException e) {
-			logger.error("Unable to share public key with {}", window);
+			logger.error("Unable to share public key with {}.", window, e);
 		}
 	}
 
 	@Override
 	public boolean testLogin() {
-		logger.info("Testing SSH credentials for {}", window);
+		logger.info("Testing SSH credentials for {}.", window);
 		return KeyConfig.getInstance().testLogin(host);
 	}
 }

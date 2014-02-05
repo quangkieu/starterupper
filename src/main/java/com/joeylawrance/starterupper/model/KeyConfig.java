@@ -47,7 +47,7 @@ public class KeyConfig {
 				kpair.writePublicKey(new FileOutputStream(publicKey), System.getProperty("user.name"));
 				kpair.dispose();
 			} catch (Exception e) {
-				logger.error("Unable to generate a new public/private SSH keypair.");
+				logger.error("Unable to generate a new public/private SSH keypair.", e);
 			}
 		}
 		// Load public key into a string
@@ -57,23 +57,23 @@ public class KeyConfig {
 			inputStream.read(publicKeyByteArray);
 			inputStream.close();
 		} catch (Exception e) {
-			logger.error("Unable to open public key.");
+			logger.error("Unable to open public key.", e);
 		}
 		key = new String(publicKeyByteArray);
 		// Configure jsch to use the private key.
 		try {
 			jsch.addIdentity(privateKey.getAbsolutePath());
 		} catch (JSchException e) {
-			logger.error("Unable to use private key.");
+			logger.error("Unable to use private key.", e);
 		}
 		// Configure jsch to use the known_hosts file.
 		try {
 			knownHosts.createNewFile();
 			jsch.setKnownHosts(knownHosts.getAbsolutePath());
 		} catch (JSchException e) {
-			logger.error("Unable to use known_hosts file.");
+			logger.error("Unable to use known_hosts file.", e);
 		} catch (IOException e1) {
-			logger.error("Unable to create new known_hosts file.");
+			logger.error("Unable to create new known_hosts file.", e1);
 		}
 	}
 	public String getPublicKey() {
@@ -120,7 +120,7 @@ public class KeyConfig {
 			channel.disconnect();
 			return connected;
 		} catch (JSchException e) {
-			logger.error(e.getMessage());
+			logger.error("Unable to test login.", e);
 		}
 		return false;
 	}

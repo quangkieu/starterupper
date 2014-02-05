@@ -95,7 +95,7 @@ public class WebHelper {
 				try {
 					htmlElement.click();
 				} catch (IOException e) {
-					logger.error("Unable to click on {} submit button for {}", submitLabel, window);
+					logger.error("Unable to click on {} submit button for {}.", submitLabel, window, e);
 				}
 				break;
 			}
@@ -112,9 +112,9 @@ public class WebHelper {
 			request = new WebRequest(new URL(url));
 			return getWebClient().getPage(getWebClient().getWebWindowByName(window), request);
 		} catch (MalformedURLException e) {
-			logger.error("Malformed URL: {}", url);
+			logger.error("Malformed URL: {}", url, e);
 		} catch (WebWindowNotFoundException e) {
-			logger.error("Unable to find window for {}", window);
+			logger.error("Unable to find window for {}.", window, e);
 		}
 		return null;
 	}

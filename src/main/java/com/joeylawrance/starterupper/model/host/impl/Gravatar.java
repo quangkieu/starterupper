@@ -134,7 +134,7 @@ public class Gravatar extends GenericHost {
 			}
 			return true;
 		} catch (Exception e) {
-			logger.error("Can't upload.", e.fillInStackTrace());
+			logger.error("Can't upload.", e);
 		}
 		return false;
 	}
@@ -161,9 +161,9 @@ public class Gravatar extends GenericHost {
 							"png",
 							profilePicture);
 				} catch (IOException e) {
-					logger.error("Couldn't save gravatar to a file.", e.fillInStackTrace());
+					logger.error("Couldn't save gravatar to a file.", e);
 				} catch (GravatarDownloadException e) {
-					logger.error(String.format("No gravatar found for %s.", event.value, e.fillInStackTrace()));
+					logger.error("No gravatar found for {}.", event.value, e);
 				}
 			}
 		}

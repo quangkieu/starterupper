@@ -61,7 +61,7 @@ public class GenericHost implements Host {
 		try {
 			client.load(window,getURL(HostAction.signup));
 		} catch (Exception e) {
-			logger.error("Unable to load signup page.");
+			logger.error("Unable to load signup page.", e);
 			Event.getBus().post(new HostPerformedAction(this, HostAction.signup, false));
 		}
 		client.fillForm(window, map);
@@ -73,9 +73,9 @@ public class GenericHost implements Host {
 		try {
 			client.load(window,getURL(HostAction.login));
 		} catch (FailingHttpStatusCodeException e) {
-			logger.error("Unable to load login page.");
+			logger.error("Unable to load login page.", e);
 		} catch (IOException e) {
-			logger.error("Unable to load login page.");
+			logger.error("Unable to load login page.", e);
 			return false;
 		}
 		client.fillForm(window, map);
@@ -108,10 +108,10 @@ public class GenericHost implements Host {
 			logger.info("Password reset for {} sent.", getHostName());
 			Event.getBus().post(new HostPerformedAction(this, HostAction.reset, true));
 		} catch (FailingHttpStatusCodeException e) {
-			logger.error("Unable to load forgot password page.", e.fillInStackTrace());
+			logger.error("Unable to load forgot password page.", e);
 			Event.getBus().post(new HostPerformedAction(this, HostAction.reset, false));
 		} catch (IOException e) {
-			logger.error("Unable to load forgot password page.", e.fillInStackTrace());
+			logger.error("Unable to load forgot password page.", e);
 			Event.getBus().post(new HostPerformedAction(this, HostAction.reset, false));
 		}
 	}
@@ -159,9 +159,9 @@ public class GenericHost implements Host {
 			loggedIn = false;
 			Event.getBus().post(new HostPerformedAction(this, HostAction.logout, true));
 		} catch (FailingHttpStatusCodeException e) {
-			logger.error("Unable to logout.");
+			logger.error("Unable to logout.", e);
 		} catch (IOException e) {
-			logger.error("Unable to logout.");
+			logger.error("Unable to logout.", e);
 		}
 	}
 

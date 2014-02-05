@@ -94,9 +94,9 @@ public class GitClient {
 			git = Git.open(localRepositoryLocation);
 			config = git.getRepository().getConfig();
 		} catch (GitAPIException e) {
-			logger.error("Unable to initialize repository. {}",e.getMessage());
+			logger.error("Unable to initialize repository.", e);
 		} catch (IOException e) {
-			logger.error("Unable to initialize repository. {}",e.getMessage());
+			logger.error("Unable to initialize repository.", e);
 		}
 	}
 	
@@ -113,7 +113,7 @@ public class GitClient {
 		try {
 			config.save();
 		} catch (IOException e) {
-			logger.error("Unable to save remote. {}", e.getMessage());
+			logger.error("Unable to save remote.", e);
 		}
 	}
 
@@ -151,11 +151,11 @@ public class GitClient {
 				try {
 					git.push().setRemote(remote.getName()).call();
 				} catch (GitAPIException e) {
-					logger.error("Encountered a problem with the push. {}", e.getMessage());
+					logger.error("Encountered a problem with the push.", e);
 				}
 			}
 		} catch (URISyntaxException e) {
-			logger.error("Unable to load remotes for repository. {}", e.getMessage());
+			logger.error("Unable to load remotes for repository.", e);
 		}
 	}
 }

@@ -48,10 +48,10 @@ public class GenericGitHostRepository extends GenericGitHost implements
 			client.submitForm(window,"Create");
 			logger.info("Created repository '{}' on {}", repositoryName, window);
 		} catch (FailingHttpStatusCodeException e) {
-			logger.error("Unable to create private repository '{}' on {}", repositoryName, window);
+			logger.error("Unable to create private repository '{}' on {}.", repositoryName, window, e);
 			return false;
 		} catch (IOException e) {
-			logger.error("Unable to create private repository '{}' on {}", repositoryName, window);
+			logger.error("Unable to create private repository '{}' on {}.", repositoryName, window, e);
 			return false;
 		}
 		return true; //!client.getPageUrl(window).equals(repositoryCreateURL);
@@ -68,9 +68,9 @@ public class GenericGitHostRepository extends GenericGitHost implements
 			client.submitForm(window, "Add");
 			logger.info("Added collaborator {} to {} on {}", username, getPrivateRepositoryName(), window);
 		} catch (FailingHttpStatusCodeException e) {
-			logger.error("Unable to add collaborator {} to {} on {}", username, getPrivateRepositoryName(), window);
+			logger.error("Unable to add collaborator {} to {} on {}.", username, getPrivateRepositoryName(), window, e);
 		} catch (IOException e) {
-			logger.error("Unable to add collaborator {} to {} on {}", username, getPrivateRepositoryName(), window);
+			logger.error("Unable to add collaborator {} to {} on {}.", username, getPrivateRepositoryName(), window, e);
 			return false;
 		}
 		return true; //!client.getPageUrl(window).equals(collaboratorURL);
