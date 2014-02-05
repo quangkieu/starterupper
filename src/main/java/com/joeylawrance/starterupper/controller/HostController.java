@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,16 +16,14 @@ import javax.swing.SwingWorker;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.google.common.eventbus.Subscribe;
 import com.joeylawrance.starterupper.gui.HostPanel;
 import com.joeylawrance.starterupper.gui.View;
+import com.joeylawrance.starterupper.model.Event;
 import com.joeylawrance.starterupper.model.host.Host;
+import com.joeylawrance.starterupper.model.host.HostPerformedAction;
 
 public class HostController {
-//	private SwingValidationGroup fieldValidator = SwingValidationGroup.create();
-	private static final Logger logger = LoggerFactory.getLogger(HostController.class);
 	private final Host model;
 	private JTextField username;
 	private JPasswordField password;
@@ -35,7 +32,7 @@ public class HostController {
 	private JButton forgotPassword;
 	private JLabel status;
 	private View view;
-	
+
 	private void enableFields(boolean enable) {
 		username.setEnabled(enable && !model.haveLoggedInBefore());
 		password.setEnabled(enable);
@@ -44,87 +41,8 @@ public class HostController {
 		forgotPassword.setEnabled(enable);
 	}
 
-	private void doLogin() {
-		new SwingWorker<Boolean, Void>() {
-			@Override
-			protected Boolean doInBackground() throws Exception {
-				status.setText("Please wait, logging in...");
-				enableFields(false);
-				return model.login();
-			}
-			@Override
-			public void done() {
-				boolean loggedIn = false;
-				try {
-					loggedIn = get();
-				} catch (InterruptedException e) {
-					logger.info("Login interrupted.", e.fillInStackTrace());
-				} catch (ExecutionException e) {
-					logger.info("Login encountered a problem.", e.fillInStackTrace());
-				}
-				enableFields(!loggedIn);
-				if (loggedIn) {
-					status.setText(String.format("Logged in to %s.", model.getHostName()));
-				} else {
-					status.setText(String.format("Login failed."));
-				}
-			}
-		}.execute();
-	}
-
-	private void doSignup() {
-		new SwingWorker<Boolean, Void>() {
-			@Override
-			protected Boolean doInBackground() throws Exception {
-				status.setText("Please wait, signing up for a new account...");
-				enableFields(false);
-				return model.signUp();
-			}
-			@Override
-			public void done() {
-				boolean signedUp = false;
-				try {
-					signedUp = get();
-				} catch (InterruptedException e) {
-					logger.info("Signup interrupted.", e.fillInStackTrace());
-				} catch (ExecutionException e) {
-					logger.info("Signup encountered a problem: {}", e.fillInStackTrace());
-				}
-				enableFields(!signedUp);
-				logIn.setEnabled(true);
-				if (signedUp) {
-					status.setText(String.format("Check your inbox for instructions to finish the signup. Then, come back here to log in.", model.getHostName()));
-				} else {
-					status.setText(String.format("Unable to create a new account. Try a different username or a stronger password."));
-				}
-			}
-		}.execute();
-	}
-	private void doReset() {
-		new SwingWorker<Void, Void>() {
-			@Override
-			protected Void doInBackground() throws Exception {
-				status.setText("Please wait, sending password reset request...");
-				model.forgotPassword();
-				return null;
-			}
-			@Override
-			public void done() {
-				try {
-					get();
-					status.setText("Check your inbox for a password reset email with instructions.");
-				} catch (InterruptedException e) {
-					logger.info("Forgot password interrupted.", e.fillInStackTrace());
-				} catch (ExecutionException e) {
-					logger.info("Forgot password encountered a problem. ", e.fillInStackTrace());
-				}
-			}
-		}.execute();
-	}
-
-	
 	public HostController(final View view, final Host model) {
-//		final ValidationPanel p = new ValidationPanel(fieldValidator);
+		Event.getBus().register(this);
 		this.model = model;
 		this.view = view;
 		view.getComponent(null, JPanel.class).setName(model.getHostName());
@@ -151,7 +69,7 @@ public class HostController {
 			public void ancestorRemoved(AncestorEvent arg0) {
 			}
 		});
-		
+
 		username.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
@@ -175,25 +93,73 @@ public class HostController {
 		signUp.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				doSignup();
+				new SwingWorker<Boolean, Void>() {
+					@Override
+					protected Boolean doInBackground() throws Exception {
+						status.setText("Please wait, signing up for a new account...");
+						enableFields(false);
+						return model.signUp();
+					}
+				}.execute();
 			}
 		});
 		logIn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				doLogin();
+				new SwingWorker<Boolean, Void>() {
+					@Override
+					protected Boolean doInBackground() throws Exception {
+						status.setText("Please wait, logging in...");
+						enableFields(false);
+						return model.login();
+					}
+				}.execute();
 			}
 		});
 		forgotPassword.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				doReset();
+				new SwingWorker<Void, Void>() {
+					@Override
+					protected Void doInBackground() throws Exception {
+						status.setText("Please wait, sending password reset request...");
+						model.forgotPassword();
+						return null;
+					}
+				}.execute();
 			}
 		});
-		
+
 		enableFields(true);
 	}
 	public HostPanel getPanel() {
 		return view.getComponent(null, HostPanel.class);
+	}
+	@Subscribe
+	public void setStatus(HostPerformedAction event) {
+		switch (event.action) {
+		case login:
+			enableFields(!event.successful);
+			if (event.successful) {
+				status.setText(String.format("Logged in to %s.", model.getHostName()));
+			} else {
+				status.setText(String.format("Login failed."));
+			}
+			break;
+		case reset:
+			status.setText("Check your inbox for a password reset email with instructions.");
+			break;
+		case signup:
+			enableFields(!event.successful);
+			logIn.setEnabled(true);
+			if (event.successful) {
+				status.setText(String.format("Check your inbox for instructions to finish the signup. Then, come back here to log in.", model.getHostName()));
+			} else {
+				status.setText(String.format("Unable to create a new account. Try a different username or a stronger password."));
+			}
+			break;
+		default:
+			break;
+		}
 	}
 }

@@ -62,6 +62,7 @@ public class GenericHost implements Host {
 			client.load(window,getURL(HostAction.signup));
 		} catch (Exception e) {
 			logger.error("Unable to load signup page.");
+			Event.getBus().post(new HostPerformedAction(this, HostAction.signup, false));
 		}
 		client.fillForm(window, map);
 		return false;
@@ -83,7 +84,9 @@ public class GenericHost implements Host {
 		if (loggedIn) {
 			logger.info("Successfully logged into {}", getHostName());
 			storeUsername();
-			Event.getBus().post(new HostPerformedAction(this, HostAction.login));
+			Event.getBus().post(new HostPerformedAction(this, HostAction.login, true));
+		} else {
+			Event.getBus().post(new HostPerformedAction(this, HostAction.login, false));
 		}
 		return loggedIn;
 	}
@@ -103,11 +106,13 @@ public class GenericHost implements Host {
 			client.fillForm(window, map);
 			client.submitForm(window, "reset|password|submit");
 			logger.info("Password reset for {} sent.", getHostName());
-			Event.getBus().post(new HostPerformedAction(this, HostAction.reset));
+			Event.getBus().post(new HostPerformedAction(this, HostAction.reset, true));
 		} catch (FailingHttpStatusCodeException e) {
-			logger.error("Unable to load forgot password page");
+			logger.error("Unable to load forgot password page.", e.fillInStackTrace());
+			Event.getBus().post(new HostPerformedAction(this, HostAction.reset, false));
 		} catch (IOException e) {
-			logger.error("Unable to load forgot password page");
+			logger.error("Unable to load forgot password page.", e.fillInStackTrace());
+			Event.getBus().post(new HostPerformedAction(this, HostAction.reset, false));
 		}
 	}
 
@@ -152,7 +157,7 @@ public class GenericHost implements Host {
 		try {
 			client.load(window,getURL(HostAction.logout));
 			loggedIn = false;
-			Event.getBus().post(new HostPerformedAction(this, HostAction.logout));
+			Event.getBus().post(new HostPerformedAction(this, HostAction.logout, true));
 		} catch (FailingHttpStatusCodeException e) {
 			logger.error("Unable to logout.");
 		} catch (IOException e) {
