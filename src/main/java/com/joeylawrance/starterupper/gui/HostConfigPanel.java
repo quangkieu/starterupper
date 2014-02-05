@@ -10,19 +10,7 @@ import net.miginfocom.swing.MigLayout;
 @SuppressWarnings("serial")
 public class HostConfigPanel extends ExtendedJPanel {
 	public static enum Controls {
-		username(JTextField.class),
-		password(JPasswordField.class),
-		signup(JButton.class),
-		login(JButton.class),
-		forgot(JButton.class),
-		status(JLabel.class),
-		logo(JLabel.class),
-		description(JLabel.class);
-		@SuppressWarnings("rawtypes")
-		public Class klass;
-		<T> Controls(Class<T> klass) {
-			this.klass = klass;
-		}
+		username, password, signup, login, forgot, status, logo, description;
 	}
 	
 	public HostConfigPanel() {
@@ -67,9 +55,5 @@ public class HostConfigPanel extends ExtendedJPanel {
 		JLabel status = new JLabel();
 		status.setName(Controls.status.name());
 		add(status, "growx,cell 1 5");
-	}
-	@SuppressWarnings("unchecked")
-	public <T> T getControl(Controls control) {
-		return (T) getComponent(control.name(), control.klass);
 	}
 }

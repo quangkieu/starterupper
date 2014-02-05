@@ -128,21 +128,21 @@ public class HostConfigController {
 		this.model = model;
 		this.view = view;
 		view.getComponent(null, JPanel.class).setName(model.getHostName());
-		view.getComponent(HostConfigPanel.Controls.logo.name(), JLabel.class).setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
-		view.getComponent(HostConfigPanel.Controls.description.name(), JLabel.class).setText(model.getDescription());
+		view.getComponent(HostConfigPanel.Controls.logo, JLabel.class).setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
+		view.getComponent(HostConfigPanel.Controls.description, JLabel.class).setText(model.getDescription());
 
-		username = view.getComponent(HostConfigPanel.Controls.username.name(), JTextField.class);
-		password = view.getComponent(HostConfigPanel.Controls.password.name(), JPasswordField.class);
-		signUp = view.getComponent(HostConfigPanel.Controls.signup.name(), JButton.class);
-		logIn = view.getComponent(HostConfigPanel.Controls.login.name(), JButton.class);
-		forgotPassword = view.getComponent(HostConfigPanel.Controls.forgot.name(), JButton.class);
-		this.status = view.getComponent(HostConfigPanel.Controls.status.name(), JLabel.class);
+		username = view.getComponent(HostConfigPanel.Controls.username, JTextField.class);
+		password = view.getComponent(HostConfigPanel.Controls.password, JPasswordField.class);
+		signUp = view.getComponent(HostConfigPanel.Controls.signup, JButton.class);
+		logIn = view.getComponent(HostConfigPanel.Controls.login, JButton.class);
+		forgotPassword = view.getComponent(HostConfigPanel.Controls.forgot, JButton.class);
+		this.status = view.getComponent(HostConfigPanel.Controls.status, JLabel.class);
 		username.setText(model.getUsername());
 		view.getComponent(null, JPanel.class).addAncestorListener(new AncestorListener() {
 			// We need to update the view to reflect model changes (if any)
 			@Override
 			public void ancestorAdded(AncestorEvent arg0) {
-				view.getComponent("username", JTextField.class).setText(model.getUsername());
+				view.getComponent(HostConfigPanel.Controls.username, JTextField.class).setText(model.getUsername());
 			}
 			@Override
 			public void ancestorMoved(AncestorEvent arg0) {
