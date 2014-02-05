@@ -20,13 +20,13 @@ import javax.swing.event.AncestorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.joeylawrance.starterupper.gui.HostConfigPanel;
+import com.joeylawrance.starterupper.gui.HostPanel;
 import com.joeylawrance.starterupper.gui.View;
 import com.joeylawrance.starterupper.model.host.Host;
 
-public class HostConfigController {
+public class HostController {
 //	private SwingValidationGroup fieldValidator = SwingValidationGroup.create();
-	private static final Logger logger = LoggerFactory.getLogger(HostConfigController.class);
+	private static final Logger logger = LoggerFactory.getLogger(HostController.class);
 	private final Host model;
 	private JTextField username;
 	private JPasswordField password;
@@ -123,26 +123,26 @@ public class HostConfigController {
 	}
 
 	
-	public HostConfigController(final View view, final Host model) {
+	public HostController(final View view, final Host model) {
 //		final ValidationPanel p = new ValidationPanel(fieldValidator);
 		this.model = model;
 		this.view = view;
 		view.getComponent(null, JPanel.class).setName(model.getHostName());
-		view.getComponent(HostConfigPanel.Controls.logo, JLabel.class).setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
-		view.getComponent(HostConfigPanel.Controls.description, JLabel.class).setText(model.getDescription());
+		view.getComponent(HostPanel.Controls.logo, JLabel.class).setIcon(new ImageIcon(Toolkit.getDefaultToolkit().getImage(model.getLogo())));
+		view.getComponent(HostPanel.Controls.description, JLabel.class).setText(model.getDescription());
 
-		username = view.getComponent(HostConfigPanel.Controls.username, JTextField.class);
-		password = view.getComponent(HostConfigPanel.Controls.password, JPasswordField.class);
-		signUp = view.getComponent(HostConfigPanel.Controls.signup, JButton.class);
-		logIn = view.getComponent(HostConfigPanel.Controls.login, JButton.class);
-		forgotPassword = view.getComponent(HostConfigPanel.Controls.forgot, JButton.class);
-		this.status = view.getComponent(HostConfigPanel.Controls.status, JLabel.class);
+		username = view.getComponent(HostPanel.Controls.username, JTextField.class);
+		password = view.getComponent(HostPanel.Controls.password, JPasswordField.class);
+		signUp = view.getComponent(HostPanel.Controls.signup, JButton.class);
+		logIn = view.getComponent(HostPanel.Controls.login, JButton.class);
+		forgotPassword = view.getComponent(HostPanel.Controls.forgot, JButton.class);
+		status = view.getComponent(HostPanel.Controls.status, JLabel.class);
 		username.setText(model.getUsername());
 		view.getComponent(null, JPanel.class).addAncestorListener(new AncestorListener() {
 			// We need to update the view to reflect model changes (if any)
 			@Override
 			public void ancestorAdded(AncestorEvent arg0) {
-				view.getComponent(HostConfigPanel.Controls.username, JTextField.class).setText(model.getUsername());
+				view.getComponent(HostPanel.Controls.username, JTextField.class).setText(model.getUsername());
 			}
 			@Override
 			public void ancestorMoved(AncestorEvent arg0) {
@@ -193,7 +193,7 @@ public class HostConfigController {
 		
 		enableFields(true);
 	}
-	public HostConfigPanel getPanel() {
-		return view.getComponent(null, HostConfigPanel.class);
+	public HostPanel getPanel() {
+		return view.getComponent(null, HostPanel.class);
 	}
 }

@@ -8,12 +8,12 @@ import javax.swing.JButton;
 import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("serial")
-public class HostConfigPanel extends ExtendedJPanel {
+public class HostPanel extends ExtendedJPanel {
 	public static enum Controls {
 		username, password, signup, login, forgot, status, logo, description;
 	}
 	
-	public HostConfigPanel() {
+	public HostPanel() {
 		setLayout(new MigLayout("", "[70px][grow]", "[76.00][][20px][][23px][]"));
 
 		JLabel logo = new JLabel();

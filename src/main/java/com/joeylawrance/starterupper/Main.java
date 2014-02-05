@@ -1,9 +1,9 @@
 package com.joeylawrance.starterupper;
 
 import com.joeylawrance.starterupper.controller.GitConfigController;
-import com.joeylawrance.starterupper.controller.HostConfigController;
+import com.joeylawrance.starterupper.controller.HostController;
 import com.joeylawrance.starterupper.gui.GitConfigPanel;
-import com.joeylawrance.starterupper.gui.HostConfigPanel;
+import com.joeylawrance.starterupper.gui.HostPanel;
 import com.joeylawrance.starterupper.gui.PicturePanel;
 import com.joeylawrance.starterupper.gui.RepositoryPanel;
 import com.joeylawrance.starterupper.gui.Wizard;
@@ -24,11 +24,11 @@ public class Main {
     	Gravatar gravatar = new Gravatar();
 
 		w.addStep(configPanel);
-		w.addStep(new HostConfigController(new HostConfigPanel(), gravatar).getPanel());
+		w.addStep(new HostController(new HostPanel(), gravatar).getPanel());
 		w.addStep(new PicturePanel(gravatar));
-		w.addStep(new HostConfigController(new HostConfigPanel(), new Bitbucket()).getPanel());
-		w.addStep(new HostConfigController(new HostConfigPanel(), new GitHub()).getPanel());
-		w.addStep(new HostConfigController(new HostConfigPanel(), new GitLab()).getPanel());
+		w.addStep(new HostController(new HostPanel(), new Bitbucket()).getPanel());
+		w.addStep(new HostController(new HostPanel(), new GitHub()).getPanel());
+		w.addStep(new HostController(new HostPanel(), new GitLab()).getPanel());
 		RepositoryPanel repo = new RepositoryPanel();
 		w.addStep(repo);
 		w.addActionListener(repo);
