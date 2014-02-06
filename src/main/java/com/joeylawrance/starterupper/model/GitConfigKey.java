@@ -5,7 +5,7 @@ package com.joeylawrance.starterupper.model;
  */
 public enum GitConfigKey {
 	// Only name and email are part of git
-	firstname("First name"), lastname("Last name"), name("Name"), defaultname("Username"), email("Email"), organization("School name");
+	firstname("First name"), lastname("Last name"), name("Name"), defaultname("Username"), email("Email"), school("School name"), student("Student"), teacher("Teacher"), graduation("Graduation");
 	private final String formElement;
 	private GitConfigKey(String formElement) {
 		this.formElement = formElement;

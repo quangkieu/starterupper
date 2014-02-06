@@ -157,8 +157,8 @@ public class HostController {
 	}
 	@Subscribe
 	public void configChanged(ConfigChanged event) {
-		if (event.key.equals(GitConfigKey.defaultname)) {
-			username.setText(model.getUsername());
+		if (event.key.equals(GitConfigKey.defaultname) && !model.haveLoggedInBefore()) {
+			username.setText(event.value);
 		}
 	}
 }

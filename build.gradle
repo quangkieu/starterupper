@@ -37,6 +37,7 @@ dependencies {
 	compile 'org.netbeans.api:org-openide-util:RELEASE68'
 	compile 'org.swinglabs:swingx:1.6.1'
 	compile 'org.slf4j:slf4j-simple:1.7.5'
+	compile 'commons-net:commons-net:3.3'
 	testCompile 'junit:junit:4.11', 'org.hamcrest:hamcrest-all:1.3'
 }
 
@@ -98,6 +99,7 @@ task proguard(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
     printusage
     dontwarn
     dontobfuscate
+    keepdirectories
     keep "class com.joeylawrance.starterupper.** { @com.google.common.eventbus.Subscribe public *; }"
     keep "class helma.xmlrpc.** {*;}"
     keep "interface helma.xmlrpc.** {*;}"
