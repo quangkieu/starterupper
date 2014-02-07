@@ -55,7 +55,7 @@ public class GitConfigPanel extends ExtendedJPanel {
 		add(new JLabel("Email address"), "cell 0 3,alignx trailing");
 		field = new JTextField();
 		field.setName(GitConfigKey.email.name());
-		field.setToolTipText("Your .edu email address");
+		field.setToolTipText("Your school-issued email address");
 		add(field, "cell 1 3,growx");
 
 		add(new JLabel("Username"), "cell 0 4,alignx trailing");
