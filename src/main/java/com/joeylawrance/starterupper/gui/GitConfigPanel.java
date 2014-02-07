@@ -12,7 +12,6 @@ import java.awt.Toolkit;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JRadioButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JComboBox;
 
 
@@ -38,20 +37,7 @@ public class GitConfigPanel extends ExtendedJPanel {
 		add(logo, "cell 1 0");
 		
 		add(new JLabel("Describe yourself for git and hosting services."), "cell 1 1");
-		
-		ButtonGroup role = new ButtonGroup();
-		
-		JRadioButton student = new JRadioButton("Student");
-		student.setSelected(true);
-		student.setName(GitConfigKey.student.name());
-		add(student, "flowx,cell 1 5");
-		role.add(student);
-		
-		JRadioButton teacher = new JRadioButton("Teacher");
-		teacher.setName(GitConfigKey.teacher.name());
-		add(teacher, "cell 1 5");
-		role.add(teacher);
-		
+				
 		add(new JLabel("Name"), "cell 0 2,alignx trailing");
 		
 		JTextField field = new JTextField();
@@ -78,15 +64,32 @@ public class GitConfigPanel extends ExtendedJPanel {
 		field.setToolTipText("Preferred username (e.g., smithj)");
 		add(field, "cell 1 4,growx");
 		
-		add(new JLabel("School"), "cell 0 6,alignx trailing");
+		add(new JLabel("School"), "cell 0 5,alignx trailing");
 		field = new JTextField();
 		field.setName(GitConfigKey.school.name());
 		field.setToolTipText("School name");
-		add(field, "cell 1 6,growx");
-				
-		add(new JLabel("Graduation"), "cell 0 7,alignx trailing");
+		add(field, "cell 1 5,growx");
 		
-		JComboBox comboBox = new JComboBox();
+		ButtonGroup role = new ButtonGroup();
+		
+		JLabel lblRole = new JLabel("Role");
+		add(lblRole, "cell 0 6");
+		
+		JRadioButton student = new JRadioButton("Student");
+		student.setSelected(true);
+		student.setName(GitConfigKey.student.name());
+		add(student, "flowx,cell 1 6");
+		role.add(student);
+		
+		JRadioButton teacher = new JRadioButton("Teacher");
+		teacher.setName(GitConfigKey.teacher.name());
+		add(teacher, "cell 1 6");
+		role.add(teacher);
+		
+		JLabel graduation = new JLabel("Graduation");
+		JComboBox<Integer> comboBox = new JComboBox<Integer>();
+		graduation.setLabelFor(comboBox);
+		add(graduation, "cell 0 7,alignx trailing");
 		comboBox.setName(GitConfigKey.graduation.name());
 		add(comboBox, "flowx,cell 1 7");
 	}

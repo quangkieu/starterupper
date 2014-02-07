@@ -5,9 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.IOException;
+import java.util.Calendar;
 
-import javax.swing.JComponent;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -17,7 +18,6 @@ import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.commons.net.whois.WhoisClient;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
@@ -25,11 +25,9 @@ import org.netbeans.validation.api.ValidatorUtils;
 import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
 import org.netbeans.validation.api.ui.swing.SwingValidationGroup;
 import org.netbeans.validation.api.ui.swing.ValidationPanel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.google.common.eventbus.Subscribe;
+import com.joeylawrance.starterupper.gui.ExtendedJPanel;
 import com.joeylawrance.starterupper.gui.View;
 import com.joeylawrance.starterupper.model.ConfigChanged;
 import com.joeylawrance.starterupper.model.Email2School;
@@ -43,16 +41,20 @@ import com.joeylawrance.starterupper.model.WebHelper;
  *
  */
 public class GitConfigController {
-	private final Logger logger = LoggerFactory.getLogger(GitConfigController.class);
-
 	private SwingValidationGroup fieldValidator = SwingValidationGroup.create();
 	private final GitConfig config;
 	private View view;
 	private final WebHelper helper;
+	private final JComboBox<Integer> combo;
 
 	@SuppressWarnings("unchecked")
-	public GitConfigController(final View view, final GitConfig config) {
+	public GitConfigController(final ExtendedJPanel view, final GitConfig config) {
 		this.view = view;
+		
+		combo = view.getComponent(GitConfigKey.graduation, JComboBox.class);
+		int year = Calendar.getInstance().get(Calendar.YEAR);
+		combo.setModel(new DefaultComboBoxModel<Integer>(new Integer[] {year, year+1, year+2, year+3, year+4, year+5, year+6, year+7}));
+		
 		helper = new WebHelper();
 		helper.newWindow("school");
 		final ValidationPanel p = new ValidationPanel(fieldValidator);
@@ -104,13 +106,15 @@ public class GitConfigController {
 		view.getComponent(GitConfigKey.student, JRadioButton.class).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				view.getComponent(GitConfigKey.graduation, JComponent.class).setVisible(true);
+				combo.setVisible(true);
+				view.getLabelForComponent(combo).setVisible(true);
 			}
 		});
 		view.getComponent(GitConfigKey.teacher, JRadioButton.class).addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				view.getComponent(GitConfigKey.graduation, JComponent.class).setVisible(false);
+				combo.setVisible(false);
+				view.getLabelForComponent(combo).setVisible(false);
 			}
 		});
 		//		view.getComponent(null, JPanel.class).add(fieldValidator.createProblemLabel(), String.format("cell 1 %s,growx", view.getRowCount()));
@@ -144,7 +148,9 @@ public class GitConfigController {
 					JTextField school = view.getComponent(GitConfigKey.school, JTextField.class);
 					// Don't clobber stuff
 					String existingSchool = config.get(GitConfigKey.school);
-					if (existingSchool != null) return null;
+					if (existingSchool != null) {
+						return null;
+					}
 					
 					// Check for the school using whois record
 					school.setEnabled(false);
