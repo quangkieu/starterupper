@@ -26,6 +26,10 @@ public class Email2School {
 	private static final Pattern emailPattern = Pattern.compile("^.*[@]");
 	private static final WhoisClient whois = new WhoisClient();
 	// Who's the whois provider for the relevant domain suffix?
+	// http://www.domaininformation.de/whoisserver_list.html
+	// http://www.math.utah.edu/whois.html
+	// http://www.nirsoft.net/whois_servers_list.html
+	// http://www.iana.org/whois
 	private static final Map<String, String> whoisProvider = new HashMap<String, String>();
 	static {
 		whoisProvider.put("edu", "whois.educause.net");
@@ -51,6 +55,7 @@ public class Email2School {
 			if (!whoisProvider.containsKey(tld)) return null;
 			whois.connect(whoisProvider.get(tld));
 			String result = whois.query(domain);
+			logger.info("WHOIS result for {}\n{}", domain, result);
 
 			// Extract just the registrant
 			Matcher matcher = whoisPattern.get(tld).matcher(result);
