@@ -18,4 +18,10 @@ Starter Upper helps students set up accounts and repositories on Git project hos
 # What Starter Upper does not do
 
 Starter Upper does not install software.
-Use package managers such as Chocolatey, Homebrew, apt-get, yum, or pacman for their respective OS to install Git and graphical frontends such as Git Extensions.
+Use package managers such as Chocolatey, Homebrew, apt-get, yum, or pacman for your respective OS to install Git and graphical frontends such as Git Extensions.
+
+# How to contribute
+
+Clone this repository. Then, in a terminal, do:
+
+    ./gradlew build
