@@ -162,15 +162,18 @@ github_setup() {
     github_setup_ssh
     github_create_private_repo
     github_add_collaborator $GITHUB_INSTRUCTOR
+    setup_repo
 }
 
-setup_repos() {
+setup_repo() {
+    echo "Configuring repository $REPO..."
     cd ~
     git clone "https://github.com/$GITHUB_INSTRUCTOR/$REPO.git"
     cd $REPO
     git remote rename origin upstream
     git remote add origin git@github.com:$github_login/$REPO.git
     git push origin master
+    echo "Done"
 }
 
 github_revoke() {
@@ -190,6 +193,4 @@ clean() {
 
 configure_git
 github_setup
-setup_repos
-
 # github_user
