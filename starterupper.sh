@@ -10,7 +10,6 @@ REPO=COMP603-2014
 
 next_step() {
     read -p "Press enter to continue." < /dev/tty
-    echo
 }
 
 # Cross platform file open
@@ -142,7 +141,7 @@ github_setup_ssh() {
 }
 
 github_create_private_repo() {
-    echo "Creating private repository on Github..."
+    echo "Creating/checking private repository on Github..."
     curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/repos/$github_login/$REPO/collaborators/$GITHUB_INSTRUCTOR 2> /dev/null > /dev/null    
 }
 
@@ -172,6 +171,21 @@ setup_repos() {
     git remote rename origin upstream
     git remote add origin git@github.com:$github_login/$REPO.git
     git push origin master
+}
+
+github_revoke() {
+    echo "Delete starterupper-script under Personal access tokens"
+    file_open "https://github.com/settings/applications"
+}
+
+# Clean up everything but the repo (BEWARE!)
+clean() {
+    github_revoke
+    git config --global --unset user.name
+    git config --global --unset user.email
+    git config --global --unset gihub.login
+    rm ~/.ssh/id_rsa*
+    rm ~/.token
 }
 
 configure_git
