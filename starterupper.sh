@@ -49,7 +49,7 @@ configure_git() {
 generate_key() {
     while [[ ! -f ~/.ssh/id_rsa.pub ]]; do
         echo "Push enter to accept defaults. Remember your passphrase (or just press enter)."
-        ssh-keygen -t rsa
+        ssh-keygen -t rsa < /dev/tty
     done
 }
 
@@ -80,7 +80,7 @@ github_join() {
     fi
 }
 
-# Holy shit, it's complicated
+# Wow, it's complicated
 # Sets $github_login and generates ~/.token with authentication token
 github_authenticate() {
     if [[ ! -f ~/.token ]]; then
@@ -165,8 +165,8 @@ github_setup() {
     github_add_collaborator $GITHUB_INSTRUCTOR
 }
 
-
 setup_repos() {
+    cd ~
     git clone "https://github.com/$GITHUB_INSTRUCTOR/$REPO.git"
     cd $REPO
     git remote rename origin upstream
