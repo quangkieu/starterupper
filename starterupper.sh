@@ -18,7 +18,7 @@ file_open() {
         msys | cygwin ) echo "Opening $1"; sleep 1; start "$1" ;;
         linux* ) echo "Opening $1"; sleep 1; gnome-open "$1" ;;
         darwin* ) echo "Opening $1"; sleep 1; open "$1" ;;
-        *) echo "Open $1 in your web browser." ;;
+        *) echo "Please open $1" ;;
     esac
     next_step
 }
@@ -142,12 +142,12 @@ github_setup_ssh() {
 
 github_create_private_repo() {
     echo "Creating/checking private repository on Github..."
-    curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/repos/$github_login/$REPO/collaborators/$GITHUB_INSTRUCTOR 2> /dev/null > /dev/null    
+    curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null > /dev/null    
 }
 
 github_add_collaborator() {
     echo "Adding $1 as a collaborator..."
-    curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/repos/$github_login/$REPO/collaborators/$1 2> /dev/null > /dev/null
+    curl --request PUT -H "Authorization: token $(cat ~/.token)" -d "" https://api.github.com/repos/$github_login/$REPO/collaborators/$1 2> /dev/null > /dev/null
 }
 
 github_user() {
@@ -168,14 +168,24 @@ github_setup() {
 setup_repo() {
     echo "Configuring repository $REPO..."
     cd ~
-    if [[ ! -f "$REPO" ]]; then
+    if [ ! -d $REPO ]; then
         git clone https://github.com/$GITHUB_INSTRUCTOR/$REPO.git
-        cd $REPO
+        file_open $REPO
+        pushd $REPO
         git remote rename origin upstream
         git remote add origin git@github.com:$github_login/$REPO.git
+        popd
     fi
+    cd $REPO
     git push origin master
-    echo "Done"
+    result=$(echo $?)
+    if [[ $result != 0 ]]; then
+        echo "Your network connection has blocked SSH. Sorry"
+        echo "Failed"
+    else
+        file_open "https://github.com/$github_login/$REPO"
+        echo "Done"
+    fi
 }
 
 github_revoke() {
@@ -193,8 +203,11 @@ clean() {
     rm -f ~/.token
 }
 
-configure_git
-github_setup
+if [ $# == 0 ]; then
+    configure_git
+    github_setup
+elif [[ $1 == "clean" ]]; then
+    clean
+fi
 
 # github_user
-# clean
