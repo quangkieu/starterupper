@@ -49,6 +49,18 @@ configure_git() {
     set_key user.email "school email address" "smithj@wit.edu"
 }
 
+# Setup remotes for repository
+# $1 is the SSH origin URL
+configure_remotes() {
+    cd ~/$REPO
+    echo "Configuring remotes..."
+    git remote rename origin upstream
+    git remote add origin $1
+    git config branch.master.remote origin
+    git config branch.master.merge refs/heads/master
+    cd ~
+}
+
 # SSH functions
 # ---------------------------------------------------------------------
 
@@ -106,16 +118,19 @@ github_authenticate() {
                 sleep 3
             fi
             if [[ ! -z $(echo $token | grep "two-factor" ) ]]; then
-                read -s -p "Enter Github two-factor authentication code: " code < /dev/tty
+                read -p "Enter Github two-factor authentication code: " code < /dev/tty
             fi
         done
-        if [[ ! -z $(echo $token | grep "HTTP/1.1 201" ) ]]; then
+        if [[ ! -z $(echo $token | grep "HTTP/... 20." ) ]]; then
+            # Extract token and save to ~/.token
             token=$(echo $token | tr '"' '\n' | grep -E '[0-9a-f]{40}')
             echo $token > ~/.token
             echo "Authenticated!"
         else
+            printf "Error: "
+            echo $token | grep "HTTP/..."
             echo "Sorry, try again later."
-            exit
+            exit 1
         fi
     fi
 }
@@ -168,6 +183,14 @@ github_add_collaborator() {
     curl --request PUT -H "Authorization: token $(cat ~/.token)" -d "" https://api.github.com/repos/$github_login/$REPO/collaborators/$1 2> /dev/null > /dev/null
 }
 
+github_add_collaborators() {
+    cd ~/$REPO
+    for repository in $(curl -i -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/repos?type=member\&sort=created\&page=1 2> /dev/null | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
+        git remote add ${repository%/*} git@github.com:$repository.git
+    done
+    git fetch --all
+}
+
 github_user() {
     curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user 2> /dev/null
 }
@@ -186,11 +209,7 @@ setup_repo() {
     cd ~
     if [ ! -d $REPO ]; then
         git clone https://github.com/$GITHUB_INSTRUCTOR/$REPO.git
-        cd $REPO
-        echo "Configuring remotes..."
-        git remote rename origin upstream
-        git remote add origin git@github.com:$github_login/$REPO.git
-        cd ~
+        configure_remotes "git@github.com:$github_login/$REPO.git"
     fi
     file_open $REPO
     cd $REPO
@@ -225,6 +244,8 @@ if [ $# == 0 ]; then
     github_setup
 elif [[ $1 == "clean" ]]; then
     clean
+elif [[ $1 == "collaborators" ]]; then
+    github_add_collaborators
 fi
 
 # github_user
