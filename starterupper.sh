@@ -1,9 +1,24 @@
 #!/bin/bash
 
+# Starter Upper: setup git hosting for classroom use with minimal user interaction.
+
 # The instructor's Github username
 GITHUB_INSTRUCTOR=lawrancej
 # The repository to clone as upstream (NO SPACES)
 REPO=COMP603-2014
+# School domain to use in email address example
+SCHOOL=wit.edu
+
+# More issues:
+# git user name is not your email check (check for email address or at sign in username)
+# validate email on github
+# check network connectivity
+# validate username
+# Note: case sensitive user name
+# add your school email address to github
+# go through all pages when fetching usernames
+# automatically share/detect email with github via api
+# grading interface: checkout stuff rapid fire like, possibly use git notes
 
 # Utilities
 # ---------------------------------------------------------------------
@@ -26,27 +41,52 @@ file_open() {
 # Git functions
 # ---------------------------------------------------------------------
 
-# Ask user to set a key in ~/.gitconfig if it's not already set.
-# $1 is the key
-# $2 is the prompt
-# $3 is an example
-set_key() {
-    value=$(git config --global $1)
-    if [[ ! -z "$value" ]]; then
-        read -p "Is $value your $2 (Yes [default] or no)? " yn < /dev/tty
-        if [[ $yn == [Yy]* ]]; then
-            value=''
-        fi
+key_valid() {
+    if ! [[ -z "$value" ]] && [[ -z $(echo "$value" | grep -E "$validation_regex" ) ]]; then
+        echo "ERROR: '$value' is not a $prompt. $invalid_prompt"
     fi
-    while [ -z "$value" ]; do
-        read -p "Enter your $2 (e.g., $3): " value < /dev/tty
-        git config --global $1 "$value"
+}
+
+# In case the user goofs things up, re-run the script to change the configuration
+check_config() {
+    fullname=$(git config --global user.name)
+    email=$(git config --global user.email)
+    while ! [[ -z "$fullname" ]] && ! [[ -z "$email" ]]; do
+        read -p "Are you $fullname <$email> (yes/no)? " yn < /dev/tty
+        case $yn in
+            [Yy] | [Yy][Ee][Ss] ) return 0 ;;
+            [Nn] | [Nn][Oo] ) git config --global --unset user.name; git config --global --unset user.email; return 0 ;;
+            "" ) return 0 ;;
+            * ) echo "Please answer yes or no." ;;
+        esac
     done
 }
 
+# Ask user to set a key in ~/.gitconfig if it's not already set.
+# Sets $value
+set_key() {
+    key=$1
+    prompt=$2
+    example=$3
+    validation_regex=$4
+    invalid_prompt=$5
+    
+    value=$(git config --global $1)
+    key_valid
+    while [[ -z "$value" ]] || [[ -z $(echo "$value" | grep -E "$validation_regex" ) ]]; do
+        read -p "Enter your $prompt (e.g., $example): " value < /dev/tty
+        key_valid
+    done
+    git config --global $key "$value"
+}
+
+# Sets $fullname and $email
 configure_git() {
-    set_key user.name "full name" "Jane Smith"
-    set_key user.email "school email address" "smithj@wit.edu"
+    check_config
+    set_key user.name "full name" "Jane Smith" "\w+ \w+" "Include your first and last name."
+    fullname=$value
+    set_key user.email "school email address" "smithj@$SCHOOL" "edu$" "Use your @$SCHOOL address."
+    email=$value
 }
 
 # Setup remotes for repository
@@ -73,7 +113,7 @@ generate_key() {
 copy_key_to_clipboard() {
     case $OSTYPE in
         msys | cygwin ) echo "Copied your public key to clipboard."; cat ~/.ssh/id_rsa.pub > /dev/clipboard ;;
-        linux* ) echo "Copied your public key to clipboard."; cat ~/.ssh/id_rsa.pub | xclip -selection clipboard ;;
+        linux* ) echo "Copied your public key to clipboard."; cat ~/.ssh/id_rsa.pub | xclip -selection clipboard ;; # -i ;;
         darwin* ) echo "Copied your public key to clipboard."; cat ~/.ssh/id_rsa.pub | pbcopy ;;
         * ) echo "Copy your public key (below) to the clipboard:"; cat ~/.ssh/id_rsa.pub ;;
     esac
@@ -87,20 +127,25 @@ github_join() {
         read -p "Do you have a Github account (yes or No [default])? " has_github_account < /dev/tty
         # Let's assume that they don't by default
         if [[ $has_github_account != [Yy]* ]]; then
-            printf "Join Github using your school email address. "
-            sleep 1
+            echo "Join Github. IMPORTANT: Use $email as your email address."
+            sleep 2
             file_open "https://github.com/join"
             echo "Open your school email inbox and verify your email with Github."
             sleep 2
             next_step
+        else
+            echo "IMPORTANT: Add/verify $email at Github."
+            sleep 3
+            file_open "https://github.com/settings/emails"
         fi
     fi
 }
 
 # Wow, it's complicated
+# https://github.com/sessions/forgot_password
 # Sets $github_login and generates ~/.token with authentication token
 github_authenticate() {
-    set_key github.login "Github username" "smithj"
+    set_key github.login "Github username" "smithj" "^[0-9a-zA-Z][0-9a-zA-Z-]*$" "See: https://github.com"
     github_login=$(git config --global github.login)
     if [[ ! -f ~/.token ]]; then
         token="HTTP/1.1 401 Unauthorized"
@@ -110,7 +155,7 @@ github_authenticate() {
             if [[ -z "$password" ]]; then
                 read -s -p "Enter Github password: " password < /dev/tty
             fi
-            token=$(curl -i -u $github_login:$password -H "X-GitHub-OTP: $code" -d '{"scopes": ["repo", "public_repo", "user", "write:public_key"], "note": "starterupper-script"}' https://api.github.com/authorizations 2> /dev/null)
+            token=$(curl -i -u $github_login:$password -H "X-GitHub-OTP: $code" -d '{"scopes": ["repo", "public_repo", "user", "write:public_key", "user:email"], "note": "starterupper-script"}' https://api.github.com/authorizations 2> /dev/null)
             echo
             if [[ ! -z $(echo $token | grep "Bad credential") ]]; then
                 echo "Incorrect password. Please wait a moment."
@@ -146,11 +191,22 @@ github_set_name() {
 }
 
 github_setup_ssh() {
-    ssh_test=$(ssh git@github.com 2>&1)
+    generate_key
+    
+    # Force accept host key
+    ssh_test=$(ssh -oStrictHostKeyChecking=no git@github.com 2>&1)
     if [[ -z $(echo $ssh_test | grep $github_login) ]]; then
-        generate_key
         github_share_key
     fi
+}
+
+github_request_discount() {
+    echo "Share and verify your school email with Github."
+    sleep 1
+    file_open "https://github.com/settings/emails"
+    echo "Request an individual student discount."
+    sleep 1
+    file_open "https://education.github.com/discount_requests/new"
 }
 
 github_create_private_repo() {
@@ -159,9 +215,7 @@ github_create_private_repo() {
         echo "Creating private repository $github_login/$REPO on Github..."
         result=$(curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
         if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
-            echo "Unable to create private repository. Request an individual student discount."
-            sleep 1
-            file_open "https://education.github.com/discount_requests/new"
+            echo "Unable to create private repository."
             result=$(curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
             if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
                 echo "Unable to create private repository because you are over quota."
@@ -189,6 +243,11 @@ github_add_collaborators() {
         git remote add ${repository%/*} git@github.com:$repository.git
     done
     git fetch --all
+}
+
+# Sets $github_verified_email if the user did things right
+github_check_email() {
+    github_verified_email=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails | tr '\n}[]{' ' \n   ' | grep "lawrancej@wit.edu" | grep "verified...true")
 }
 
 github_user() {
@@ -232,6 +291,7 @@ github_revoke() {
 # Clean up everything but the repo (BEWARE!)
 clean() {
     github_revoke
+    sed -i s/.*github.com.*// ~/.ssh/known_hosts
     git config --global --unset user.name
     git config --global --unset user.email
     git config --global --unset github.login
