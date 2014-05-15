@@ -1,23 +1,29 @@
 #!/bin/bash
 
-# Starter Upper: setup git hosting for classroom use with minimal user interaction.
+# Starter Upper: Setup git hosting for classroom use with minimal user interaction.
 
+# Configuration
+# ---------------------------------------------------------------------
+
+# The instructor's name
+INSTRUCTOR_NAME="Joey Lawrance"
+# The instructor's email
+INSTRUCTOR_EMAIL="lawrancej@wit.edu"
 # The instructor's Github username
-GITHUB_INSTRUCTOR=lawrancej
+INSTRUCTOR_GITHUB=lawrancej
+
 # The repository to clone as upstream (NO SPACES)
 REPO=COMP603-2014
 # School domain to use in email address example
 SCHOOL=wit.edu
 
 # More issues:
-# git user name is not your email check (check for email address or at sign in username)
-# validate email on github
+# add email to github via api, if not set (e.g., for existing users registered with a different email)
+# ask user to validate email if not validated
+# check if email is validated via api on github before attempting to create a private repo
 # check network connectivity
-# validate username
-# Note: case sensitive user name
-# add your school email address to github
+# determine if username is found via api as a last minute sanity check
 # go through all pages when fetching usernames
-# automatically share/detect email with github via api
 # grading interface: checkout stuff rapid fire like, possibly use git notes
 
 # Utilities
@@ -41,21 +47,35 @@ file_open() {
 # Git functions
 # ---------------------------------------------------------------------
 
-key_valid() {
+# Ask the user if they are the instructor (by default, assume that they aren't)
+instructor_check() {
+    if [[ ! $user_is_instructor ]]; then
+        while ! [[ -z "$value" ]] && [[ "$value" == "$instructor" ]]; do
+            read -p "Are you the instructor (yes/no)? " user_is_instructor < /dev/tty
+            case "$user_is_instructor" in
+                [Yy] | [Yy][Ee][Ss] ) user_is_instructor=true; return 0 ;;
+                [Nn] | [Nn][Oo] ) user_is_instructor=false; git config --global --unset $key; value=''; return 0 ;;
+                "" ) user_is_instructor=false; git config --global --unset $key; value=''; return 0 ;;
+                * ) echo "Please answer yes or no." ;;
+            esac
+        done
+    fi
+}
+
+validate_input() {
+    instructor_check
     if ! [[ -z "$value" ]] && [[ -z $(echo "$value" | grep -E "$validation_regex" ) ]]; then
         echo "ERROR: '$value' is not a $prompt. $invalid_prompt"
     fi
 }
 
-# In case the user goofs things up, re-run the script to change the configuration
-check_config() {
-    fullname=$(git config --global user.name)
-    email=$(git config --global user.email)
-    while ! [[ -z "$fullname" ]] && ! [[ -z "$email" ]]; do
-        read -p "Are you $fullname <$email> (yes/no)? " yn < /dev/tty
-        case $yn in
+# Ask the user if they want to change their configuration in case of goof-ups (by default, assume that they don't)
+change_config() {
+    while ! [[ -z "$value" ]]; do
+        read -p "Is your $prompt $value (yes/no)? " yn < /dev/tty
+        case "$yn" in
             [Yy] | [Yy][Ee][Ss] ) return 0 ;;
-            [Nn] | [Nn][Oo] ) git config --global --unset user.name; git config --global --unset user.email; return 0 ;;
+            [Nn] | [Nn][Oo] ) git config --global --unset $key; value=''; return 0 ;;
             "" ) return 0 ;;
             * ) echo "Please answer yes or no." ;;
         esac
@@ -70,32 +90,38 @@ set_key() {
     example=$3
     validation_regex=$4
     invalid_prompt=$5
+    instructor=$6
     
-    value=$(git config --global $1)
-    key_valid
+    value=$(git config --global $key)
+
+    change_config
+    validate_input
     while [[ -z "$value" ]] || [[ -z $(echo "$value" | grep -E "$validation_regex" ) ]]; do
         read -p "Enter your $prompt (e.g., $example): " value < /dev/tty
-        key_valid
+        validate_input
     done
     git config --global $key "$value"
 }
 
 # Sets $fullname and $email
 configure_git() {
-    check_config
-    set_key user.name "full name" "Jane Smith" "\w+ \w+" "Include your first and last name."
+    set_key user.name "full name" "Jane Smith" "\w+ \w+" "Include your first and last name." "$INSTRUCTOR_NAME"
     fullname=$value
-    set_key user.email "school email address" "smithj@$SCHOOL" "edu$" "Use your @$SCHOOL address."
+    set_key user.email "school email address" "smithj@$SCHOOL" "edu$" "Use your .edu address." "$INSTRUCTOR_EMAIL"
     email=$value
 }
 
 # Setup remotes for repository
 # $1 is the SSH origin URL
+# $2 is the HTTPS upstream URL
 configure_remotes() {
     cd ~/$REPO
     echo "Configuring remotes..."
-    git remote rename origin upstream
+    # We remove and add again, in case the user goofed up before
+    git remote rm origin 2> /dev/null
+    git remote rm upstream 2> /dev/null
     git remote add origin $1
+    git remote add upstream $2
     git config branch.master.remote origin
     git config branch.master.merge refs/heads/master
     cd ~
@@ -133,10 +159,6 @@ github_join() {
             echo "Open your school email inbox and verify your email with Github."
             sleep 2
             next_step
-        else
-            echo "IMPORTANT: Add/verify $email at Github."
-            sleep 3
-            file_open "https://github.com/settings/emails"
         fi
     fi
 }
@@ -145,7 +167,7 @@ github_join() {
 # https://github.com/sessions/forgot_password
 # Sets $github_login and generates ~/.token with authentication token
 github_authenticate() {
-    set_key github.login "Github username" "smithj" "^[0-9a-zA-Z][0-9a-zA-Z-]*$" "See: https://github.com"
+    set_key github.login "Github username" "smithj" "^[0-9a-zA-Z][0-9a-zA-Z-]*$" "See: https://github.com" "$INSTRUCTOR_GITHUB"
     github_login=$(git config --global github.login)
     if [[ ! -f ~/.token ]]; then
         token="HTTP/1.1 401 Unauthorized"
@@ -201,11 +223,12 @@ github_setup_ssh() {
 }
 
 github_request_discount() {
-    echo "Share and verify your school email with Github."
-    sleep 1
-    file_open "https://github.com/settings/emails"
+    github_check_email
+    if [[ -z "$github_verified_email" ]]; then
+        github_verify_email
+    fi
     echo "Request an individual student discount."
-    sleep 1
+    sleep 2
     file_open "https://education.github.com/discount_requests/new"
 }
 
@@ -215,7 +238,8 @@ github_create_private_repo() {
         echo "Creating private repository $github_login/$REPO on Github..."
         result=$(curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
         if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
-            echo "Unable to create private repository."
+            echo "Unable to create private repository because you are over quota."
+            github_request_discount
             result=$(curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
             if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
                 echo "Unable to create private repository because you are over quota."
@@ -239,19 +263,26 @@ github_add_collaborator() {
 
 github_add_collaborators() {
     cd ~/$REPO
-    for repository in $(curl -i -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/repos?type=member\&sort=created\&page=1 2> /dev/null | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
+    for repository in $(curl -i -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/repos?type=member\&sort=created\&page=1\&per_page=100 2> /dev/null | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
         git remote add ${repository%/*} git@github.com:$repository.git
     done
     git fetch --all
 }
 
+# Ask the user to verify their email address
+github_verify_email() {
+    echo "IMPORTANT: Add/verify $email at Github."
+    sleep 3
+    file_open "https://github.com/settings/emails"
+}
+
 # Sets $github_verified_email if the user did things right
 github_check_email() {
-    github_verified_email=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails | tr '\n}[]{' ' \n   ' | grep "lawrancej@wit.edu" | grep "verified...true")
+    github_verified_email=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails | tr '\n}[]{' ' \n   ' | grep "$email" | grep "verified...true")
 }
 
 github_user() {
-    curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user 2> /dev/null
+    curl -i https://api.github.com/users/$github_login 2> /dev/null
 }
 
 github_setup() {
@@ -260,16 +291,18 @@ github_setup() {
     github_set_name
     github_setup_ssh
     github_create_private_repo
-    github_add_collaborator $GITHUB_INSTRUCTOR
+    github_add_collaborator $INSTRUCTOR_GITHUB
     setup_repo
 }
 
 setup_repo() {
     cd ~
+    origin="git@github.com:$github_login/$REPO.git"
+    upstream="https://github.com/$INSTRUCTOR_GITHUB/$REPO.git"
     if [ ! -d $REPO ]; then
-        git clone https://github.com/$GITHUB_INSTRUCTOR/$REPO.git
-        configure_remotes "git@github.com:$github_login/$REPO.git"
+        git clone "$upstream"
     fi
+    configure_remotes "$origin" "$upstream"
     file_open $REPO
     cd $REPO
     git push origin master
@@ -287,6 +320,7 @@ github_revoke() {
     echo "Delete starterupper-script under Personal access tokens"
     file_open "https://github.com/settings/applications"
 }
+
 
 # Clean up everything but the repo (BEWARE!)
 clean() {
