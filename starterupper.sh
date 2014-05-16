@@ -25,6 +25,7 @@ SCHOOL=wit.edu
 # grading interface: checkout stuff rapid fire like, possibly use git notes
 # fall back to https remotes if the school doesn't support SSH
 # if the public key already exists on another account, ask user if they'd like to wipe existing keypair and generate a new one.
+# revoke authorization automatically DELETE /authorizations/:id  (need to store the id in the first place)
 
 # Runtime flags (DO NOT CHANGE)
 # ---------------------------------------------------------------------
