@@ -18,14 +18,12 @@ REPO=COMP603-2014
 SCHOOL=wit.edu
 
 # More issues:
-# add email to github via api, if not set (e.g., for existing users registered with a different email)
-# ask user to validate email if not validated
-# check if email is validated via api on github before attempting to create a private repo
 # go through all pages when fetching usernames
 # grading interface: checkout stuff rapid fire like, possibly use git notes
 # fall back to https remotes if the school doesn't support SSH
 # if the public key already exists on another account, ask user if they'd like to wipe existing keypair and generate a new one.
 # revoke authorization automatically DELETE /authorizations/:id  (need to store the id in the first place)
+# Find some way to call GetUserNameEx on Windows http://msdn.microsoft.com/en-us/library/ms724435%28VS.85%29.aspx
 
 # Runtime flags (DO NOT CHANGE)
 # ---------------------------------------------------------------------
@@ -182,6 +180,7 @@ local_setup() {
 github_configure() {
     local_setup
     
+    # Ask if they've got a github account
     if [ -z $(git config --global login.github) ]; then
         read -p "Do you have a Github account (yes or No [default])? " has_github_account < /dev/tty
         # Let's assume that they don't by default
@@ -277,11 +276,30 @@ github_setup_ssh() {
     fi
 }
 
-github_request_discount() {
-    github_check_email
-    if [[ -z "$github_verified_email" ]]; then
-        github_verify_email
+# Setup a verified .edu email on github
+github_configure_email() {
+    # check if email is validated via api
+    emails=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ')
+
+    # add email to github via api, if not set (e.g., for existing users registered with a different email)
+    if [[ -z $(echo "$emails" | grep "$email") ]]; then
+        curl -H "Authorization: token $(cat ~/.token)" -d "\"$email\"" https://api.github.com/user/emails  2> /dev/null > /dev/null
     fi
+    # ask user to validate email if not validated
+    if [[ -z $(echo "$emails" | grep "verified...true") ]]; then
+        echo "IMPORTANT: Open your inbox and verify $email with Github."
+        sleep 3
+        file_open "https://github.com/settings/emails"
+    else
+        return 0
+    fi
+    # Nag the user until they get it right
+    while [[ -z $(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ' | grep "verified...true") ]]; do
+        read -p "ERROR: $email is not verified yet. Verify, then press enter to continue." < /dev/tty
+    done
+}
+
+github_request_discount() {
     echo "Request an individual student discount."
     sleep 2
     file_open "https://education.github.com/discount_requests/new"
@@ -289,13 +307,15 @@ github_request_discount() {
 
 github_create_private_repo() {
     github_setup_ssh
+    github_configure_email
     
+    # Don't create a private repo if it already exists
     result=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/repos/$github_login/$REPO 2> /dev/null)
     if [[ ! -z $(echo $result | grep "Not Found") ]]; then
         echo "Creating private repository $github_login/$REPO on Github..."
         result=$(curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
         if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
-            echo "Unable to create private repository because you are over quota."
+            echo "Unable to create private repository."
             github_request_discount
             result=$(curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
             if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
@@ -324,18 +344,6 @@ github_add_collaborators() {
         git remote add ${repository%/*} git@github.com:$repository.git
     done
     git fetch --all
-}
-
-# Ask the user to verify their email address
-github_verify_email() {
-    echo "IMPORTANT: Add/verify $email at Github."
-    sleep 3
-    file_open "https://github.com/settings/emails"
-}
-
-# Sets $github_verified_email if the user did things right
-github_check_email() {
-    github_verified_email=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails | tr '\n}[]{' ' \n   ' | grep "$email" | grep "verified...true")
 }
 
 github_user() {
