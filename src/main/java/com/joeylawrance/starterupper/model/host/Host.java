@@ -48,13 +48,11 @@ public interface Host {
 	/**
 	 * Sign up for the host.
 	 * @return Whether the sign up was successful.
-	 * @throws Exception
 	 */
 	boolean signUp();
 	/**
 	 * Log into the host.
 	 * @return Whether the login was successful.
-	 * @throws Exception
 	 */
 	boolean login();
 	/**
@@ -69,12 +67,10 @@ public interface Host {
 	boolean loggedIn();
 	/**
 	 * Log out of the host.
-	 * @throws Exception
 	 */
 	void logout();
 	/**
 	 * Reset the password for the host.
-	 * @throws Exception
 	 */
 	void forgotPassword();
 }

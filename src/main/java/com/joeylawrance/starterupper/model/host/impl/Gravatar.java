@@ -95,6 +95,7 @@ public class Gravatar extends GenericHost {
 			SecureXmlRpcClient client = new SecureXmlRpcClient(String.format("https://secure.gravatar.com/xmlrpc?user=%s",thedigest));
 
 			// Crop the image down to the center for that square look.
+			// Maybe we should do this instead: http://envalo.com/image-cropping-php-using-entropy-explained/
 			BufferedImage bi = ImageIO.read(profilePicture);
 			BufferedImage cropped = bi.getSubimage(40, 0, 240, 240);
 			File temp = File.createTempFile("profile", ".png");

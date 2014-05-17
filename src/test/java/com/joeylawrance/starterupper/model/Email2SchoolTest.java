@@ -12,6 +12,7 @@ public class Email2SchoolTest {
 	public void test() {
 		assertThat(Email2School.schoolFromEmail("somebody@open.ac.uk"), is ("The Open University"));
 		assertThat(Email2School.schoolFromEmail("somebody@csail.mit.edu"), is("Massachusetts Institute of Technology"));
+		assertThat(Email2School.schoolFromEmail("somebody@tsinghua.edu.cn"), is ("Tsinghua University"));
 	}
 
 }

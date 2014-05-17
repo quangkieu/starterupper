@@ -88,8 +88,8 @@ public class HostController {
 				new SwingWorker<Boolean, Void>() {
 					@Override
 					protected Boolean doInBackground() throws Exception {
-						status.setText("Please wait, signing up for a new account...");
-						enableFields(false);
+						status.setText("Opening signup page, login when done...");
+//						enableFields(false);
 						return model.signUp();
 					}
 				}.execute();
@@ -148,7 +148,7 @@ public class HostController {
 			if (event.successful) {
 				status.setText("Check your inbox for instructions to finish the signup. Then, come back here to log in.");
 			} else {
-				status.setText("Unable to create a new account. Try a different username or a stronger password.");
+				status.setText("Unable to open signup page. Sorry about that.");
 			}
 			break;
 		default:

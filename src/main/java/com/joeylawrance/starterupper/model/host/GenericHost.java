@@ -1,6 +1,8 @@
 package com.joeylawrance.starterupper.model.host;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,13 +62,14 @@ public class GenericHost implements Host {
 	@Override
 	public boolean signUp() {
 		try {
-			client.load(window,getURL(HostAction.signup));
+			Desktop.getDesktop().browse(URI.create(this.getURL(HostAction.signup)));
 		} catch (Exception e) {
 			logger.error("Unable to load signup page.", e);
 			Event.getBus().post(new HostPerformedAction(this, HostAction.signup, false));
+			return false;
 		}
-		client.fillForm(window, map);
-		return false;
+		Event.getBus().post(new HostPerformedAction(this, HostAction.signup, false));
+		return true;
 	}
 
 	@Override
@@ -186,4 +189,5 @@ public class GenericHost implements Host {
 	public boolean haveLoggedInBefore() {
 		return loadUsername() != null;
 	}
+
 }
