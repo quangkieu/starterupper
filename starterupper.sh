@@ -11,6 +11,8 @@ INSTRUCTOR_NAME="Joey Lawrance"
 INSTRUCTOR_EMAIL="lawrancej@wit.edu"
 # The instructor's Github username
 INSTRUCTOR_GITHUB=lawrancej
+# The instructor's GitLab username
+INSTRUCTOR_GITLAB=lawrancej
 
 # The repository to clone as upstream (NO SPACES)
 REPO=COMP603-2014
@@ -25,6 +27,9 @@ SCHOOL=wit.edu
 # revoke authorization automatically DELETE /authorizations/:id  (need to store the id in the first place)
 # use github user's full name in camel case as remote name when doing collaborator setup
 # bitbucket, gitlab support
+# make it work for team projects
+# make it work if the instructor repository is private (one way to achieve this would be to create the student private repo first)
+# 
 
 # Runtime flags (DO NOT CHANGE)
 # ---------------------------------------------------------------------
@@ -103,7 +108,7 @@ instructor_setup() {
     fullname="$INSTRUCTOR_NAME"
     git config --global user.email "$INSTRUCTOR_EMAIL"
     email="$INSTRUCTOR_EMAIL"
-    git config --global login.github "$INSTRUCTOR_GITHUB"
+    git config --global github.login "$INSTRUCTOR_GITHUB"
     github_login="$INSTRUCTOR_GITHUB"
 }
 
@@ -215,7 +220,7 @@ github_configure() {
     local_setup
     
     # Ask if they've got a github account
-    if [ -z $(git config --global login.github) ]; then
+    if [ -z $(git config --global github.login) ]; then
         read -p "Do you have a Github account (yes or No [default])? " has_github_account < /dev/tty
         # Let's assume that they don't by default
         if [[ $has_github_account != [Yy]* ]]; then
@@ -227,54 +232,55 @@ github_configure() {
             next_step
         fi
     fi
-    if ! [[ -f ~/.token ]]; then
-        set_key login.github "Github username" "$USERNAME" "^[0-9a-zA-Z][0-9a-zA-Z-]*$" "See: https://github.com" "$INSTRUCTOR_GITHUB" "$github_login"
+    if [[ -z $(git config --global github.token) ]]; then
+        set_key github.login "Github username" "$USERNAME" "^[0-9a-zA-Z][0-9a-zA-Z-]*$" "See: https://github.com" "$INSTRUCTOR_GITHUB" "$github_login"
         # determine if username is found via api as a last minute sanity check
-        while [[ -z $(github_user "$(git config --global login.github)" | grep "HTTP/... 20.") ]]; do
-            echo "ERROR: username $(git config --global login.github) does not exist on Github."
-            git config --global --unset login.github
-            set_key login.github "Github username" "$USERNAME" "^[0-9a-zA-Z][0-9a-zA-Z-]*$" "See: https://github.com" "$INSTRUCTOR_GITHUB" "$github_login"
+        while [[ -z $(github_user "$(git config --global github.login)" | grep "HTTP/... 20.") ]]; do
+            echo "ERROR: username $(git config --global github.login) does not exist on Github."
+            git config --global --unset github.login
+            set_key github.login "Github username" "$USERNAME" "^[0-9a-zA-Z][0-9a-zA-Z-]*$" "See: https://github.com" "$INSTRUCTOR_GITHUB" "$github_login"
         done
     fi
-    github_login=$(git config --global login.github)
+    github_login=$(git config --global github.login)
 }
 
 # Wow, it's complicated
 # https://github.com/sessions/forgot_password
-# Generates ~/.token with authentication token
+# Sets github.token with authentication token
 github_authenticate() {
     github_configure
 
-    if [[ ! -f ~/.token ]]; then
-        token="HTTP/1.1 401 Unauthorized"
-        code=''
-        password=''
-        while [[ ! -z $(echo $token | grep "HTTP/1.1 401 Unauthorized" ) ]]; do
-            if [[ -z "$password" ]]; then
-                read -s -p "Enter Github password: " password < /dev/tty
-            fi
-            token=$(curl -i -u $github_login:$password -H "X-GitHub-OTP: $code" -d '{"scopes": ["repo", "public_repo", "user", "write:public_key", "user:email"], "note": "starterupper-script"}' https://api.github.com/authorizations 2> /dev/null)
-            echo
-            if [[ ! -z $(echo $token | grep "Bad credential") ]]; then
-                echo "Incorrect password. Please wait a moment."
-                password=''
-                sleep 3
-            fi
-            if [[ ! -z $(echo $token | grep "two-factor" ) ]]; then
-                read -p "Enter Github two-factor authentication code: " code < /dev/tty
-            fi
-        done
-        if [[ ! -z $(echo $token | grep "HTTP/... 20." ) ]]; then
-            # Extract token and save to ~/.token
-            token=$(echo $token | tr '"' '\n' | grep -E '[0-9a-f]{40}')
-            echo $token > ~/.token
-            echo "Authenticated!"
-        else
-            printf "Error: "
-            echo "$token" | grep "HTTP/..."
-            echo "Sorry, try again later."
-            exit 1
+    if [[ -n "$(git config --global github.token)" ]]; then
+        return 0
+    fi
+    token="HTTP/1.1 401 Unauthorized"
+    code=''
+    password=''
+    while [[ ! -z $(echo $token | grep "HTTP/1.1 401 Unauthorized" ) ]]; do
+        if [[ -z "$password" ]]; then
+            read -s -p "Enter Github password: " password < /dev/tty
         fi
+        token=$(curl -i -u $github_login:$password -H "X-GitHub-OTP: $code" -d '{"scopes": ["repo", "public_repo", "user", "write:public_key", "user:email"], "note": "starterupper-script"}' https://api.github.com/authorizations 2> /dev/null)
+        echo
+        if [[ ! -z $(echo $token | grep "Bad credential") ]]; then
+            echo "Incorrect password. Please wait a moment."
+            password=''
+            sleep 3
+        fi
+        if [[ ! -z $(echo $token | grep "two-factor" ) ]]; then
+            read -p "Enter Github two-factor authentication code: " code < /dev/tty
+        fi
+    done
+    if [[ ! -z $(echo $token | grep "HTTP/... 20." ) ]]; then
+        # Extract token and store it in github.token
+        token=$(echo $token | tr '"' '\n' | grep -E '[0-9a-f]{40}')
+        git config --global github.token "$token"
+        echo "Authenticated!"
+    else
+        printf "Error: "
+        echo "$token" | grep "HTTP/..."
+        echo "Sorry, try again later."
+        exit 1
     fi
 }
 
@@ -282,7 +288,7 @@ github_set_name() {
     github_authenticate
 
     echo "Updating Github profile information..."
-    curl --request PATCH -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$(git config --global user.name)\"}" https://api.github.com/user 2> /dev/null > /dev/null
+    curl --request PATCH -H "Authorization: token $(git config --global github.token)" -d "{\"name\": \"$(git config --global user.name)\"}" https://api.github.com/user 2> /dev/null > /dev/null
 }
 
 # Share the public key
@@ -294,7 +300,7 @@ github_setup_ssh() {
     # If not, share it
     if [[ -z $(echo "$publickey_shared" | grep $(cat ~/.ssh/id_rsa.pub | sed -e 's/ssh-rsa \(.*\)=.*/\1/')) ]]; then
         echo "Sharing public key..."
-        curl -i -H "Authorization: token $(cat ~/.token)" -d "{\"title\": \"$(hostname)\", \"key\": \"$(cat ~/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys 2> /dev/null > /dev/null
+        curl -i -H "Authorization: token $(git config --global github.token)" -d "{\"title\": \"$(hostname)\", \"key\": \"$(cat ~/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys 2> /dev/null > /dev/null
     fi
     # Test SSH connection on default port (22)
     ssh_test=$(ssh -oStrictHostKeyChecking=no git@github.com 2>&1)
@@ -315,11 +321,11 @@ github_configure_email() {
     github_authenticate
 
     # check if email is validated via api
-    emails=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ')
+    emails=$(curl -H "Authorization: token $(git config --global github.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ')
 
     # add email to github via api, if not set (e.g., for existing users registered with a different email)
     if [[ -z $(echo "$emails" | grep "$email") ]]; then
-        curl -H "Authorization: token $(cat ~/.token)" -d "\"$email\"" https://api.github.com/user/emails  2> /dev/null > /dev/null
+        curl -H "Authorization: token $(git config --global github.token)" -d "\"$email\"" https://api.github.com/user/emails  2> /dev/null > /dev/null
     fi
     # ask user to validate email if not validated
     if [[ -z $(echo "$emails" | grep "verified...true") ]]; then
@@ -330,7 +336,7 @@ github_configure_email() {
         return 0
     fi
     # Nag the user until they get it right
-    while [[ -z $(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ' | grep "verified...true") ]]; do
+    while [[ -z $(curl -H "Authorization: token $(git config --global github.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ' | grep "verified...true") ]]; do
         read -p "ERROR: $email is not verified yet. Verify, then press enter to continue." < /dev/tty
     done
 }
@@ -346,14 +352,14 @@ github_create_private_repo() {
     github_configure_email
     
     # Don't create a private repo if it already exists
-    result=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/repos/$github_login/$REPO 2> /dev/null)
+    result=$(curl -H "Authorization: token $(git config --global github.token)" https://api.github.com/repos/$github_login/$REPO 2> /dev/null)
     if [[ ! -z $(echo $result | grep "Not Found") ]]; then
         echo "Creating private repository $github_login/$REPO on Github..."
-        result=$(curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
+        result=$(curl -H "Authorization: token $(git config --global github.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
         if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
             echo "Unable to create private repository."
             github_request_discount
-            result=$(curl -H "Authorization: token $(cat ~/.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
+            result=$(curl -H "Authorization: token $(git config --global github.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
             if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
                 echo "Unable to create private repository because you are over quota."
                 echo "Wait for the discount and try again."
@@ -371,12 +377,12 @@ github_create_private_repo() {
 
 github_add_collaborator() {
     echo "Adding $1 as a collaborator..."
-    curl --request PUT -H "Authorization: token $(cat ~/.token)" -d "" https://api.github.com/repos/$github_login/$REPO/collaborators/$1 2> /dev/null > /dev/null
+    curl --request PUT -H "Authorization: token $(git config --global github.token)" -d "" https://api.github.com/repos/$github_login/$REPO/collaborators/$1 2> /dev/null > /dev/null
 }
 
 github_add_collaborators() {
     cd ~/$REPO
-    for repository in $(curl -i -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/repos?type=member\&sort=created\&page=1\&per_page=100 2> /dev/null | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
+    for repository in $(curl -i -H "Authorization: token $(git config --global github.token)" https://api.github.com/user/repos?type=member\&sort=created\&page=1\&per_page=100 2> /dev/null | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
         git remote add ${repository%/*} git@github.com:$repository.git 2> /dev/null
     done
     git fetch --all
@@ -406,8 +412,8 @@ setup_repo() {
     git push origin master # 2> /dev/null
     result=$(echo $?)
     if [[ $result != 0 ]]; then
-        echo "Unable to push. Your network blocked SSH (port 22)."
-        echo "Failed. Try again when you have full network access."
+        echo "ERROR: Unable to push."
+        echo "Failed."
     else
         file_open "https://github.com/$github_login/$REPO"
         echo "Done"
@@ -426,9 +432,9 @@ clean() {
     sed -i s/.*github.com.*// ~/.ssh/known_hosts
     git config --global --unset user.name
     git config --global --unset user.email
-    git config --global --unset login.github
+    git config --global --unset github.login
+    git config --global --unset github.token
     rm -f ~/.ssh/id_rsa*
-    rm -f ~/.token
 }
 
 if [ $# == 0 ]; then
