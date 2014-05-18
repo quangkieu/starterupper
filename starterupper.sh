@@ -23,7 +23,8 @@ SCHOOL=wit.edu
 # fall back to https remotes if the school doesn't support SSH
 # if the public key already exists on another account, ask user if they'd like to wipe existing keypair and generate a new one.
 # revoke authorization automatically DELETE /authorizations/:id  (need to store the id in the first place)
-# Find some way to call GetUserNameEx on Windows http://msdn.microsoft.com/en-us/library/ms724435%28VS.85%29.aspx
+# use github user's full name in camel case as remote name when doing collaborator setup
+# bitbucket, gitlab support
 
 # Runtime flags (DO NOT CHANGE)
 # ---------------------------------------------------------------------
@@ -42,6 +43,39 @@ get_username() {
     fi
     if [[ -z "$USERNAME" ]]; then
         USERNAME=$(whoami 2> /dev/null)
+    fi
+}
+
+# Get the user's full name
+get_userfullname() {
+    get_username
+
+    case $OSTYPE in
+        msys | cygwin )
+            cat << 'EOF' > getfullname.ps1
+$MethodDefinition = @'
+[DllImport("secur32.dll", CharSet=CharSet.Auto, SetLastError=true)]
+public static extern int GetUserNameEx (int nameFormat, System.Text.StringBuilder userName, ref uint userNameSize);
+'@
+$windows = Add-Type -MemberDefinition $MethodDefinition -Name 'Secur32' -Namespace 'Win32' -PassThru
+$sb = New-Object System.Text.StringBuilder
+$num=[uint32]256
+$windows::GetUserNameEx(3, $sb, [ref]$num) | out-null
+$sb.ToString()
+EOF
+            FULLNAME=$(powershell -executionpolicy remotesigned -File getfullname.ps1 | sed -e 's/\(.*\), \(.*\)/\2 \1/')
+            rm getfullname.ps1 > /dev/null
+            ;;
+        linux* ) # untested
+            FULLNAME=$(getent passwd $USERNAME | cut -d ':' -f 5 | cut -d ',' -f 1)
+            ;;
+        darwin* ) # untested
+            FULLNAME=$(dscl . read /Users/`whoami` RealName | grep -v RealName | cut -c 2-)
+            ;;
+        *) FULLNAME="" ;;
+    esac
+    if [[ -z "$FULLNAME" ]]; then
+        FULLNAME="Jane Smith"
     fi
 }
 
@@ -164,9 +198,9 @@ configure_remotes() {
 # Setup git user.name, user.email and ssh keypair.
 # Sets: $fullname, $email, $USERNAME, $ssh_works
 local_setup() {
-    get_username
+    get_userfullname
     generate_ssh_keypair
-    set_key user.name "full name" "Jane Smith" "\w+ \w+" "Include your first and last name." "$INSTRUCTOR_NAME" "$fullname"
+    set_key user.name "full name" "$FULLNAME" "\w+ \w+" "Include your first and last name." "$INSTRUCTOR_NAME" "$fullname"
     fullname="$value"
     set_key user.email "school email address" "$USERNAME@$SCHOOL" "edu$" "Use your .edu address." "$INSTRUCTOR_EMAIL" "$email"
     email="$value"
@@ -278,6 +312,8 @@ github_setup_ssh() {
 
 # Setup a verified .edu email on github
 github_configure_email() {
+    github_authenticate
+
     # check if email is validated via api
     emails=$(curl -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ')
 
@@ -341,7 +377,7 @@ github_add_collaborator() {
 github_add_collaborators() {
     cd ~/$REPO
     for repository in $(curl -i -H "Authorization: token $(cat ~/.token)" https://api.github.com/user/repos?type=member\&sort=created\&page=1\&per_page=100 2> /dev/null | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
-        git remote add ${repository%/*} git@github.com:$repository.git
+        git remote add ${repository%/*} git@github.com:$repository.git 2> /dev/null
     done
     git fetch --all
 }
