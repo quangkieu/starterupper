@@ -48,3 +48,7 @@ Starter Upper collects the class roster from Github and fetches all student work
 * Minimize user interaction as much as possible
 * Validate all user input and sanity check
 * Provide good defaults
+
+== References
+
+* https://git.wiki.kernel.org/index.php/GitHosting[Git hosts]
