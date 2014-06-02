@@ -5,19 +5,16 @@
 # Configuration
 # ---------------------------------------------------------------------
 
-# The instructor's name
-INSTRUCTOR_NAME="Joey Lawrance"
-# The instructor's email
-INSTRUCTOR_EMAIL="lawrancej@wit.edu"
-# The instructor's Github username
-INSTRUCTOR_GITHUB=lawrancej
-# The instructor's GitLab username
-INSTRUCTOR_GITLAB=lawrancej
-
-# The repository to clone as upstream (NO SPACES)
-REPO=COMP603-2014
 # School domain to use in email address example
-SCHOOL=wit.edu
+readonly SCHOOL=wit.edu
+# The instructor's name
+readonly INSTRUCTOR_NAME="Joey Lawrance"
+# The instructor's email
+readonly INSTRUCTOR_EMAIL="lawrancej@wit.edu"
+# The instructor's Github username
+readonly INSTRUCTOR_GITHUB=lawrancej
+# The repository to clone as upstream (NO SPACES)
+readonly REPO=COMP603-2014
 
 # More issues:
 # go through all pages when fetching usernames
@@ -29,10 +26,14 @@ SCHOOL=wit.edu
 # bitbucket, gitlab support
 # make it work for team projects
 # make it work if the instructor repository is private (one way to achieve this would be to create the student private repo first)
-# 
+# technically, it's not necessary to store the github username.
+# go with default if the user presses enter
 
 # Runtime flags (DO NOT CHANGE)
 # ---------------------------------------------------------------------
+readonly PROGNAME=$(basename $0)
+readonly ARGS="$@"
+
 ssh_works=true # unless proven otherwise...
 fullname=''
 email=''
@@ -114,17 +115,18 @@ instructor_setup() {
 
 # Ask the user if they are the instructor (by default, assume that they aren't)
 instructor_check() {
-    if [[ ! $user_is_instructor ]]; then
-        while ! [[ -z "$value" ]] && [[ "$value" == "$instructor" ]]; do
-            read -p "Are you the instructor (yes/no)? " user_is_instructor < /dev/tty
-            case "$user_is_instructor" in
-                [Yy] | [Yy][Ee][Ss] ) instructor_setup; return 0 ;;
-                [Nn] | [Nn][Oo] ) user_is_instructor=false; git config --global --unset $key; value=''; return 0 ;;
-                "" ) user_is_instructor=false; git config --global --unset $key; value=''; return 0 ;;
-                * ) echo "Please answer yes or no." ;;
-            esac
-        done
+    if [[ $user_is_instructor ]]; then
+        return 0
     fi
+    while ! [[ -z "$value" ]] && [[ "$value" == "$instructor" ]]; do
+        read -p "Are you the instructor (yes/no)? " user_is_instructor < /dev/tty
+        case "$user_is_instructor" in
+            [Yy] | [Yy][Ee][Ss] ) instructor_setup; return 0 ;;
+            [Nn] | [Nn][Oo] ) user_is_instructor=false; git config --global --unset $key; value=''; return 0 ;;
+            "" ) user_is_instructor=false; git config --global --unset $key; value=''; return 0 ;;
+            * ) echo "Please answer yes or no." ;;
+        esac
+    done
 }
 
 # Check if the user is the instructor or complain if their value doesn't match the regex.
@@ -139,18 +141,19 @@ validate_input() {
 # Ask the user if they want to change their configuration in case of goof-ups (by default, assume that they don't)
 change_config() {
     # If we already set a value before, don't bother changing the config again
-    if [[ -z "$given_value" ]]; then
-        # Ask if the user is okay with what they set
-        while ! [[ -z "$value" ]]; do
-            read -p "Is your $prompt $value (yes/no)? " yn < /dev/tty
-            case "$yn" in
-                [Yy] | [Yy][Ee][Ss] ) return 0 ;;
-                [Nn] | [Nn][Oo] ) git config --global --unset $key; value=''; return 0 ;;
-                "" ) return 0 ;;
-                * ) echo "Please answer yes or no." ;;
-            esac
-        done
+    if [[ -n "$given_value" ]]; then
+        return 0
     fi
+    # Ask if the user is okay with what they set
+    while ! [[ -z "$value" ]]; do
+        read -p "Is your $prompt $value (yes/no)? " yn < /dev/tty
+        case "$yn" in
+            [Yy] | [Yy][Ee][Ss] ) return 0 ;;
+            [Nn] | [Nn][Oo] ) git config --global --unset $key; value=''; return 0 ;;
+            "" ) return 0 ;;
+            * ) echo "Please answer yes or no." ;;
+        esac
+    done
 }
 
 # Ask user to set a key in ~/.gitconfig if it's not already set.
@@ -177,11 +180,13 @@ set_key() {
 
 # Generate SSH public/private keypair, if it doesn't already exist.
 generate_ssh_keypair() {
-    if [[ ! -f ~/.ssh/id_rsa.pub ]]; then
-        echo "Generating SSH public/private keypair..."
-        # Use default location, set no phassphrase, no questions asked
-        printf "\n" | ssh-keygen -t rsa -N '' 2> /dev/null > /dev/null
+    if [[ -f ~/.ssh/id_rsa.pub ]]; then
+        return 0
     fi
+    
+    echo "Generating SSH public/private keypair..."
+    # Use default location, set no phassphrase, no questions asked
+    printf "\n" | ssh-keygen -t rsa -N '' 2> /dev/null > /dev/null
 }
 
 # Setup remotes for repository
@@ -256,7 +261,7 @@ github_authenticate() {
     token="HTTP/1.1 401 Unauthorized"
     code=''
     password=''
-    while [[ ! -z $(echo $token | grep "HTTP/1.1 401 Unauthorized" ) ]]; do
+    while [[ ! -z "$(echo $token | grep "HTTP/1.1 401 Unauthorized" )" ]]; do
         if [[ -z "$password" ]]; then
             read -s -p "Enter Github password: " password < /dev/tty
         fi
@@ -278,7 +283,7 @@ github_authenticate() {
         echo "Authenticated!"
     else
         printf "Error: "
-        echo "$token" | grep "HTTP/..."
+        echo "$token" | grep "HTTP/..." # Probably the user manually removed the token
         echo "Sorry, try again later."
         exit 1
     fi
@@ -352,25 +357,26 @@ github_create_private_repo() {
     github_configure_email
     
     # Don't create a private repo if it already exists
-    result=$(curl -H "Authorization: token $(git config --global github.token)" https://api.github.com/repos/$github_login/$REPO 2> /dev/null)
-    if [[ ! -z $(echo $result | grep "Not Found") ]]; then
-        echo "Creating private repository $github_login/$REPO on Github..."
+    if [[ -z $(curl -H "Authorization: token $(git config --global github.token)" https://api.github.com/repos/$github_login/$REPO 2> /dev/null | grep "Not Found") ]]; then
+        return 0
+    fi
+    
+    echo "Creating private repository $github_login/$REPO on Github..."
+    result=$(curl -H "Authorization: token $(git config --global github.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
+    if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
+        echo "Unable to create private repository."
+        github_request_discount
         result=$(curl -H "Authorization: token $(git config --global github.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
         if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
-            echo "Unable to create private repository."
-            github_request_discount
-            result=$(curl -H "Authorization: token $(git config --global github.token)" -d "{\"name\": \"$REPO\", \"private\": true}" https://api.github.com/user/repos 2> /dev/null)
-            if [[ ! -z $(echo $result | grep "over your quota" ) ]]; then
-                echo "Unable to create private repository because you are over quota."
-                echo "Wait for the discount and try again."
-                if [[ $has_github_account == [Yy]* ]]; then
-                    echo "You may need to free up some private repositories."
-                    sleep 1
-                    file_open "https://github.com/settings/repositories"
-                fi
-                echo "Failed"
-                exit 1
+            echo "Unable to create private repository because you are over quota."
+            echo "Wait for the discount and try again."
+            if [[ $has_github_account == [Yy]* ]]; then
+                echo "You may need to free up some private repositories."
+                sleep 1
+                file_open "https://github.com/settings/repositories"
             fi
+            echo "Failed"
+            exit 1
         fi
     fi
 }
@@ -425,6 +431,42 @@ github_revoke() {
     file_open "https://github.com/settings/applications"
 }
 
+gitlab_configure() {
+    local_setup
+    echo "Join GitLab."
+    sleep 2
+    file_open "https://gitlab.com/users/sign_up"
+}
+
+gitlab_authenticate() {
+    if [[ -n "$(git config --global gitlab.token)" ]]; then
+        return 0
+    fi
+
+    echo "Copy your private token from GitLab"
+    sleep 2
+    file_open "https://gitlab.com/profile/account"
+    
+    read -p "Paste your private token here: " token < /dev/tty
+    
+    while [[ ! -z "$(curl https://gitlab.com/api/v3/user?private_token=$token | grep '401 Unauthorized')" ]]; do
+        echo "ERROR: Invalid private token."
+        read -p "Paste your private token here: " token < /dev/tty    
+    done
+    git config --global gitlab.token "$token"
+}
+
+gitlab_setup_ssh() {
+    gitlab_authenticate
+    
+    # Check if public key is shared
+    publickey_shared=$(curl https://gitlab.com/api/v3/user/keys?private_token=$(git config --global gitlab.token) 2> /dev/null | grep $(cat ~/.ssh/id_rsa.pub | sed -e 's/ssh-rsa \(.*\)=.*/\1/'))
+    # If not, share it
+    if [[ -z "$publickey_shared" ]]; then
+        echo "Sharing public key..."
+        curl -i -H -d "{\"title\": \"$(hostname)\", \"key\": \"$(cat ~/.ssh/id_rsa.pub)\"}" https://api.github.com/user/keys?private_token=$(git config --global gitlab.token) 2> /dev/null > /dev/null
+    fi
+}
 
 # Clean up everything but the repo (BEWARE!)
 clean() {
