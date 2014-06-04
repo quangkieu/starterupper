@@ -42,19 +42,23 @@ github_login=''
 # Utilities
 # ---------------------------------------------------------------------
 
+is_empty() {
+    local var=$1
+    [[ -z $var ]]
+}
+
 # Set $USERNAME, if not already set.
-get_username() {
-    if [[ -z "$USERNAME" ]]; then
-        USERNAME=$(id -nu 2> /dev/null)
-    fi
-    if [[ -z "$USERNAME" ]]; then
-        USERNAME=$(whoami 2> /dev/null)
-    fi
+set_username() {
+    is_empty "$USERNAME" && \
+        USERNAME="$(id -nu 2> /dev/null)"
+
+    is_empty "$USERNAME" && \
+        USERNAME="$(whoami 2> /dev/null)"
 }
 
 # Get the user's full name
 get_userfullname() {
-    get_username
+    set_username
 
     case $OSTYPE in
         msys | cygwin )
@@ -73,7 +77,7 @@ EOF
             rm getfullname.ps1 > /dev/null
             ;;
         linux* ) # untested
-            FULLNAME=$(getent passwd $USERNAME | cut -d ':' -f 5 | cut -d ',' -f 1)
+            FULLNAME=$(getent passwd "$USERNAME" | cut -d ':' -f 5 | cut -d ',' -f 1)
             ;;
         darwin* ) # untested
             FULLNAME=$(dscl . read /Users/`whoami` RealName | grep -v RealName | cut -c 2-)
