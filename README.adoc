@@ -11,7 +11,7 @@ Starter Upper automates set up as much as possible so students and faculty can g
 . Copy/paste this command into Git Bash or Terminal:
 
 ----
-curl https://raw.githubusercontent.com/lawrancej/starterupper/master/starterupper.sh | sh
+curl https://raw.githubusercontent.com/lawrancej/starterupper/master/starterupper.sh | bash
 ----
 
 == What Starter Upper does for students
@@ -46,8 +46,9 @@ Starter Upper collects the class roster from Github and fetches all student work
 * Set up everything with one command
 * Small download
 * Minimize user interaction as much as possible
-* Validate all user input and sanity check
-* Provide good defaults
+* Provide good defaults and ask for confirmation
+* Validate all user input
+* Degrade gracefully when facing errors
 
 == References
 
