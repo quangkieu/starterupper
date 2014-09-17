@@ -19,11 +19,9 @@ readonly INSTRUCTOR_GITHUB=lawrancej
 # fall back to https remotes if the school doesn't support SSH
 # if the public key already exists on another account, ask user if they'd like to wipe existing keypair and generate a new one.
 # revoke authorization automatically DELETE /authorizations/:id  (need to store the id in the first place)
-# use github user's full name in camel case as remote name when doing collaborator setup
 # bitbucket, gitlab support
 # make it work for team projects
 # make it work if the instructor repository is private (one way to achieve this would be to create the student private repo first)
-# technically, it's not necessary to store the github username.
 
 # Runtime flags (DO NOT CHANGE)
 # ---------------------------------------------------------------------
@@ -44,9 +42,9 @@ Utility_paste() {
         *) printf "Please copy $prompt to the clipboard:\n$1\n"; return 0 ;;
     esac
     if [[ $OSTYPE == darwin* ]]; then
-        printf "I copied $prompt to the clipboard. (Cmd-V to paste)"
+        printf "I copied $prompt to the clipboard. (Cmd-V or right click to paste)"
     else
-        printf "I copied $prompt to the clipboard. (Ctrl-V to paste)"
+        printf "I copied $prompt to the clipboard. (Ctrl-V or right click to paste)"
     fi
 }
 
@@ -686,8 +684,15 @@ gitlab_setup_ssh() {
     fi
 }
 
+Gravatar_setup() {
+    echo "Press enter to sign up to create a Gravatar (profile picture)."
+    echo "$(Utility_paste "$(User_getEmail)" "your school email address")"
+    Interactive_fileOpen "https://en.gravatar.com/connect/"
+}
+
 if [ $# == 0 ]; then
     User_setup
+    Gravatar_setup
     Github_setUsername
     Git_configureRepository "github.com" "$(Host_getUsername "github")" "$INSTRUCTOR_GITHUB"
     Github_authenticate
