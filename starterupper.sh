@@ -202,7 +202,7 @@ EOF
 
 # We're assuming that students have a .edu email address
 Valid_email() {
-    local email="$1"
+    local email="$(printf $1 | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
     printf "$(Utility_nonEmptyValueMatchesRegex "$email" "edu$")"
 }
 
@@ -210,13 +210,14 @@ Valid_email() {
 # Side effect: set ~/.gitconfig user.email if unset
 User_getEmail() {
     # Try to see if the user already stored the email address
-    local email="$(git config user.email)"
+    local email="$(git config user.email | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
     # If the stored email is bogus, ...
     if [[ "false" == $(Valid_email "$email") ]]; then
         # Guess an email address and save it
         email="$(User_getUsername)@$SCHOOL"
-        git config --global user.email "$email"
     fi
+    # Resave, just in case of goofups
+    git config --global user.email "$email"
     printf "$email"
 }
 
@@ -562,7 +563,6 @@ Github_createPrivateRepo() {
         
         Github_verifyEmail
         Github_getDiscount
-        
         Github_manualCreatePrivateRepo
     fi
 }
@@ -595,6 +595,16 @@ Github_clean() {
     rm -f ~/.ssh/id_rsa*
 }
 
+# Add collaborators
+Github_addCollaborators() {
+    cd ~/$REPO
+    for repository in $(Github_invoke GET "/user/repos?type=member\&sort=created\&page=1\&per_page=100" "" | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
+        git remote add ${repository%/*} git@github.com:$repository.git 2> /dev/null
+    done
+    git fetch --all
+}
+
+
 # Test suite
 # ---------------------------------------------------------------------
 
@@ -605,6 +615,8 @@ Test() {
     echo $fullname
     echo $username
     echo $email
+    
+    echo "Valid email: $(Valid_email "LAWRANCEJ@WIT.EDU")"
 
     verified=$(Utility_nonEmptyValueMatchesRegex "$fullname" "")
 
@@ -626,39 +638,26 @@ Test() {
 
 # Setup a verified .edu email on github
 github_configure_email() {
+    # Check if email is validated via api
+    local emails="$(Github_invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ')"
+    local email="$(User_getEmail)"
 
-    # check if email is validated via api
-    emails=$(curl -H "Authorization: token $(git config --global github.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ')
-
-    # add email to github via api, if not set (e.g., for existing users registered with a different email) (FIXME: doesn't work)
+    # Add email to github via api, if not set (FIXME: doesn't work)
     if [[ -z $(echo "$emails" | grep "$email") ]]; then
-        curl -H "Authorization: token $(git config --global github.token)" -d "\"$email\"" https://api.github.com/user/emails  2> /dev/null > /dev/null
+        Github_invoke POST "/user/emails" "\"$email\"" > /dev/null
     fi
-    # ask user to validate email if not validated
+    # Ask user to validate email if not validated
     if [[ -z $(echo "$emails" | grep "verified...true") ]]; then
         echo "IMPORTANT: Open your inbox and verify $email with Github."
         sleep 3
-        file_open "https://github.com/settings/emails"
+        Interactive_fileOpen "https://github.com/settings/emails"
     else
         return 0
     fi
     # Nag the user until they get it right
-    while [[ -z $(curl -H "Authorization: token $(git config --global github.token)" https://api.github.com/user/emails 2> /dev/null | tr '\n}[]{' ' \n   ' | grep "verified...true") ]]; do
+    while [[ -z $(Github_invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ' | grep "verified...true") ]]; do
         read -p "ERROR: $email is not verified yet. Verify, then press enter to continue." < /dev/tty
     done
-}
-
-
-Github_addCollaborators() {
-    cd ~/$REPO
-    for repository in $(Github_invoke GET "/user/repos?type=member\&sort=created\&page=1\&per_page=100" "" | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
-        git remote add ${repository%/*} git@github.com:$repository.git 2> /dev/null
-    done
-    git fetch --all
-}
-
-github_user() {
-    curl -i https://api.github.com/users/$1 2> /dev/null
 }
 
 gitlab_configure() {
@@ -698,15 +697,30 @@ gitlab_setup_ssh() {
     fi
 }
 
+
+# Setup Gravatar
 Gravatar_setup() {
-    echo "Press enter to sign up to create a Gravatar (profile picture)."
-    echo "$(Utility_paste "$(User_getEmail)" "your school email address")"
-    Interactive_fileOpen "https://en.gravatar.com/connect/"
+    local hash="$(printf "$1" | md5sum | tr -d ' *-')"
+    local gravatar="$(curl -I "http://www.gravatar.com/avatar/$hash?d=404" 2> /dev/null)" 
+    # If the user has no Gravatar, ...
+    if [[ -z $(echo "$gravatar" | grep "HTTP/... 2.." ) ]]; then
+        # Nag them to join
+        curl -L "http://www.gravatar.com/avatar/$hash?d=retro&s=200" 2> /dev/null > ~/.gravatar.png
+        echo "Help your instructor learn your name: create a Gravatar (profile picture)."
+        echo "Press enter to see your default profile picture."
+        Interactive_fileOpen ~/.gravatar.png
+        rm -f ~/.gravatar.png
+        
+        echo "Press enter to sign up for Gravatar with your school email address."
+        echo "Take a picture with your webcam or upload a recent photo of yourself."
+        echo "$(Utility_paste "$(User_getEmail)" "your email address")"
+        Interactive_fileOpen "https://en.gravatar.com/gravatars/new"
+    fi
 }
 
-if [ $# == 0 ]; then
+Github_setup() {
     User_setup
-    Gravatar_setup
+    Gravatar_setup "$(User_getEmail)"
     Github_setUsername
     Git_configureRepository "github.com" "$(Host_getUsername "github")" "$INSTRUCTOR_GITHUB"
     Github_authenticate
@@ -715,6 +729,10 @@ if [ $# == 0 ]; then
     Github_addCollaborator $INSTRUCTOR_GITHUB
     Github_sharePublicKey
     Git_pushRepo
+}
+
+if [ $# == 0 ]; then
+    Github_setup
 elif [[ $1 == "clean" ]]; then
     Github_clean
 elif [[ $1 == "collaborators" ]]; then
