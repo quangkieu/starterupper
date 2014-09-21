@@ -1,7 +1,2 @@
-/bin
-/build
-.settings
-.project
-.classpath
-.gradle
-.sonar
+*.exe
+*.dll
