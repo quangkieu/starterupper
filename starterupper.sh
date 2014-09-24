@@ -6,7 +6,7 @@
 
 # The repository to clone as upstream (NO SPACES)
 readonly REPO=starterupper
-# Domain for school email
+# Default domain for school email
 readonly SCHOOL=wit.edu
 # The instructor's Github username
 readonly INSTRUCTOR_GITHUB=lawrancej
@@ -41,14 +41,9 @@ source cli.sh
 source gravatar.sh
 source github.sh
 
-# Interactively setup user information
-User_setup() {
-    Interactive_setValue "user.name" "$(User_getFullName)" "Valid_fullName" "full name" "Include your first and last name."
-    Interactive_setValue "user.email" "$(User_getEmail)" "Valid_email" "school email address" "Use your .edu address."
-}
-
 Github_setup() {
     User_setup
+    echo $(User_getSchool)
     Gravatar_setup "$(User_getEmail)"
     Github_setUsername
     Git_configureRepository "github.com" "$(Host_getUsername "github")" "$INSTRUCTOR_GITHUB"

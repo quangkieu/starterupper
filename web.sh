@@ -1,21 +1,3 @@
-Acquire_software() {
-    # If we don't have netcat, get it
-    if [[ -z "$(which nc)" ]]; then
-        curl http://nmap.org/dist/ncat-portable-5.59BETA1.zip 2> /dev/null > ncat.zip
-        unzip -p ncat.zip ncat-portable-5.59BETA1/ncat.exe > nc.exe
-        rm ncat.zip
-    fi
-    # If we don't have mkfifo, get it (along with its dependencies)
-    if [[ -z "$(which mkfifo)" ]]; then
-        curl -L http://gnuwin32.sourceforge.net/downlinks/coreutils-bin-zip.php 2> /dev/null > coreutils.zip
-        unzip -p coreutils.zip bin/mkfifo.exe > mkfifo.exe
-        curl -L http://gnuwin32.sourceforge.net/downlinks/coreutils-dep-zip.php 2> /dev/null > coreutils-dep.zip
-        unzip -p coreutils-dep.zip bin/libintl3.dll > libintl3.dll
-        unzip -p coreutils-dep.zip bin/libiconv2.dll > libiconv2.dll
-        rm coreutils.zip
-        rm coreutils-dep.zip
-    fi
-}
 
 WebServer_static() {
     local file="$1"; shift

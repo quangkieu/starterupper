@@ -1,5 +1,6 @@
 #!/bin/bash
-# Github
+
+# Github non-interactive functions
 # ---------------------------------------------------------------------
 
 # Is the name available on Github?
@@ -27,6 +28,9 @@ Github_validUsername() {
     # Otherwise, it's not valid
     Utility_fail
 }
+
+# Github CLI-interactive functions
+# ---------------------------------------------------------------------
 
 # Ask user to verify email
 Github_verifyEmail() {
@@ -83,6 +87,19 @@ Github_setUsername() {
     fi
 }
 
+Github_authorize() {
+    local password="$1"; shift
+    local code="$1"
+    read -r -d '' json <<-EOF
+            {
+                "scopes": ["repo", "public_repo", "user", "write:public_key", "user:email"],
+                "note": "starterupper $(date --iso-8601=seconds)"
+            }
+EOF
+    curl -i -u $(Host_getUsername "github"):$password -H "X-GitHub-OTP: $code" -d "$json" https://api.github.com/authorizations 2> /dev/null
+}
+
+# Idea: refactor to use interactive_setValue instead.
 # Acquire authentication token and store in github.token
 Github_authenticate() {
     # Don't bother if we already got the authentication token
@@ -92,7 +109,6 @@ Github_authenticate() {
     local token="HTTP/1.1 401 Unauthorized"
     local code=''
     local password=''
-    local json=''
     # As long as we're unauthorized, ...
     while [[ ! -z "$(echo $token | grep "HTTP/1.1 401 Unauthorized" )" ]]; do
         # Ask for a password
@@ -101,18 +117,12 @@ Github_authenticate() {
             echo # We need this, otherwise it'll look bad
         fi
         # Generate authentication token request
-        read -r -d '' json <<-EOF
-            {
-                "scopes": ["repo", "public_repo", "user", "write:public_key", "user:email"],
-                "note": "starterupper $(date --iso-8601=seconds)"
-            }
-EOF
-        token=$(curl -i -u $(Host_getUsername "github"):$password -H "X-GitHub-OTP: $code" -d "$json" https://api.github.com/authorizations 2> /dev/null)
+        token=$(Github_authorize "$password" "$code")
         # If we got a bad credential, we need to reset the password and try again
         if [[ ! -z $(echo $token | grep "Bad credential") ]]; then
-            echo -e "\e[1;37;41mERROR\e[0m: Incorrect password. Please wait a moment."
+            echo -e "\e[1;37;41mERROR\e[0m: Incorrect password for user $(Host_getUsername "github"). Please wait."
             password=''
-            sleep 3
+            sleep 1
         fi
         # If the user has two-factor authentication, ask for it.
         if [[ ! -z $(echo $token | grep "two-factor" ) ]]; then
