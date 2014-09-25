@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Setup</title>
+  <title>COMP278-2014 Setup</title>
   <link rel="stylesheet" media="all" href="reset.css" />
   <link rel="stylesheet" media="all" href="text.css" />
   <link rel="stylesheet" media="all" href="960.css" />
+  <style>
+  h1 {margin:0px; padding:0px;}
+  hgroup div {position: relative; top: 50%; transform: translateY(70%);}
+  </style>
   <script src='http://cdn.ractivejs.org/latest/ractive-legacy.min.js'></script>
   <script src='sparkMD5.js'></script>
 </head>
@@ -13,78 +17,97 @@
   <article>
     <div id="gravatar_container"></div>
     <script id="gravatar_template" type="text/ractive">
-      <header class="container_12">
-        <hgroup class="grid_4 prefix_2">
-          <h1>{{repo}} Setup</h1>
-        </hgroup>
-        <div class="clear"></div>
-        <div class="grid_9">
-          Configure your profile, create a Github account, private repository.
-        </div>
-      </header>
+      <form>
+      <div style="display:none;"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=404" onerror="noGravatarAccount(this)" /></div>
       <section class="container_12">
-        <hgroup class="grid_12">
-          <h1>My Profile<hr></h1>
+        <hgroup>
+          <h1 class="grid_2">Profile</h1>
+          <div class="grid_10">{{#if gravatarAccount }}Thanks for creating a Gravatar!{{else}}Help the instructor learn names: create a Gravatar{{/if}}</div>
+          <div class="clear"></div>
+          <hr />
         </hgroup>
-        <div class="clear"></div>
-        <div class="grid_2"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=retro&s=120" title="Gravatar for {{email}}" width="120" height="120" /></div>
+        <div class="grid_2"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=retro&s=140" title="Gravatar for {{email}}" width="140" height="140" /></div>
         <div class="grid_4">
-          <form>
+          {{#if gravatarAccount }}
+            <a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Update Gravatar</a>
+          {{else}}
             <select on-change="gravatar">
-              <option selected>I do not have a Gravatar account</option>
+              <option>I do not have a Gravatar account</option>
               <option>I have a Gravatar account</option>
             </select><br/>
-          </form>
+            <ol>
+              {{#if gravatarUser}}
+                <li><a href="https://en.gravatar.com/emails/new" target="actionRequired">Add {{emailPrompt}} to Gravatar</a></li>
+              {{else}}
+                <li><a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">Join Gravatar</a> (use {{emailPrompt}})</li>
+              {{/if}}
+              <li>Gravatar will email a link: click to verify email</li>
+              <li><a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Add an image</a></li>
+            </ol>
+          {{/if}}
+        </div>
+        <div class="grid_6">
+          <input type="text" name="user.name" value="{{fullName}}" placeholder="Full name" pattern="[a-zA-Z.]+ [a-zA-Z. ]+" required /><br />
+          <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required /><br />
+          <button>Update Git Configuration</button>          
+          <pre>
+git config user.name "{{fullName}}"
+git config user.email "{{email}}"
+</pre>
+        </div>
+        </form>
+      </section>
+      <section class="container_12">
+        <hgroup>
+          <h1 class="grid_2">Github</h1>
+          <div class="grid_10">{{#if githubAccount }}{{else}}Github hosts private git repositories free for students{{/if}}</div>
+          <div class="clear"></div>
+          <hr />
+        </hgroup>
+        <div class="clear"></div>
+        <div class="grid_2"><img src="github.svg" width="140" height="140" title="Github" /></div>
+        <div class="grid_4">
+          <select on-change="github">
+            <option selected>I do not have a Github account</option>
+            <option>I have a Github account</option>
+          </select><br/>
           <ol>
-            {{#if gravatarUser}}
-              <li><a href="https://en.gravatar.com/emails/new" target="actionRequired">Add {{email}} to Gravatar</a></li>
-            {{else}}
-              <li><a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">Join Gravatar</a> (use {{email}})</li>
-            {{/if}}
-            <li>Gravatar will email a link. Click to verify email.</li>
-            <li><a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Add an image</a>.</li>
+          {{#if githubUser}}
+            <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{emailPrompt}} to Github</a></li>
+          {{else}}
+            <li><a href="https://github.com/join" target="actionRequired">Join Github</a> (use {{emailPrompt}})</li>
+          {{/if}}
+            <li>Github will email a link: click to verify email</li>
+            <li><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an individual student discount</a></li>
           </ol>
         </div>
         <div class="grid_3">
           <form>
-            <input type="text" name="user.name" value="{{fullName}}" placeholder="Full name" pattern="[a-zA-Z.]+ [a-zA-Z. ]+" required /><br />
-            <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required /><br />
-            <input type="text" name="user.school" value="{{school}}" placeholder="School name" pattern="[a-zA-Z. ]+" required />
-            <input type="submit" value="Save settings" />
+          <input type="text" name="github.login" value="{{githubUsername}}" placeholder="Github username" pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" required /><br />
+          <input type="password" name="github.password" placeholder="Password" pattern=".{7,}" required /><br />
+          {{#if githubTwoFactor}}
+          <input type="text" name="github.code" placeholder="Authentication code" pattern="[0-9]{6}" required /><br />
+          {{/if}}
+          <button>Login</button> <a href="https://github.com/password_reset">Forgot password?</a>
           </form>
         </div>
       </section>
       <br />
       <section class="container_12">
-        <hgroup class="grid_9">
-          <h1>Github<hr></h1>
+        <hgroup class="grid_12">
+          <h1>{{repo}} Repository Setup<hr /></h1>
         </hgroup>
         <div class="clear"></div>
-        <div class="grid_2"><img src="Github.png" /></div>
-        <div class="grid_4">
-          <form>
-            <select on-change="github">
-              <option selected>I do not have a Github account</option>
-              <option>I have a Github account</option>
-            </select><br/>
-            <ol>
-            {{#if githubUser}}
-              <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{email}} to Github</a></li>
-            {{else}}
-              <li><a href="https://github.com/join" target="actionRequired">Join Github</a> (use {{email}})</li>
-            {{/if}}
-              <li>Github will email a link. Click to verify email.</li>
-              <li><a href="https://education.github.com" target="actionRequired">Request an individual student discount</a>.</li>
-            </ol>
-          </form>
-        </div>
-        <div class="grid_3">
-          <form>
-            <input type="text" name="github.login" value="$(Host_getUsername 'github')" placeholder="Github username" pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" required /><br />
-            <input type="password" name="github.password" placeholder="Password" pattern=".{7,}" required /><br />
-            <input type="text" name="github.code" placeholder="Authentication code" pattern="[0-9]{6}" />
-            <input type="submit" value="Login" />
-          </form>
+        <div class="grid_2"><img src="git.svg" width="140" height="140" title="Git" /></div>
+        <div class="grid_10">
+          <pre>
+git clone https://github.com/{{githubInstructorLogin}}/{{repo}}
+cd ~/{{repo}}
+git remote rename origin upstream
+git remote add origin git@github.com:{{githubUsername}}/{{repo}}.git
+git push -u origin master
+          </pre>
+            <button>Set up {{repo}}</button>
         </div>
       </section>
     </script>
@@ -102,10 +125,17 @@
       data: {
         email: 'lawrancej@wit.edu',
         emailHash: SparkMD5.hash('lawrancej@wit.edu'),
+        emailPrompt: 'lawrancej@wit.edu',
         fullName: 'Joey Lawrance',
         school: 'Wentworth Institute of Technology',
         gravatarUser: false,
+        gravatarAccount: true,
+        githubAccount: false,
         githubUser: false,
+        githubUsername: 'lawrancej',
+        githubLoggedIn: false,
+        githubInstructorLogin: 'lawrancej',
+        githubTwoFactor: false,
         repo: 'COMP278-2014'
       }
     });
@@ -119,8 +149,19 @@
       }
     });
     ractive.observe('email', function ( newValue, oldValue ) {
-      ractive.set('emailHash', SparkMD5.hash(newValue));
+      var newEmail=newValue.toLowerCase().trim();
+      var regex=/edu$/;
+      var emailValid=/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      var validEmail=emailValid.test(newEmail);
+      var schoolEmail=regex.test(newEmail);
+      ractive.set('email',newEmail);
+      ractive.set('emailHash', SparkMD5.hash(newEmail));
+      ractive.set('emailPrompt', (validEmail && schoolEmail) ? newEmail: "your school email");
+      ractive.set('gravatarAccount',validEmail && schoolEmail);
     });
+    function noGravatarAccount(source) {
+      ractive.set('gravatarAccount', false);
+    }
   </script>
 </body>
 </html>
