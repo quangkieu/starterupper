@@ -17,97 +17,94 @@
   <article>
     <div id="gravatar_container"></div>
     <script id="gravatar_template" type="text/ractive">
-      <form>
       <div style="display:none;"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=404" onerror="noGravatarAccount(this)" /></div>
       <section class="container_12">
+        <form>
         <hgroup>
           <h1 class="grid_2">Profile</h1>
-          <div class="grid_10">{{#if gravatarAccount }}Thanks for creating a Gravatar!{{else}}Help the instructor learn names: create a Gravatar{{/if}}</div>
+          <div class="grid_4">Tell git your full name and school email address</div>
+          <div class="grid_6">Gravatars help the instructor learn names</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
-        <div class="grid_2"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=retro&s=140" title="Gravatar for {{email}}" width="140" height="140" /></div>
+        <div class="grid_2"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=retro&s=140" title="Gravatar for {{emailPrompt}}" width="140" height="140" /></div>
         <div class="grid_4">
+          <input type="text" name="user.name" value="{{fullName}}" placeholder="Full name" pattern="[a-zA-Z.]+ [a-zA-Z. ]+" required /><br />
+          <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required autofocus /><br />
+          <button>Save changes</button>
+          <pre>
+git config user.name "{{fullName}}"
+git config user.email "{{email}}"</pre>
+        </div>
+        <div class="grid_6">
           {{#if gravatarAccount }}
-            <a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Update Gravatar</a>
+          Thanks for creating a Gravatar! (<a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Update</a>)
           {{else}}
-            <select on-change="gravatar">
-              <option>I do not have a Gravatar account</option>
-              <option>I have a Gravatar account</option>
-            </select><br/>
             <ol>
-              {{#if gravatarUser}}
-                <li><a href="https://en.gravatar.com/emails/new" target="actionRequired">Add {{emailPrompt}} to Gravatar</a></li>
-              {{else}}
-                <li><a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">Join Gravatar</a> (use {{emailPrompt}})</li>
-              {{/if}}
+              <li><a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">Join Gravatar</a> or <a href="https://en.gravatar.com/emails/new" target="actionRequired">add email to your account</a><br />
+              (use {{emailPrompt}})</li>
               <li>Gravatar will email a link: click to verify email</li>
               <li><a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Add an image</a></li>
             </ol>
           {{/if}}
         </div>
-        <div class="grid_6">
-          <input type="text" name="user.name" value="{{fullName}}" placeholder="Full name" pattern="[a-zA-Z.]+ [a-zA-Z. ]+" required /><br />
-          <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required /><br />
-          <button>Update Git Configuration</button>          
-          <pre>
-git config user.name "{{fullName}}"
-git config user.email "{{email}}"
-</pre>
-        </div>
         </form>
       </section>
+      <br />
       <section class="container_12">
+        <form>
         <hgroup>
           <h1 class="grid_2">Github</h1>
-          <div class="grid_10">{{#if githubAccount }}{{else}}Github hosts private git repositories free for students{{/if}}</div>
+          <div class="grid_4">Github hosts private repositories free for students</div>
+          <div class="grid_6">{{#if !githubLoggedIn}}Create or upgrade your Github account{{/if}}</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
         <div class="clear"></div>
         <div class="grid_2"><img src="github.svg" width="140" height="140" title="Github" /></div>
         <div class="grid_4">
-          <select on-change="github">
-            <option selected>I do not have a Github account</option>
-            <option>I have a Github account</option>
-          </select><br/>
-          <ol>
-          {{#if githubUser}}
-            <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{emailPrompt}} to Github</a></li>
+          {{#if githubLoggedIn}}
+          You are signed into Github <button>Sign out</button>
           {{else}}
-            <li><a href="https://github.com/join" target="actionRequired">Join Github</a> (use {{emailPrompt}})</li>
-          {{/if}}
-            <li>Github will email a link: click to verify email</li>
-            <li><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an individual student discount</a></li>
-          </ol>
-        </div>
-        <div class="grid_3">
-          <form>
           <input type="text" name="github.login" value="{{githubUsername}}" placeholder="Github username" pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" required /><br />
           <input type="password" name="github.password" placeholder="Password" pattern=".{7,}" required /><br />
           {{#if githubTwoFactor}}
           <input type="text" name="github.code" placeholder="Authentication code" pattern="[0-9]{6}" required /><br />
           {{/if}}
-          <button>Login</button> <a href="https://github.com/password_reset">Forgot password?</a>
-          </form>
+          <button>Sign in</button> <a href="https://github.com/password_reset">Forgot password?</a>
+          {{/if}}
         </div>
+        <div class="grid_6">
+          <ol>
+            {{#if githubLoggedIn}}
+            <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{emailPrompt}} to your account</a></li>
+            {{else}}
+            <li><a href="https://github.com/join" target="actionRequired">Join Github</a> or <a href="https://github.com/settings/emails" target="actionRequired">add email to your account</a><br />
+            (use {{emailPrompt}})</li>
+            {{/if}}
+            <li>Github will email a link: click to verify email</li>
+            <li><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an individual student discount</a></li>
+          </ol>
+        </div>
+        </form>
       </section>
       <br />
       <section class="container_12">
-        <hgroup class="grid_12">
-          <h1>{{repo}} Repository Setup<hr /></h1>
+        <hgroup>
+          <h1 class="grid_2">Git Setup</h1>
+          <div class="grid_10">Set up your local (<a href="file://~/{{repo}}" target="_blank"><code>~/{{repo}}</code></a>), <a href="https://github.com/{{githubUsername}}/{{repo}}" target="_blank">private remote</a>, and <a href="https://github.com/{{githubInstructorLogin}}/{{repo}}" target="_blank">upstream</a> git repositories</div>
+          <div class="clear"></div>
+          <hr />
         </hgroup>
         <div class="clear"></div>
         <div class="grid_2"><img src="git.svg" width="140" height="140" title="Git" /></div>
         <div class="grid_10">
-          <pre>
-git clone https://github.com/{{githubInstructorLogin}}/{{repo}}
-cd ~/{{repo}}
+          <pre>git clone https://github.com/{{githubInstructorLogin}}/{{repo}}.git
+cd {{repo}}
 git remote rename origin upstream
 git remote add origin git@github.com:{{githubUsername}}/{{repo}}.git
-git push -u origin master
-          </pre>
-            <button>Set up {{repo}}</button>
+git push -u origin master</pre>
+          <button>Set up {{repo}}</button>
         </div>
       </section>
     </script>
@@ -123,31 +120,32 @@ git push -u origin master
 
       // Here, we're passing in some initial data
       data: {
+        // Properties we care about
+        repo: 'COMP278-2014',
         email: 'lawrancej@wit.edu',
-        emailHash: SparkMD5.hash('lawrancej@wit.edu'),
-        emailPrompt: 'lawrancej@wit.edu',
         fullName: 'Joey Lawrance',
-        school: 'Wentworth Institute of Technology',
-        gravatarUser: false,
-        gravatarAccount: true,
-        githubAccount: false,
-        githubUser: false,
         githubUsername: 'lawrancej',
-        githubLoggedIn: false,
         githubInstructorLogin: 'lawrancej',
+        
+        // Gravatar ID
+        emailHash: SparkMD5.hash('lawrancej@wit.edu'),
+        // Did we find a Gravatar image from the user's email? (Assume yes unless we get a 404 error)
+        gravatarAccount: true,
+        
+        // Email placeholder
+        emailPrompt: 'lawrancej@wit.edu',
+
+        // Successful Github login?
+        githubLoggedIn: false,
+        // Does Github need two-factor auth?
         githubTwoFactor: false,
-        repo: 'COMP278-2014'
+        // Is the Github email verified?
+        githubVerifiedEmail: false,
+        // Can we create a private repository?
+        githubUpgradedPlan: false
       }
     });
     
-    ractive.on({
-      gravatar: function () {
-        ractive.toggle('gravatarUser');
-      },
-      github: function () {
-        ractive.toggle('githubUser');
-      }
-    });
     ractive.observe('email', function ( newValue, oldValue ) {
       var newEmail=newValue.toLowerCase().trim();
       var regex=/edu$/;
