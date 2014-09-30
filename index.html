@@ -10,7 +10,7 @@
   h1 {margin:0px; padding:0px;}
   hgroup div {position: relative; top: 50%; transform: translateY(70%);}
   </style>
-  <script src='http://cdn.ractivejs.org/latest/ractive-legacy.min.js'></script>
+  <script src='ractive-legacy.min.js'></script>
   <script src='sparkMD5.js'></script>
 </head>
 <body>
@@ -23,7 +23,7 @@
         <hgroup>
           <h1 class="grid_2">Profile</h1>
           <div class="grid_4">Tell git your full name and school email address</div>
-          <div class="grid_6">Gravatars help the instructor learn names</div>
+          <div class="grid_6">Create or update your Gravatar: help the instructor learn names</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
@@ -31,7 +31,7 @@
         <div class="grid_4">
           <input type="text" name="user.name" value="{{fullName}}" placeholder="Full name" pattern="[a-zA-Z.]+ [a-zA-Z. ]+" required /><br />
           <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required autofocus /><br />
-          <button>Save changes</button>
+          <button>Configure Git</button>
           <pre>
 git config user.name "{{fullName}}"
 git config user.email "{{email}}"</pre>
@@ -41,9 +41,9 @@ git config user.email "{{email}}"</pre>
           Thanks for creating a Gravatar! (<a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Update</a>)
           {{else}}
             <ol>
-              <li><a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">Join Gravatar</a> or <a href="https://en.gravatar.com/emails/new" target="actionRequired">add email to your account</a><br />
+              <li><a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">Join Gravatar</a> or <a href="https://en.gravatar.com/emails/new" target="actionRequired">add email to your existing account</a><br />
               (use {{emailPrompt}})</li>
-              <li>Gravatar will email a link: click to verify email</li>
+              <li>Gravatar will email a link: click to verify your school email</li>
               <li><a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Add an image</a></li>
             </ol>
           {{/if}}
@@ -51,12 +51,12 @@ git config user.email "{{email}}"</pre>
         </form>
       </section>
       <br />
+      <form>
       <section class="container_12">
-        <form>
         <hgroup>
           <h1 class="grid_2">Github</h1>
           <div class="grid_4">Github hosts private repositories free for students</div>
-          <div class="grid_6">{{#if !githubLoggedIn}}Create or upgrade your Github account{{/if}}</div>
+          <div class="grid_6">{{#if !githubLoggedIn}}Create or upgrade your Github account for educational use{{else}}{{#if !githubUpgradedPlan}}Upgrade your Github account for educational use{{else}}Thanks for setting up your Github account!{{/if}}{{/if}}</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
@@ -77,36 +77,45 @@ git config user.email "{{email}}"</pre>
         <div class="grid_6">
           <ol>
             {{#if githubLoggedIn}}
-            <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{emailPrompt}} to your account</a></li>
+              {{#if !githubEmailFound}}
+               <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{emailPrompt}} to your account</a></li>
+              {{/if}}
             {{else}}
-            <li><a href="https://github.com/join" target="actionRequired">Join Github</a> or <a href="https://github.com/settings/emails" target="actionRequired">add email to your account</a><br />
-            (use {{emailPrompt}})</li>
+              {{#if !githubEmailFound}}
+                <li><a href="https://github.com/join" target="actionRequired">Join Github</a> or <a href="https://github.com/settings/emails" target="actionRequired">add email to your existing account</a><br />
+                (use {{emailPrompt}})</li>
+              {{/if}}
             {{/if}}
-            <li>Github will email a link: click to verify email</li>
-            <li><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an individual student discount</a></li>
+            {{#if !githubVerifiedEmail}}
+              <li>Github will email a link: click to verify your school email</li>
+            {{/if}}
+            {{#if !githubUpgradedPlan}}
+              <li><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an individual student discount</a></li>
+            {{/if}}
           </ol>
         </div>
-        </form>
       </section>
       <br />
       <section class="container_12">
         <hgroup>
           <h1 class="grid_2">Git Setup</h1>
-          <div class="grid_10">Set up your local (<a href="file://~/{{repo}}" target="_blank"><code>~/{{repo}}</code></a>), <a href="https://github.com/{{githubUsername}}/{{repo}}" target="_blank">private remote</a>, and <a href="https://github.com/{{githubInstructorLogin}}/{{repo}}" target="_blank">upstream</a> git repositories</div>
+          <div class="grid_10">Set up your git repositories: <b>local</b> (<a href="{{localRepo}}" target="_blank"><code>~/{{repo}}</code></a>), <b>origin</b> (<a href="https://github.com/{{githubUsername}}/{{repo}}" target="_blank">your private repository</a>), and <b>upstream</b> (<a href="https://github.com/{{githubInstructorLogin}}/{{repo}}" target="_blank">course repository</a>)</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
         <div class="clear"></div>
         <div class="grid_2"><img src="git.svg" width="140" height="140" title="Git" /></div>
         <div class="grid_10">
+          <button>Set up {{repo}}</button>
           <pre>git clone https://github.com/{{githubInstructorLogin}}/{{repo}}.git
 cd {{repo}}
-git remote rename origin upstream
+git remote rm origin
 git remote add origin git@github.com:{{githubUsername}}/{{repo}}.git
+git remote add upstream https://github.com/{{githubInstructorLogin}}/{{repo}}.git
 git push -u origin master</pre>
-          <button>Set up {{repo}}</button>
         </div>
       </section>
+      </form>
     </script>
   </article>
   <script>
@@ -126,6 +135,7 @@ git push -u origin master</pre>
         fullName: 'Joey Lawrance',
         githubUsername: 'lawrancej',
         githubInstructorLogin: 'lawrancej',
+        localRepo: 'file:///C:/Users/lawrancej/COMP278-2014',
         
         // Gravatar ID
         emailHash: SparkMD5.hash('lawrancej@wit.edu'),
@@ -138,7 +148,9 @@ git push -u origin master</pre>
         // Successful Github login?
         githubLoggedIn: false,
         // Does Github need two-factor auth?
-        githubTwoFactor: false,
+        githubTwoFactor: true,
+        // Is the email on the account?
+        githubEmailFound: false,
         // Is the Github email verified?
         githubVerifiedEmail: false,
         // Can we create a private repository?
