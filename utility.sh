@@ -25,6 +25,16 @@ Acquire_software() {
 # Utilities
 # ---------------------------------------------------------------------
 
+# Print out the size of the file
+Utility_fileSize() {
+    local file="$1"
+    local theSize="$(du -b "$file" | cut -f1)"
+    if [[ -z "$theSize" ]]; then
+        theSize="0"
+    fi
+    printf "$theSize"
+}
+
 # "return" failure
 Utility_fail() {
     echo -n
@@ -43,6 +53,65 @@ Utility_lastSuccess() {
         Utility_success
     else
         Utility_fail
+    fi
+}
+
+# Make a named pipe
+Utility_makePipe() {
+    local pipe="$1"
+    rm -f "$pipe" 2> /dev/null
+    mknod .request p 2> /dev/null
+    cat > .request <<EOF
+EOF
+#    printf "\n" > .request
+}
+
+# Wait until we get the pipe
+Utility_waitForPipe() {
+    local pipe="$1"
+    until [[ -p "$pipe" ]] || [[ -f "$pipe" ]]; do
+        sleep 1
+    done
+}
+
+# Cross-platform read from named pipe
+Utility_pipeWrite() {
+    local pipe="$1"; shift
+    local data="$1"
+    # If we got a real pipe, the pipe will wait
+    if [[ -p "$pipe" ]]; then
+        # Hooray for blocking writes
+        printf "$data" > "$pipe"
+    # Windows users can't have nice things, as usual...
+    elif [[ -f "$pipe" ]]; then
+        # Boo hiss... We need to implement our own blocking write
+        printf "$data" > "$pipe"
+        # Wait for the other side to read
+        while [[ "0" != "$(Utility_fileSize "$pipe")" ]]; do
+            sleep 1
+        done
+    fi
+}
+
+# Cross-platform read from named pipe
+Utility_pipeRead() {
+    local pipe="$1"
+    local line=""
+    # If we got a real pipe, read will block until data to come in
+    if [[ -p "$pipe" ]]; then
+        # Hooray for blocking reads
+        read line < "$pipe"
+        printf "$line"
+    # Windows users can't have nice things, as usual...
+    elif [[ -f "$pipe" ]]; then
+        # Wait for the other side to write
+        while [[ "0" == "$(Utility_fileSize "$pipe")" ]]; do
+            sleep 1
+        done
+        read line < "$pipe"
+#        line="$(head -n 1 "$pipe")"
+        sed -i -e "1d" "$pipe"
+        printf "$line"
     fi
 }
 
