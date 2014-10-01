@@ -4,6 +4,17 @@ source utility.sh
 # http://mywiki.wooledge.org/NamedPipes
 # Also, simultaneous connections
 # Also, windows pipes aren't
+# http://hak5.org/episodes/haktip-53
+#favicon set that up
+
+PrintIndex() {
+    sed -e "s/REPOSITORY/$REPO/g" \
+    -e "s/EMAIL/$(User_getEmail)/g" \
+    -e "s/FULL_NAME/$(User_getFullName)/g" \
+    -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
+    -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
+    index.html
+}
 
 # Get the MIME type from a file
 WebServer_MIMEType() {
@@ -69,10 +80,10 @@ WebServer_makeResponse() {
     while sleep 1; do
         file="$(Utility_pipeRead .request)"
         echo "FILE $file" >&2
-        if [[ "$file" != "$old" ]]; then
+#        if [[ "$file" != "$old" ]]; then
             WebServer_sendResponse "$file"
             old="$file"
-        fi
+#        fi
     done
 }
 
@@ -83,5 +94,6 @@ WebServer_start() {
     WebServer_makeResponse | nc -o debug -k -lvv 8080 | WebServer_handleRequest
 }
 
+# PrintIndex
 Utility_fileOpen http://localhost:8080
 WebServer_start index.html "text/html"
