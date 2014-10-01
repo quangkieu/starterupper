@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64px"
-   height="64px"
+   width="140px"
+   height="140px"
    id="svg3613"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="New document 5">
+   sodipodi:docname="github.svg">
   <defs
      id="defs3615" />
   <sodipodi:namedview
@@ -26,7 +26,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="5.5"
      inkscape:cx="32"
-     inkscape:cy="32"
+     inkscape:cy="58.45098"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -53,7 +53,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer">
     <g
-       transform="matrix(0.41985749,0,0,0.41985749,-151.79871,-2.2710748)"
+       transform="matrix(0.92086425,0,0,0.92086425,-333.37024,-5.391957)"
        id="g4100">
       <path
          inkscape:connector-curvature="0"
