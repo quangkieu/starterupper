@@ -57,6 +57,7 @@ Utility_lastSuccess() {
 }
 
 # Make a named pipe
+# TODO: sniff for mkfifo, mknod first. If all else fails, just fake it with a regular file.
 Utility_makePipe() {
     local pipe="$1"
     rm -f "$pipe" 2> /dev/null

@@ -5,7 +5,6 @@ source utility.sh
 # Also, simultaneous connections
 # Also, windows pipes aren't
 # http://hak5.org/episodes/haktip-53
-#favicon set that up
 
 PrintIndex() {
     sed -e "s/REPOSITORY/$REPO/g" \
@@ -21,6 +20,7 @@ WebServer_MIMEType() {
     local fileName="$1";
     case $fileName in
         *.html | *.htm ) printf "text/html" ;;
+        *.ico ) printf "image/x-icon" ;;
         *.css ) printf "text/css" ;;
         *.js ) printf "text/javascript" ;;
         *.txt ) printf "text/plain" ;;
@@ -75,15 +75,11 @@ WebServer_sendResponse() {
 
 WebServer_makeResponse() {
     local file=""
-    local old=""
     Utility_waitForPipe .request
     while sleep 1; do
         file="$(Utility_pipeRead .request)"
         echo "FILE $file" >&2
-#        if [[ "$file" != "$old" ]]; then
-            WebServer_sendResponse "$file"
-            old="$file"
-#        fi
+        WebServer_sendResponse "$file"
     done
 }
 
