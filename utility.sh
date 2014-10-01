@@ -60,7 +60,9 @@ Utility_lastSuccess() {
 Utility_makePipe() {
     local pipe="$1"
     rm -f "$pipe" 2> /dev/null
+    # This is actually worse than just using touch on windows
     mknod .request p 2> /dev/null
+    # Probably unnecessary if we had a real pipe
     cat > .request <<EOF
 EOF
 #    printf "\n" > .request
@@ -97,7 +99,7 @@ Utility_pipeWrite() {
 Utility_pipeRead() {
     local pipe="$1"
     local line=""
-    # If we got a real pipe, read will block until data to come in
+    # If we got a real pipe, read will block until data comes in
     if [[ -p "$pipe" ]]; then
         # Hooray for blocking reads
         read line < "$pipe"
@@ -109,7 +111,6 @@ Utility_pipeRead() {
             sleep 1
         done
         read line < "$pipe"
-#        line="$(head -n 1 "$pipe")"
         sed -i -e "1d" "$pipe"
         printf "$line"
     fi

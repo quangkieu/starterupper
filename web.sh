@@ -1,6 +1,10 @@
 #!/bin/bash
 source utility.sh
 
+# http://mywiki.wooledge.org/NamedPipes
+# Also, simultaneous connections
+# Also, windows pipes aren't
+
 # Get the MIME type from a file
 WebServer_MIMEType() {
     local fileName="$1";
