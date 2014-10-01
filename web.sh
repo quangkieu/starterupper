@@ -16,64 +16,72 @@ WebServer_MIMEType() {
     esac
 }
 
-WebServer_makeResponse() {
-    local file="$1"; shift
-    if [[ -z "$file" ]]; then
-        file="index.html"
-    fi
-    local type="$(WebServer_MIMEType $file)"
-    if [[ -f "$file" ]]; then
-        local fileData=$(<"$file")
-        local response="HTTP/1.1 200 OK
-Date: $(date '+%a, %d %b %Y %T %Z')
-Cache-Control: private
-Server: Starter Upper 2014-09-29
-Content-Type: $type
-Content-Length: ${#fileData}
-Content-Encoding: binary
+WebServer_handleRequest() {
+    while read line; do
+        if [[ $line == GET* ]]; then
+            echo "$line" >&2
+            local url="${line#GET /}"
+            url="${url% HTTP/*}"
+            if [[ -z "$url" ]]; then
+                url="index.html"
+            fi
+            while read header; do
+                if [[ -z "$header" ]]; then
+                    break
+                fi
+            done
+            echo "$url" >.request
+        fi
+    done
+}
 
-$fileData"
-        cat >>httpipe << EOF
-$response
-EOF
-    else
-        local response="HTTP/1.1 404 Not Found
+WebServer_makeResponse() {
+    sleep 5
+    while read file < .request; do
+        local type="$(WebServer_MIMEType $file)"
+        if [[ -f "$file" ]]; then
+            echo -ne "HTTP/1.0 200 OK\r\nContent-Length: $(wc -c $file | sed -r -e 's/ +([0-9]+) .*/\1/')\r\nContent-Encoding: binary\r\nContent-Type: $type\r\n\r\n"
+            cat "$file"
+            sleep 5
+#            cat "$file"
+#            local response="HTTP/1.1 200 OK
+#Date: $(date '+%a, %d %b %Y %T %Z')
+#Cache-Control: private
+#Server: Starter Upper 2014-09-29
+#Content-Type: $type
+#Connection: close
+#Content-Length: ${#fileData}
+#Content-Encoding: binary
+#
+#$fileData"
+#            cat << EOF
+#$response
+#EOF
+        else
+            local response="HTTP/1.1 404 Not Found
 Content-Type: text/html
+Connection: close
 
 <h1>404 Not Found</h1>
 The requested resource was not found"
-        cat >>httpipe << EOF
+            cat << EOF
 $response
 EOF
-    fi
+        fi
+    done
 }
 
 WebServer() {
     Acquire_software
-    rm -f httpipe
+    rm -f .request
+    rm debug
 #    touch httpipe
-    mknod httpipe p 2> /dev/null
-#    mkfifo httpipe
-    cat >httpipe <<EOF
+    mknod .request p 2> /dev/null
+    cat > .request <<EOF
 EOF
 #    WebServer_makeResponse index.html
 #    while true; do
-    (tail -c 1048576 -f httpipe) | nc -k -lv 8080 | (
-        while read line; do
-            if [[ $line == GET* ]]; then
-                echo "$line"
-                local url="${line#GET /}"
-                url="${url% HTTP/*}"
-                while read header; do
-                    echo "$header"
-                    if [[ -z "$header" ]]; then
-                        break
-                    fi
-                done
-                WebServer_makeResponse "$url"
-            fi
-        done
-    )
+    WebServer_makeResponse | nc -o debug -k -lvv 8080 | WebServer_handleRequest
 #    done
 #    while true; do
 #        header=$({ echo -ne "HTTP/1.0 200 OK\r\nContent-Length: $(wc -c $file)\r\nContent-Encoding: binary\r\nContent-Type: $type\r\n\r\n"; cat $file; } | nc -l 8080 2>&1)
@@ -83,4 +91,3 @@ EOF
 
 start http://localhost:8080
 WebServer index.html "text/html"
-# WebServer_MIMEType index.html
