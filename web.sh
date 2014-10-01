@@ -76,7 +76,7 @@ WebServer_start() {
     Acquire_software
     rm debug 2> /dev/null
     Utility_makePipe .request
-    WebServer_makeResponse | nc -o debug -m 1 -k -lvv 8080 | WebServer_handleRequest
+    WebServer_makeResponse | nc -o debug -k -lvv 8080 | WebServer_handleRequest
 }
 
 Utility_fileOpen http://localhost:8080
