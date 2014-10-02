@@ -27,7 +27,7 @@
         <hgroup>
           <h1 class="grid_2">Profile</h1>
           <div class="grid_4">Tell git your full name and school email address</div>
-          <div class="grid_6">Create or update your Gravatar to help the instructor learn names</div>
+          <div class="grid_6">Update or create your Gravatar to help the instructor learn names</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
@@ -45,7 +45,7 @@ git config user.email "{{email}}"</pre>
           Thanks for creating a Gravatar! (<a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Update</a>)
           {{else}}
             <ol>
-              <li><a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">Join Gravatar</a> or <a href="https://en.gravatar.com/emails/new" target="actionRequired">add email to your existing account</a><br />
+              <li><a href="https://en.gravatar.com/emails/new" target="actionRequired">Add email to Gravatar account</a> or <a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">join Gravatar</a><br />
               (use {{emailPrompt}})</li>
               <li>Gravatar will email a link: click to verify your school email</li>
               <li><a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Add an image</a></li>
@@ -60,7 +60,7 @@ git config user.email "{{email}}"</pre>
         <hgroup>
           <h1 class="grid_2">Github</h1>
           <div class="grid_4">Github hosts private repositories free for students</div>
-          <div class="grid_6">{{#if !githubLoggedIn}}Create or upgrade your Github account for educational use{{else}}{{#if !githubUpgradedPlan}}Upgrade your Github account for educational use{{else}}Thanks for setting up your Github account!{{/if}}{{/if}}</div>
+          <div class="grid_6">{{#if !githubLoggedIn}}Upgrade or create your Github account for educational use{{else}}{{#if !githubUpgradedPlan}}Upgrade your Github account for educational use{{else}}Thanks for setting up your Github account!{{/if}}{{/if}}</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
@@ -127,11 +127,11 @@ git config user.email "{{email}}"</pre>
           <ol>
             {{#if githubLoggedIn}}
               {{#if !githubEmailFound}}
-               <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{emailPrompt}} to your account</a></li>
+               <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{emailPrompt}} to Github account</a></li>
               {{/if}}
             {{else}}
               {{#if !githubEmailFound}}
-                <li><a href="https://github.com/join" target="actionRequired">Join Github</a> or <a href="https://github.com/settings/emails" target="actionRequired">add email to your existing account</a><br />
+                <li><a href="https://github.com/settings/emails" target="actionRequired">Add email to Github account</a> or <a href="https://github.com/join" target="actionRequired">join Github</a><br />
                 (use {{emailPrompt}})</li>
               {{/if}}
             {{/if}}

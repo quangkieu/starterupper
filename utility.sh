@@ -58,37 +58,38 @@ Utility_lastSuccess() {
 
 # Make a named pipe
 # TODO: sniff for mkfifo, mknod first. If all else fails, just fake it with a regular file.
-Utility_makePipe() {
+Pipe_new() {
     local pipe="$1"
     rm -f "$pipe" 2> /dev/null
     # This is actually worse than just using touch on windows
-    mknod .request p 2> /dev/null
+    mknod "$pipe" p 2> /dev/null
     # Probably unnecessary if we had a real pipe
-    cat > .request <<EOF
+    cat > "$pipe" <<EOF
 EOF
-#    printf "\n" > .request
 }
 
 # Wait until we get the pipe
-Utility_waitForPipe() {
+Pipe_await() {
     local pipe="$1"
     until [[ -p "$pipe" ]] || [[ -f "$pipe" ]]; do
-        sleep 1
+        sleep 10
     done
 }
 
 # Cross-platform read from named pipe
-Utility_pipeWrite() {
+Pipe_write() {
     local pipe="$1"; shift
     local data="$1"
     # If we got a real pipe, the pipe will wait
     if [[ -p "$pipe" ]]; then
         # Hooray for blocking writes
-        printf "$data" > "$pipe"
+        # We use echo here so we can send multi-line strings on one line
+        echo "$data" > "$pipe"
     # Windows users can't have nice things, as usual...
     elif [[ -f "$pipe" ]]; then
         # Boo hiss... We need to implement our own blocking write
-        printf "$data" > "$pipe"
+        # We use echo here so we can send multi-line strings on one line
+        echo "$data" > "$pipe"
         # Wait for the other side to read
         while [[ "0" != "$(Utility_fileSize "$pipe")" ]]; do
             sleep 1
@@ -97,7 +98,7 @@ Utility_pipeWrite() {
 }
 
 # Cross-platform read from named pipe
-Utility_pipeRead() {
+Pipe_read() {
     local pipe="$1"
     local line=""
     # If we got a real pipe, read will block until data comes in
@@ -115,6 +116,23 @@ Utility_pipeRead() {
         sed -i -e "1d" "$pipe"
         printf "$line"
     fi
+}
+
+# Get the MIME type by the extension
+Utility_MIMEType() {
+    local fileName="$1";
+    case $fileName in
+        *.html | *.htm ) printf "text/html" ;;
+        *.ico ) printf "image/x-icon" ;;
+        *.css ) printf "text/css" ;;
+        *.js ) printf "text/javascript" ;;
+        *.txt ) printf "text/plain" ;;
+        *.jpg ) printf "image/jpeg" ;;
+        *.png ) printf "image/png" ;;
+        *.svg ) printf "image/svg+xml" ;;
+        *.pdf ) printf "application/pdf" ;;
+        * ) printf "application/octet-stream" ;;
+    esac
 }
 
 # Cross-platform paste to clipboard
