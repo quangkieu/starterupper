@@ -9,15 +9,6 @@ readonly PIPE=.httpipe
 # Also, windows pipes aren't
 # http://hak5.org/episodes/haktip-53
 
-PrintIndex() {
-    sed -e "s/REPOSITORY/$REPO/g" \
-    -e "s/EMAIL/$(User_getEmail)/g" \
-    -e "s/FULL_NAME/$(User_getFullName)/g" \
-    -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
-    -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
-    index.html
-}
-
 # Is this a request line?
 Request_line() {
     local line="$1"
@@ -69,15 +60,17 @@ Request_new() {
             fi
         done
         # Sometimes, we have a payload in the request, so handle that, too...
-        local length=$(Request_lookup "$request" "Content-Length")
+        local length="$(Request_lookup "$request" "Content-Length")"
         local payload=""
-        if [[ "$length" != "0" ]]; then
+#        echo "length: $length" >&2
+        if [[ -n "$length" ]] && [[ "$length" != "0" ]]; then
             read -n "$length" payload
             request="$request\n$payload"
         fi
     fi
+    # Uncomment to debug
+#    printf "$request" >&2
     # Return single line string
-    echo "$request" >&2
     echo "$request"
 }
 
@@ -97,17 +90,16 @@ WebServer_sendFile() {
     if [[ -z "$file" ]]; then
         return 0
     fi
-    echo "OPEN FILE: $file" >&2
     if [[ ! -f "$file" ]]; then
         response="HTTP/1.1 404 Not Found"
         file="404.html"
     fi
     local type="$(Utility_MIMEType $file)"
-    echo "SENDING $file" >&2
+#    echo "SENDING $file" >&2
     Response_send "$response" "$(Utility_fileSize "$file")" "$type"
     cat "$file"
     printf "\n"
-    echo "FINISHED $file" >&2
+#    echo "FINISHED $file" >&2
 }
 
 # Listen for requests
@@ -119,15 +111,28 @@ WebServer_listen() {
     done
 }
 
+PrintIndex() {
+    sed -e "s/REPOSITORY/$REPO/g" \
+    -e "s/EMAIL/$(User_getEmail)/g" \
+    -e "s/FULL_NAME/$(User_getFullName)/g" \
+    -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
+    -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
+    index.html > temp.html
+
+    WebServer_sendFile "temp.html"
+    rm temp.html
+}
+
+# Route requests to appropriate responses
 WebServer_route() {
     local request="$1"
-    local target=""
-    echo "FILE $(Request_target "$request")" >&2
-    target="$(Request_target "$request")"
+    local target="$(Request_target "$request")"
+    echo "ROUTING: $target" >&2
     if [[ "$target" == "/" ]]; then
-        target="index.html"
+        PrintIndex
+    else
+        WebServer_sendFile "$target"
     fi
-    WebServer_sendFile "$target"
 }
 
 # Respond to requests
@@ -140,6 +145,7 @@ WebServer_respond() {
     done
 }
 
+# Start the web server
 WebServer_start() {
     Acquire_software
     rm debug 2> /dev/null
