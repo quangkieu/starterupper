@@ -85,7 +85,8 @@ Response_send() {
 
 # Send file with HTTP response headers
 WebServer_sendFile() {
-    local file="$1";
+    local request="$1"; shift
+    local file="$(Request_target "$request")";
     local response="HTTP/1.1 200 OK"
     if [[ -z "$file" ]]; then
         return 0
@@ -95,11 +96,11 @@ WebServer_sendFile() {
         file="404.html"
     fi
     local type="$(Utility_MIMEType $file)"
-#    echo "SENDING $file" >&2
+    echo "SENDING $file" >&2
     Response_send "$response" "$(Utility_fileSize "$file")" "$type"
     cat "$file"
     printf "\n"
-#    echo "FINISHED $file" >&2
+    echo "FINISHED $file" >&2
 }
 
 # Listen for requests
@@ -123,35 +124,60 @@ PrintIndex() {
     rm temp.html
 }
 
+
+# Given a routing table and the request target, return name of function to call
+Router_lookup() {
+    # The routing table maps targets to bash functions
+    local table="$1"; shift
+    # However, keys can have special characters (e.g., / and *)
+    # Therefore, we must first make them sed-friendly
+    local key="$(echo $1 | sed -e 's/[/]/\\\//g' -e 's/[*]/[*]/g')"
+    # Lookup the function
+    local value="$(Request_lookup "$table" "$key")"
+    if [[ -z "value" ]]; then
+        key="[*]"
+        value="$(Request_lookup "$table" "$key")"
+    fi
+    printf "$value"
+}
+
 # Route requests to appropriate responses
 WebServer_route() {
+    local table="$1"; shift
     local request="$1"
     local target="$(Request_target "$request")"
-    echo "ROUTING: $target" >&2
-    if [[ "$target" == "/" ]]; then
-        PrintIndex
-    else
-        WebServer_sendFile "$target"
-    fi
+    local function="$(Router_lookup "$table" "$target")"
+    echo "ROUTING: $target using $function" >&2
+    "$function" "$request"
+#    if [[ "$target" == "/" ]]; then
+#        PrintIndex
+#    else
+#        WebServer_sendFile "$target"
+#    fi
 }
 
 # Respond to requests
 WebServer_respond() {
+    local routingTable="$1"
     local request=""
     Pipe_await "$PIPE"
     while sleep 1; do
         request="$(Pipe_read "$PIPE")"
-        WebServer_route "$request"
+        WebServer_route "$routingTable" "$request"
     done
 }
 
-# Start the web server
+# Start the web server, using supplied routing table
+# The routing table maps targets to functions.
+# It has the same syntax as HTTP headers: keys are targets, values are functions
+# * is the catch-all (default) target if nothing else matches
 WebServer_start() {
+    local routingTable="$1"
     Acquire_software
     rm debug 2> /dev/null
     Pipe_new "$PIPE"
-    WebServer_respond | nc -o debug -k -lvv 8080 | WebServer_listen
+    WebServer_respond "$routingTable" | nc -o debug -k -lvv 8080 | WebServer_listen
 }
 
 Utility_fileOpen http://localhost:8080 > /dev/null
-WebServer_start
+WebServer_start "/: PrintIndex\r\n*: WebServer_sendFile\r\n"
