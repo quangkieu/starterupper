@@ -105,6 +105,7 @@ WebServer_sendFile() {
 
 # Listen for requests
 WebServer_listen() {
+    echo -e "Listening for HTTP requests...                                             [\e[1;32mOK\e[0m]" >&2
     local request=""
     while read line; do
         request=$(Request_new "$line")
@@ -134,7 +135,7 @@ Router_lookup() {
     local key="$(echo $1 | sed -e 's/[/]/\\\//g' -e 's/[*]/[*]/g')"
     # Lookup the function
     local value="$(Request_lookup "$table" "$key")"
-    if [[ -z "value" ]]; then
+    if [[ -z "$value" ]]; then
         key="[*]"
         value="$(Request_lookup "$table" "$key")"
     fi
@@ -167,17 +168,31 @@ WebServer_respond() {
     done
 }
 
-# Start the web server, using supplied routing table
+# Start the web server, using routing table supplied through standard input
 # The routing table maps targets to functions.
 # It has the same syntax as HTTP headers: keys are targets, values are functions
 # * is the catch-all (default) target if nothing else matches
 WebServer_start() {
-    local routingTable="$1"
+    # Read in routing table from standard in
+    printf "Starting web server (please wait)..." >&2
+    local routingTable=""
+    while read line; do
+        routingTable="$routingTable\n$line"
+    done
+    # Get netcat, if it's not already installed
     Acquire_software
     rm debug 2> /dev/null
     Pipe_new "$PIPE"
-    WebServer_respond "$routingTable" | nc -o debug -k -lvv 8080 | WebServer_listen
+    echo -e "                                       [\e[1;32mOK\e[0m]" >&2
+    echo -e "Opening web browser to http://localhost:8080                               [\e[1;32mOK\e[0m]" >&2
+    
+    Utility_fileOpen http://localhost:8080 > /dev/null
+    WebServer_respond "$routingTable" | nc -k -l 8080 | WebServer_listen
 }
 
-Utility_fileOpen http://localhost:8080 > /dev/null
-WebServer_start "/: PrintIndex\r\n*: WebServer_sendFile\r\n"
+WebServer_start <<EOF
+/: PrintIndex
+*: WebServer_sendFile
+EOF
+
+
