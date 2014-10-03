@@ -6,8 +6,6 @@ readonly PIPE=.httpipe
 
 # http://mywiki.wooledge.org/NamedPipes
 # Also, simultaneous connections
-# Also, windows pipes aren't
-# http://hak5.org/episodes/haktip-53
 
 # Is this a request line?
 Request_line() {

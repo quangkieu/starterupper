@@ -4,7 +4,7 @@ PIPES=""
 
 finish() {
     echo "Wait! You're not done yet!"
-    rm $PIPES 2> /dev/null
+    rm -f $PIPES 2> /dev/null
 }
 
 trap finish EXIT
