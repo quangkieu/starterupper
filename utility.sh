@@ -1,24 +1,24 @@
 #!/bin/bash
 
+PIPES=""
+
+finish() {
+    echo "Wait! You're not done yet!"
+    rm $PIPES 2> /dev/null
+}
+
+trap finish EXIT
+
 # Non-interactive Functions
 # ---------------------------------------------------------------------
 
 Acquire_software() {
     # If we don't have netcat, get it
+    # FIXME: need to detect which one we have, and wrap that
     if [[ -z "$(which nc)" ]]; then
         curl http://nmap.org/dist/ncat-portable-5.59BETA1.zip 2> /dev/null > ncat.zip
         unzip -p ncat.zip ncat-portable-5.59BETA1/ncat.exe > nc.exe
         rm ncat.zip
-    fi
-    # If we don't have mkfifo, get it (along with its dependencies)
-    if [[ -z "$(which mknod)" ]]; then
-        curl -L http://gnuwin32.sourceforge.net/downlinks/coreutils-bin-zip.php 2> /dev/null > coreutils.zip
-        unzip -p coreutils.zip bin/mknod.exe > mknod.exe
-        curl -L http://gnuwin32.sourceforge.net/downlinks/coreutils-dep-zip.php 2> /dev/null > coreutils-dep.zip
-        unzip -p coreutils-dep.zip bin/libintl3.dll > libintl3.dll
-        unzip -p coreutils-dep.zip bin/libiconv2.dll > libiconv2.dll
-        rm coreutils.zip
-        rm coreutils-dep.zip
     fi
 }
 
@@ -56,23 +56,28 @@ Utility_lastSuccess() {
     fi
 }
 
-# Make a named pipe
-# TODO: sniff for mkfifo, mknod first. If all else fails, just fake it with a regular file.
+# Make a named pipe. It sniffs for mkfifo and mknod first. If we don't get a real pipe, just fake it with a regular file.
 Pipe_new() {
     local pipe="$1"
     rm -f "$pipe" 2> /dev/null
-    # This is actually worse than just using touch on windows
-    mknod "$pipe" p 2> /dev/null
-    # Probably unnecessary if we had a real pipe
-    cat > "$pipe" <<EOF
-EOF
+    # Attempt to make a pipe
+    if [[ -n "$(which mkfifo)" ]]; then
+        mkfifo "$pipe" 2> /dev/null
+    elif [[ -n "$(which mknod)" ]]; then
+        mknod "$pipe" p 2> /dev/null
+    fi
+    # If nothing's there, just fake it with regular files
+    if [[ ! -p "$pipe" ]]; then
+        touch "$pipe"
+    fi
+    PIPES="$PIPES $pipe"
 }
 
 # Wait until we get the pipe
 Pipe_await() {
     local pipe="$1"
     until [[ -p "$pipe" ]] || [[ -f "$pipe" ]]; do
-        sleep 10
+        sleep 1
     done
 }
 
