@@ -28,18 +28,16 @@ Request_method() {
 Request_target() {
     local request="$1"
     echo "$request" | sed -e 's/^[^ ]* \(.*\) HTTP\/.*/\1/'
-#    if [[ -z "$url" ]]; then
-#        url="index.html"
-#    fi
 }
 
 # Get the file from the request
 Request_file() {
     local request="$1"
-    # Remove attempts to look outside the current folder, strip off the leading slash and the query
     local target="$(Request_target "$request")"
+    # Leave the root request alone
     if [[ "$target" == "/" ]]; then
         printf "/"
+    # Remove attempts to look outside the current folder, strip off the leading slash and the query
     else
         echo "$target" | sed -e 's/[.][.]//g' -e 's/^[/]*//g' -e 's/[?].*$//'
     fi
@@ -121,7 +119,38 @@ WebServer_listen() {
     local request=""
     while read line; do
         request=$(Request_new "$line")
+        # Send the request through 
         Pipe_write "$PIPE" "$request\n"
+    done
+}
+
+# Respond to requests, using supplied route function
+# The route function is a command that takes a request argument: it should send a response
+WebServer_respond() {
+    local routeFunction="$1"
+    local request=""
+    Pipe_await "$PIPE"
+    while true; do
+        request="$(Pipe_read "$PIPE")"
+        # Pass the request to the route function
+        "$routeFunction" "$request"
+    done
+}
+
+# Start the web server, using the supplied routing function
+WebServer_start() {
+    local routes="$1"
+    # Get netcat, if it's not already installed
+    Acquire_software
+    Pipe_new "$PIPE"
+    
+    if [[ "$(Utility_fileOpen http://localhost:8080)" ]]; then
+        echo -e "Opened web browser to http://localhost:8080                                [\e[1;32mOK\e[0m]" >&2
+    else
+        echo -e "Please open web browser to http://localhost:8080              [\e[1;32mACTION REQUIRED\e[0m]" >&2
+    fi
+    while true; do
+        WebServer_respond "$routes" | nc -l 8080 | WebServer_listen
     done
 }
 
@@ -137,74 +166,13 @@ PrintIndex() {
     rm temp.html
 }
 
-
-# Given a routing table and the request target, return name of function to call
-Router_lookup() {
-    # The routing table maps targets to bash functions
-    local table="$1"; shift
-    # However, keys can have special characters (e.g., / and *)
-    # Therefore, we must first make them sed-friendly
-    local key="$(echo $1 | sed -e 's/[/]/\\\//g' -e 's/[*]/[*]/g')"
-    # Lookup the function
-    local value="$(Request_lookup "$table" "$key")"
-    if [[ -z "$value" ]]; then
-        key="[*]"
-        value="$(Request_lookup "$table" "$key")"
-    fi
-    printf "$value"
-}
-
-# Route requests to appropriate responses
-WebServer_route() {
-    local table="$1"; shift
+MyRouter() {
     local request="$1"
     local target="$(Request_file "$request")"
-    local function="$(Router_lookup "$table" "$target")"
-    echo "ROUTING: $target using $function" >&2
-    "$function" "$request"
-#    if [[ "$target" == "/" ]]; then
-#        PrintIndex
-#    else
-#        WebServer_sendFile "$target"
-#    fi
+    case "$target" in
+        "/" ) PrintIndex "$request" ;;
+        * )   WebServer_sendFile "$request"
+    esac
 }
 
-# Respond to requests
-WebServer_respond() {
-    local routingTable="$1"
-    local request=""
-    Pipe_await "$PIPE"
-    while sleep 1; do
-        request="$(Pipe_read "$PIPE")"
-        WebServer_route "$routingTable" "$request"
-    done
-}
-
-# Start the web server, using routing table supplied through standard input
-# The routing table maps targets to functions.
-# It has the same syntax as HTTP headers: keys are targets, values are functions
-# * is the catch-all (default) target if nothing else matches
-WebServer_start() {
-    # Read in routing table from standard in
-    printf "Starting web server (please wait)..." >&2
-    local routingTable=""
-    while read line; do
-        routingTable="$routingTable\n$line"
-    done
-    # Get netcat, if it's not already installed
-    Acquire_software
-    rm debug 2> /dev/null
-    Pipe_new "$PIPE"
-    echo -e "                                       [\e[1;32mOK\e[0m]" >&2
-    echo -e "Opening web browser to http://localhost:8080                               [\e[1;32mOK\e[0m]" >&2
-    
-    Utility_fileOpen http://localhost:8080 > /dev/null
-    WebServer_respond "$routingTable" | nc -k -l 8080 | WebServer_listen
-}
-
-WebServer_start <<EOF
-/: PrintIndex
-*: WebServer_sendFile
-EOF
-
-
+WebServer_start "MyRouter"
