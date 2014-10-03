@@ -33,6 +33,18 @@ Request_target() {
 #    fi
 }
 
+# Get the file from the request
+Request_file() {
+    local request="$1"
+    # Remove attempts to look outside the current folder, strip off the leading slash and the query
+    local target="$(Request_target "$request")"
+    if [[ "$target" == "/" ]]; then
+        printf "/"
+    else
+        echo "$target" | sed -e 's/[.][.]//g' -e 's/^[/]*//g' -e 's/[?].*$//'
+    fi
+}
+
 # Given a header key, return the value
 Request_lookup() {
     local request="$1"; shift
@@ -86,7 +98,7 @@ Response_send() {
 # Send file with HTTP response headers
 WebServer_sendFile() {
     local request="$1"; shift
-    local file="$(Request_target "$request")";
+    local file="$(Request_file "$request")";
     local response="HTTP/1.1 200 OK"
     if [[ -z "$file" ]]; then
         return 0
@@ -146,7 +158,7 @@ Router_lookup() {
 WebServer_route() {
     local table="$1"; shift
     local request="$1"
-    local target="$(Request_target "$request")"
+    local target="$(Request_file "$request")"
     local function="$(Router_lookup "$table" "$target")"
     echo "ROUTING: $target using $function" >&2
     "$function" "$request"
