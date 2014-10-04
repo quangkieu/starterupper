@@ -3,7 +3,6 @@
 PIPES=""
 
 finish() {
-    echo "Wait! You're not done yet!"
     rm -f $PIPES 2> /dev/null
 }
 
@@ -85,17 +84,11 @@ Pipe_await() {
 Pipe_write() {
     local pipe="$1"; shift
     local data="$1"
-    # If we got a real pipe, the pipe will wait
-    if [[ -p "$pipe" ]]; then
-        # Hooray for blocking writes
-        # We use echo here so we can send multi-line strings on one line
-        echo "$data" > "$pipe"
-    # Windows users can't have nice things, as usual...
-    elif [[ -f "$pipe" ]]; then
-        # Boo hiss... We need to implement our own blocking write
-        # We use echo here so we can send multi-line strings on one line
-        echo "$data" > "$pipe"
-        # Wait for the other side to read
+    # We use echo here so we can send multi-line strings on one line
+    echo "$data" > "$pipe"
+    # If we got a real pipe, the pipe will wait, but if we got a fake pipe, ...
+    if [[ ! -p "$pipe" ]]; then
+        # We need to wait for the other side to read
         while [[ "0" != "$(Utility_fileSize "$pipe")" ]]; do
             sleep 1
         done
@@ -118,6 +111,7 @@ Pipe_read() {
             sleep 1
         done
         read line < "$pipe"
+        # Remove the line that we just read, because we've got to fake it
         sed -i -e "1d" "$pipe"
         printf "$line"
     fi

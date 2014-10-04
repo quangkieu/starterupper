@@ -5,18 +5,15 @@
   <title>REPOSITORY Setup</title>
   <!-- Suppress favicon -->
   <link rel="shortcut icon" href="#" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/reset.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />
   <style>
-  a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,caption,center,cite,code,dd,del,details,dfn,dialog,div,dl,dt,em,embed,fieldset,figcaption,figure,font,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,hr,html,i,iframe,img,ins,kbd,label,legend,li,main,mark,menu,meter,nav,object,ol,output,p,pre,progress,q,rp,rt,ruby,s,samp,section,small,span,strike,strong,sub,summary,sup,table,tbody,td,tfoot,th,thead,time,tr,tt,u,ul,var,video,xmp{border:0;margin:0;padding:0;font-size:100%}html,body{height:100%}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section{display:block}b,strong{font-weight:bold}img{color:transparent;font-size:0;vertical-align:middle;-ms-interpolation-mode:bicubic}ol,ul{list-style:none}li{display:list-item}table{border-collapse:collapse;border-spacing:0}th,td,caption{font-weight:normal;vertical-align:top;text-align:left}q{quotes:none}q:before,q:after{content:'';content:none}sub,sup,small{font-size:75%}sub,sup{line-height:0;position:relative;vertical-align:baseline}sub{bottom:-0.25em}sup{top:-0.5em}svg{overflow:hidden}
-  body{font:13px/1.5 'Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif}pre,code{font-family:'DejaVu Sans Mono',Menlo,Consolas,monospace}hr{border:0 solid #ccc;border-top-width:1px;clear:both;height:0}h1{font-size:25px}h2{font-size:23px}h3{font-size:21px}h4{font-size:19px}h5{font-size:17px}h6{font-size:15px}ol{list-style:decimal}ul{list-style:disc}li{margin-left:30px}p,dl,hr,h1,h2,h3,h4,h5,h6,ol,ul,pre,table,address,fieldset,figure{margin-bottom:20px}
-  body{min-width:960px}.container_12,.container_16{margin-left:auto;margin-right:auto;width:960px}.grid_1,.grid_2,.grid_3,.grid_4,.grid_5,.grid_6,.grid_7,.grid_8,.grid_9,.grid_10,.grid_11,.grid_12,.grid_13,.grid_14,.grid_15,.grid_16{display:inline;float:left;margin-left:10px;margin-right:10px}.push_1,.pull_1,.push_2,.pull_2,.push_3,.pull_3,.push_4,.pull_4,.push_5,.pull_5,.push_6,.pull_6,.push_7,.pull_7,.push_8,.pull_8,.push_9,.pull_9,.push_10,.pull_10,.push_11,.pull_11,.push_12,.pull_12,.push_13,.pull_13,.push_14,.pull_14,.push_15,.pull_15{position:relative}.container_12 .grid_3,.container_16 .grid_4{width:220px}.container_12 .grid_6,.container_16 .grid_8{width:460px}.container_12 .grid_9,.container_16 .grid_12{width:700px}.container_12 .grid_12,.container_16 .grid_16{width:940px}.alpha{margin-left:0}.omega{margin-right:0}.container_12 .grid_1{width:60px}.container_12 .grid_2{width:140px}.container_12 .grid_4{width:300px}.container_12 .grid_5{width:380px}.container_12 .grid_7{width:540px}.container_12 .grid_8{width:620px}.container_12 .grid_10{width:780px}.container_12 .grid_11{width:860px}.container_16 .grid_1{width:40px}.container_16 .grid_2{width:100px}.container_16 .grid_3{width:160px}.container_16 .grid_5{width:280px}.container_16 .grid_6{width:340px}.container_16 .grid_7{width:400px}.container_16 .grid_9{width:520px}.container_16 .grid_10{width:580px}.container_16 .grid_11{width:640px}.container_16 .grid_13{width:760px}.container_16 .grid_14{width:820px}.container_16 .grid_15{width:880px}.container_12 .prefix_3,.container_16 .prefix_4{padding-left:240px}.container_12 .prefix_6,.container_16 .prefix_8{padding-left:480px}.container_12 .prefix_9,.container_16 .prefix_12{padding-left:720px}.container_12 .prefix_1{padding-left:80px}.container_12 .prefix_2{padding-left:160px}.container_12 .prefix_4{padding-left:320px}.container_12 .prefix_5{padding-left:400px}.container_12 .prefix_7{padding-left:560px}.container_12 .prefix_8{padding-left:640px}.container_12 .prefix_10{padding-left:800px}.container_12 .prefix_11{padding-left:880px}.container_16 .prefix_1{padding-left:60px}.container_16 .prefix_2{padding-left:120px}.container_16 .prefix_3{padding-left:180px}.container_16 .prefix_5{padding-left:300px}.container_16 .prefix_6{padding-left:360px}.container_16 .prefix_7{padding-left:420px}.container_16 .prefix_9{padding-left:540px}.container_16 .prefix_10{padding-left:600px}.container_16 .prefix_11{padding-left:660px}.container_16 .prefix_13{padding-left:780px}.container_16 .prefix_14{padding-left:840px}.container_16 .prefix_15{padding-left:900px}.container_12 .suffix_3,.container_16 .suffix_4{padding-right:240px}.container_12 .suffix_6,.container_16 .suffix_8{padding-right:480px}.container_12 .suffix_9,.container_16 .suffix_12{padding-right:720px}.container_12 .suffix_1{padding-right:80px}.container_12 .suffix_2{padding-right:160px}.container_12 .suffix_4{padding-right:320px}.container_12 .suffix_5{padding-right:400px}.container_12 .suffix_7{padding-right:560px}.container_12 .suffix_8{padding-right:640px}.container_12 .suffix_10{padding-right:800px}.container_12 .suffix_11{padding-right:880px}.container_16 .suffix_1{padding-right:60px}.container_16 .suffix_2{padding-right:120px}.container_16 .suffix_3{padding-right:180px}.container_16 .suffix_5{padding-right:300px}.container_16 .suffix_6{padding-right:360px}.container_16 .suffix_7{padding-right:420px}.container_16 .suffix_9{padding-right:540px}.container_16 .suffix_10{padding-right:600px}.container_16 .suffix_11{padding-right:660px}.container_16 .suffix_13{padding-right:780px}.container_16 .suffix_14{padding-right:840px}.container_16 .suffix_15{padding-right:900px}.container_12 .push_3,.container_16 .push_4{left:240px}.container_12 .push_6,.container_16 .push_8{left:480px}.container_12 .push_9,.container_16 .push_12{left:720px}.container_12 .push_1{left:80px}.container_12 .push_2{left:160px}.container_12 .push_4{left:320px}.container_12 .push_5{left:400px}.container_12 .push_7{left:560px}.container_12 .push_8{left:640px}.container_12 .push_10{left:800px}.container_12 .push_11{left:880px}.container_16 .push_1{left:60px}.container_16 .push_2{left:120px}.container_16 .push_3{left:180px}.container_16 .push_5{left:300px}.container_16 .push_6{left:360px}.container_16 .push_7{left:420px}.container_16 .push_9{left:540px}.container_16 .push_10{left:600px}.container_16 .push_11{left:660px}.container_16 .push_13{left:780px}.container_16 .push_14{left:840px}.container_16 .push_15{left:900px}.container_12 .pull_3,.container_16 .pull_4{left:-240px}.container_12 .pull_6,.container_16 .pull_8{left:-480px}.container_12 .pull_9,.container_16 .pull_12{left:-720px}.container_12 .pull_1{left:-80px}.container_12 .pull_2{left:-160px}.container_12 .pull_4{left:-320px}.container_12 .pull_5{left:-400px}.container_12 .pull_7{left:-560px}.container_12 .pull_8{left:-640px}.container_12 .pull_10{left:-800px}.container_12 .pull_11{left:-880px}.container_16 .pull_1{left:-60px}.container_16 .pull_2{left:-120px}.container_16 .pull_3{left:-180px}.container_16 .pull_5{left:-300px}.container_16 .pull_6{left:-360px}.container_16 .pull_7{left:-420px}.container_16 .pull_9{left:-540px}.container_16 .pull_10{left:-600px}.container_16 .pull_11{left:-660px}.container_16 .pull_13{left:-780px}.container_16 .pull_14{left:-840px}.container_16 .pull_15{left:-900px}.clear{clear:both;display:block;overflow:hidden;visibility:hidden;width:0;height:0}.clearfix:before,.clearfix:after,.container_12:before,.container_12:after,.container_16:before,.container_16:after{content:'.';display:block;overflow:hidden;visibility:hidden;font-size:0;line-height:0;width:0;height:0}.clearfix:after,.container_12:after,.container_16:after{clear:both}.clearfix,.container_12,.container_16{zoom:1}
   h1 {margin:0px; padding:0px;}
   hgroup div {position: relative; top: 50%; transform: translateY(70%);}
   </style>
-  <script src="ractive-legacy.min.js"></script>
-<!--  <script src="http://cdn.ractivejs.org/latest/ractive-legacy.min.js"></script> -->
-  <script>
-  (function(a){if(typeof exports==="object"){module.exports=a()}else{if(typeof define==="function"&&define.amd){define(a)}else{var c;try{c=window}catch(b){c=self}c.SparkMD5=a()}}}(function(c){var e=function(s,r){return(s+r)&4294967295},n=function(z,v,u,r,y,w){v=e(e(v,z),e(r,w));return e((v<<y)|(v>>>(32-y)),u)},a=function(v,u,A,z,r,y,w){return n((u&A)|((~u)&z),v,u,r,y,w)},k=function(v,u,A,z,r,y,w){return n((u&z)|(A&(~z)),v,u,r,y,w)},f=function(v,u,A,z,r,y,w){return n(u^A^z,v,u,r,y,w)},p=function(v,u,A,z,r,y,w){return n(A^(u|(~z)),v,u,r,y,w)},d=function(s,u){var t=s[0],r=s[1],w=s[2],v=s[3];t=a(t,r,w,v,u[0],7,-680876936);v=a(v,t,r,w,u[1],12,-389564586);w=a(w,v,t,r,u[2],17,606105819);r=a(r,w,v,t,u[3],22,-1044525330);t=a(t,r,w,v,u[4],7,-176418897);v=a(v,t,r,w,u[5],12,1200080426);w=a(w,v,t,r,u[6],17,-1473231341);r=a(r,w,v,t,u[7],22,-45705983);t=a(t,r,w,v,u[8],7,1770035416);v=a(v,t,r,w,u[9],12,-1958414417);w=a(w,v,t,r,u[10],17,-42063);r=a(r,w,v,t,u[11],22,-1990404162);t=a(t,r,w,v,u[12],7,1804603682);v=a(v,t,r,w,u[13],12,-40341101);w=a(w,v,t,r,u[14],17,-1502002290);r=a(r,w,v,t,u[15],22,1236535329);t=k(t,r,w,v,u[1],5,-165796510);v=k(v,t,r,w,u[6],9,-1069501632);w=k(w,v,t,r,u[11],14,643717713);r=k(r,w,v,t,u[0],20,-373897302);t=k(t,r,w,v,u[5],5,-701558691);v=k(v,t,r,w,u[10],9,38016083);w=k(w,v,t,r,u[15],14,-660478335);r=k(r,w,v,t,u[4],20,-405537848);t=k(t,r,w,v,u[9],5,568446438);v=k(v,t,r,w,u[14],9,-1019803690);w=k(w,v,t,r,u[3],14,-187363961);r=k(r,w,v,t,u[8],20,1163531501);t=k(t,r,w,v,u[13],5,-1444681467);v=k(v,t,r,w,u[2],9,-51403784);w=k(w,v,t,r,u[7],14,1735328473);r=k(r,w,v,t,u[12],20,-1926607734);t=f(t,r,w,v,u[5],4,-378558);v=f(v,t,r,w,u[8],11,-2022574463);w=f(w,v,t,r,u[11],16,1839030562);r=f(r,w,v,t,u[14],23,-35309556);t=f(t,r,w,v,u[1],4,-1530992060);v=f(v,t,r,w,u[4],11,1272893353);w=f(w,v,t,r,u[7],16,-155497632);r=f(r,w,v,t,u[10],23,-1094730640);t=f(t,r,w,v,u[13],4,681279174);v=f(v,t,r,w,u[0],11,-358537222);w=f(w,v,t,r,u[3],16,-722521979);r=f(r,w,v,t,u[6],23,76029189);t=f(t,r,w,v,u[9],4,-640364487);v=f(v,t,r,w,u[12],11,-421815835);w=f(w,v,t,r,u[15],16,530742520);r=f(r,w,v,t,u[2],23,-995338651);t=p(t,r,w,v,u[0],6,-198630844);v=p(v,t,r,w,u[7],10,1126891415);w=p(w,v,t,r,u[14],15,-1416354905);r=p(r,w,v,t,u[5],21,-57434055);t=p(t,r,w,v,u[12],6,1700485571);v=p(v,t,r,w,u[3],10,-1894986606);w=p(w,v,t,r,u[10],15,-1051523);r=p(r,w,v,t,u[1],21,-2054922799);t=p(t,r,w,v,u[8],6,1873313359);v=p(v,t,r,w,u[15],10,-30611744);w=p(w,v,t,r,u[6],15,-1560198380);r=p(r,w,v,t,u[13],21,1309151649);t=p(t,r,w,v,u[4],6,-145523070);v=p(v,t,r,w,u[11],10,-1120210379);w=p(w,v,t,r,u[2],15,718787259);r=p(r,w,v,t,u[9],21,-343485551);s[0]=e(t,s[0]);s[1]=e(r,s[1]);s[2]=e(w,s[2]);s[3]=e(v,s[3])},q=function(t){var u=[],r;for(r=0;r<64;r+=4){u[r>>2]=t.charCodeAt(r)+(t.charCodeAt(r+1)<<8)+(t.charCodeAt(r+2)<<16)+(t.charCodeAt(r+3)<<24)}return u},m=function(r){var t=[],s;for(s=0;s<64;s+=4){t[s>>2]=r[s]+(r[s+1]<<8)+(r[s+2]<<16)+(r[s+3]<<24)}return t},l=function(A){var u=A.length,r=[1732584193,-271733879,-1732584194,271733878],w,t,z,x,y,v;for(w=64;w<=u;w+=64){d(r,q(A.substring(w-64,w)))}A=A.substring(w-64);t=A.length;z=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];for(w=0;w<t;w+=1){z[w>>2]|=A.charCodeAt(w)<<((w%4)<<3)}z[w>>2]|=128<<((w%4)<<3);if(w>55){d(r,z);for(w=0;w<16;w+=1){z[w]=0}}x=u*8;x=x.toString(16).match(/(.*?)(.{0,8})$/);y=parseInt(x[2],16);v=parseInt(x[1],16)||0;z[14]=y;z[15]=v;d(r,z);return r},o=function(z){var t=z.length,r=[1732584193,-271733879,-1732584194,271733878],v,s,y,w,x,u;for(v=64;v<=t;v+=64){d(r,m(z.subarray(v-64,v)))}z=(v-64)<t?z.subarray(v-64):new Uint8Array(0);s=z.length;y=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];for(v=0;v<s;v+=1){y[v>>2]|=z[v]<<((v%4)<<3)}y[v>>2]|=128<<((v%4)<<3);if(v>55){d(r,y);for(v=0;v<16;v+=1){y[v]=0}}w=t*8;w=w.toString(16).match(/(.*?)(.{0,8})$/);x=parseInt(w[2],16);u=parseInt(w[1],16)||0;y[14]=x;y[15]=u;d(r,y);return r},j=["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"],h=function(u){var t="",r;for(r=0;r<4;r+=1){t+=j[(u>>(r*8+4))&15]+j[(u>>(r*8))&15]}return t},b=function(r){var s;for(s=0;s<r.length;s+=1){r[s]=h(r[s])}return r.join("")},i=function(r){return b(l(r))},g=function(){this.reset()};if(i("hello")!=="5d41402abc4b2a76b9719d911017c592"){e=function(r,u){var t=(r&65535)+(u&65535),s=(r>>16)+(u>>16)+(t>>16);return(s<<16)|(t&65535)}}g.prototype.append=function(r){if(/[\u0080-\uFFFF]/.test(r)){r=unescape(encodeURIComponent(r))}this.appendBinary(r);return this};g.prototype.appendBinary=function(t){this._buff+=t;this._length+=t.length;var s=this._buff.length,r;for(r=64;r<=s;r+=64){d(this._state,q(this._buff.substring(r-64,r)))}this._buff=this._buff.substr(r-64);return this};g.prototype.end=function(t){var w=this._buff,v=w.length,u,s=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],r;for(u=0;u<v;u+=1){s[u>>2]|=w.charCodeAt(u)<<((u%4)<<3)}this._finish(s,v);r=!!t?this._state:b(this._state);this.reset();return r};g.prototype._finish=function(s,w){var u=w,t,v,r;s[u>>2]|=128<<((u%4)<<3);if(u>55){d(this._state,s);for(u=0;u<16;u+=1){s[u]=0}}t=this._length*8;t=t.toString(16).match(/(.*?)(.{0,8})$/);v=parseInt(t[2],16);r=parseInt(t[1],16)||0;s[14]=v;s[15]=r;d(this._state,s)};g.prototype.reset=function(){this._buff="";this._length=0;this._state=[1732584193,-271733879,-1732584194,271733878];return this};g.prototype.destroy=function(){delete this._state;delete this._buff;delete this._length};g.hash=function(t,r){if(/[\u0080-\uFFFF]/.test(t)){t=unescape(encodeURIComponent(t))}var s=l(t);return !!r?s:b(s)};g.hashBinary=function(s,r){var t=l(s);return !!r?t:b(t)};g.ArrayBuffer=function(){this.reset()};g.ArrayBuffer.prototype.append=function(r){var u=this._concatArrayBuffer(this._buff,r),t=u.length,s;this._length+=r.byteLength;for(s=64;s<=t;s+=64){d(this._state,m(u.subarray(s-64,s)))}this._buff=(s-64)<t?u.subarray(s-64):new Uint8Array(0);return this};g.ArrayBuffer.prototype.end=function(t){var w=this._buff,v=w.length,s=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],u,r;for(u=0;u<v;u+=1){s[u>>2]|=w[u]<<((u%4)<<3)}this._finish(s,v);r=!!t?this._state:b(this._state);this.reset();return r};g.ArrayBuffer.prototype._finish=g.prototype._finish;g.ArrayBuffer.prototype.reset=function(){this._buff=new Uint8Array(0);this._length=0;this._state=[1732584193,-271733879,-1732584194,271733878];return this};g.ArrayBuffer.prototype.destroy=g.prototype.destroy;g.ArrayBuffer.prototype._concatArrayBuffer=function(u,s){var t=u.length,r=new Uint8Array(t+s.byteLength);r.set(u);r.set(new Uint8Array(s),t);return r};g.ArrayBuffer.hash=function(r,s){var t=o(new Uint8Array(r));return !!s?t:b(t)};return g}));
-  </script>
+  <script src="http://lawrancej.github.io/starterupper/ractive-legacy.min.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/sparkMD5.js"></script>
 </head>
 <body>
   <article>
@@ -66,52 +63,7 @@ git config user.email "{{email}}"</pre>
           <hr />
         </hgroup>
         <div class="clear"></div>
-        <div class="grid_2"><svg
-   width="140px"
-   height="140px"
-   id="svg3613"
-   version="1.1">
-  <defs
-     id="defs3615" />
-  <g id="layer1">
-    <g
-       transform="matrix(0.92086425,0,0,0.92086425,-333.37024,-5.391957)"
-       id="g4100">
-      <path
-         d="m 438.26125,8.04375 c -41.68375,0 -75.485,33.795 -75.485,75.485 0,33.35125 21.62875,61.64625 51.62125,71.6275 3.7725,0.69875 5.1575,-1.6375 5.1575,-3.63125 0,-1.8 -0.07,-7.74625 -0.1025,-14.05375 -21,4.56625 -25.43125,-8.90625 -25.43125,-8.90625 C 390.5875,119.84 385.64,117.52 385.64,117.52 c -6.84875,-4.685 0.51625,-4.58875 0.51625,-4.58875 7.58,0.53125 11.57125,7.78 11.57125,7.78 6.7325,11.53875 17.65875,8.2025 21.96625,6.27375 0.6775,-4.87875 2.63375,-8.21 4.7925,-10.09375 C 407.72,114.9825 390.095,108.51 390.095,79.58625 c 0,-8.24125 2.94875,-14.975 7.7775,-20.26125 -0.78375,-1.9025 -3.3675,-9.57875 0.73125,-19.97625 0,0 6.33875,-2.02875 20.76375,7.7375 6.02125,-1.6725 12.47875,-2.51125 18.89375,-2.54 6.415,0.02875 12.8775,0.8675 18.91,2.54 14.4075,-9.76625 20.7375,-7.7375 20.7375,-7.7375 4.10875,10.3975 1.52375,18.07375 0.74,19.97625 4.84,5.28625 7.76875,12.02 7.76875,20.26125 0,28.9925 -17.65875,35.37625 -34.4675,37.245 2.7075,2.3425 5.12,6.93625 5.12,13.97875 0,10.1 -0.0875,18.22875 -0.0875,20.715 0,2.00875 1.35875,4.3625 5.185,3.62125 29.97625,-9.9925 51.5775,-38.2775 51.5775,-71.6175 0,-41.69 -33.79625,-75.485 -75.48375,-75.485"
-         style="fill:#1b1817;fill-opacity:1;fill-rule:evenodd;stroke:none"
-         id="path26" />
-      <path
-         d="m 391.36625,116.42375 c -0.16625,0.37625 -0.75625,0.4875 -1.29375,0.23 -0.5475,-0.24625 -0.855,-0.7575 -0.6775,-1.13375 0.1625,-0.385 0.75375,-0.4925 1.3,-0.235 0.54875,0.24625 0.86125,0.7625 0.67125,1.13875 l 0,0"
-         style="fill:#1b1817;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="path28" />
-      <path
-         d="m 394.42375,119.83375 c -0.36,0.33375 -1.06375,0.17875 -1.54125,-0.34875 -0.49375,-0.52625 -0.58625,-1.23 -0.22125,-1.56875 0.37125,-0.3325 1.05375,-0.17625 1.54875,0.34875 0.49375,0.5325 0.59,1.23125 0.21375,1.56875 l 0,0"
-         style="fill:#1b1817;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="path30" />
-      <path
-         d="m 397.4,124.18125 c -0.4625,0.32125 -1.21875,0.02 -1.68625,-0.65125 -0.4625,-0.67125 -0.4625,-1.47625 0.01,-1.79875 0.46875,-0.3225 1.21375,-0.0312 1.6875,0.63375 0.46125,0.6825 0.46125,1.4875 -0.0113,1.81625 l 0,0"
-         style="fill:#1b1817;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="path32" />
-      <path
-         d="m 401.4775,128.38125 c -0.41375,0.45625 -1.295,0.33375 -1.94,-0.28875 -0.66,-0.60875 -0.84375,-1.4725 -0.42875,-1.92875 0.41875,-0.4575 1.305,-0.32875 1.955,0.28875 0.655,0.6075 0.855,1.4775 0.41375,1.92875 l 0,0"
-         style="fill:#1b1817;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="path34" />
-      <path
-         d="m 407.1025,130.82 c -0.1825,0.59125 -1.03125,0.86 -1.88625,0.60875 -0.85375,-0.25875 -1.4125,-0.95125 -1.24,-1.54875 0.1775,-0.595 1.03,-0.875 1.89125,-0.60625 0.8525,0.2575 1.4125,0.945 1.235,1.54625 l 0,0"
-         style="fill:#1b1817;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="path36" />
-      <path
-         d="m 413.28,131.2725 c 0.0213,0.6225 -0.70375,1.13875 -1.60125,1.15 -0.9025,0.02 -1.6325,-0.48375 -1.6425,-1.09625 0,-0.62875 0.70875,-1.14 1.61125,-1.155 0.8975,-0.0175 1.6325,0.4825 1.6325,1.10125 l 0,0"
-         style="fill:#1b1817;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="path38" />
-      <path
-         d="m 419.02875,130.29375 c 0.1075,0.6075 -0.51625,1.23125 -1.4075,1.3975 -0.87625,0.16 -1.6875,-0.215 -1.79875,-0.8175 -0.10875,-0.6225 0.52625,-1.24625 1.40125,-1.4075 0.8925,-0.155 1.69125,0.21 1.805,0.8275 l 0,0"
-         style="fill:#1b1817;fill-opacity:1;fill-rule:nonzero;stroke:none"
-         id="path40" />
-    </g>
-  </g>
-</svg></div>
+        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/github.svg" width="140" height="140" /></div>
         <div class="grid_4">
           {{#if githubLoggedIn}}
           You are signed into Github <button>Sign out</button>
@@ -154,27 +106,7 @@ git config user.email "{{email}}"</pre>
           <hr />
         </hgroup>
         <div class="clear"></div>
-        <div class="grid_2"><svg
-   viewBox="0 0 114.8625 114.8625"
-   height="140px"
-   width="140px"
-   version="1.1"
-   id="svg2"><defs
-     id="defs6"><clipPath
-       id="clipPath18"
-       clipPathUnits="userSpaceOnUse"><path
-         id="path20"
-         d="M 0,918.855 0,0 l 918.879,0 0,918.855 -918.879,0 z" /></clipPath></defs><g
-     transform="matrix(1.25,0,0,-1.25,0,114.8625)"
-     id="g10"><g
-       transform="scale(0.1,0.1)"
-       id="g12"><g
-         id="g14"><g
-           clip-path="url(#clipPath18)"
-           id="g16"><path
-             id="path22"
-             style="fill:#f03c2e;fill-opacity:1;fill-rule:nonzero;stroke:none"
-             d="M 901.543,500.352 500.352,901.527 c -23.094,23.11 -60.567,23.11 -83.692,0 L 333.359,818.211 439.031,712.535 c 24.563,8.293 52.727,2.727 72.297,-16.847 19.688,-19.696 25.203,-48.102 16.699,-72.75 L 629.883,521.094 c 24.648,8.496 53.066,3.004 72.754,-16.711 27.5,-27.492 27.5,-72.059 0,-99.574 -27.52,-27.516 -72.078,-27.516 -99.61,0 -20.683,20.703 -25.8,51.097 -15.312,76.582 l -95,94.992 0,-249.969 c 6.699,-3.32 13.027,-7.742 18.613,-13.312 27.5,-27.497 27.5,-72.059 0,-99.598 -27.5,-27.488 -72.09,-27.488 -99.57,0 -27.5,27.539 -27.5,72.101 0,99.598 6.797,6.789 14.668,11.925 23.066,15.363 l 0,252.281 c -8.398,3.438 -16.25,8.531 -23.066,15.367 -20.828,20.821 -25.84,51.395 -15.156,76.977 L 292.422,777.285 17.3242,502.211 c -23.10545,-23.129 -23.10545,-60.602 0,-83.711 L 418.535,17.3242 c 23.098,-23.10545 60.559,-23.10545 83.692,0 L 901.543,416.641 c 23.113,23.113 23.113,60.605 0,83.711" /></g></g></g></g></svg></div>
+        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/git.svg" width="140" height="140" /></div>
         <div class="grid_10">
           <button>Set up {{repo}}</button>
           <pre>git clone https://github.com/{{githubInstructorLogin}}/{{repo}}.git
