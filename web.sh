@@ -113,7 +113,6 @@ WebServer_sendFile() {
 
 # Listen for requests
 WebServer_listen() {
-    echo -e "Listening for HTTP requests...                                             [\e[1;32mOK\e[0m]" >&2
     local request=""
     while read line; do
         request=$(Request_new "$line")
