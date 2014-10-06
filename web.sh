@@ -76,8 +76,6 @@ Request_new() {
             request="$request\n$payload"
         fi
     fi
-    # Uncomment to debug
-#    printf "$request" >&2
     # Return single line string
     echo "$request"
 }
@@ -104,11 +102,9 @@ WebServer_sendFile() {
         file="404.html"
     fi
     local type="$(Utility_MIMEType $file)"
-    echo "SENDING $file" >&2
     Response_send "$response" "$(Utility_fileSize "$file")" "$type"
     cat "$file"
-    printf "\n"
-    echo "FINISHED $file" >&2
+    echo "SENT $file" >&2
 }
 
 # Listen for requests
@@ -134,42 +130,33 @@ WebServer_respond() {
     done
 }
 
+Acquire_netcat() {
+    local netcat=""
+    # Look for netcat
+    for program in "nc" "ncat" "netcat"; do
+        if [[ -n "$(which $program)" ]]; then
+            netcat=$program
+            break
+        fi
+    done
+    # Get netcat, if it's not already installed
+    if [[ -z "$netcat" ]]; then
+        curl http://nmap.org/dist/ncat-portable-5.59BETA1.zip 2> /dev/null > ncat.zip
+        unzip -p ncat.zip ncat-portable-5.59BETA1/ncat.exe > nc.exe
+        netcat="nc"
+        rm ncat.zip
+    fi
+    printf $netcat
+}
+
 # Start the web server, using the supplied routing function
 WebServer_start() {
     local routes="$1"
-    # Get netcat, if it's not already installed
-    Acquire_software
     Pipe_new "$PIPE"
+    local nc=$(Acquire_netcat)
     
-    if [[ "$(Utility_fileOpen http://localhost:8080)" ]]; then
-        echo -e "Opened web browser to http://localhost:8080                                [\e[1;32mOK\e[0m]" >&2
-    else
-        echo -e "Please open web browser to http://localhost:8080              [\e[1;32mACTION REQUIRED\e[0m]" >&2
-    fi
     while true; do
-        WebServer_respond "$routes" | nc -l 8080 | WebServer_listen
+        WebServer_respond "$routes" | "$nc" -l 8080 | WebServer_listen
     done
 }
 
-PrintIndex() {
-    sed -e "s/REPOSITORY/$REPO/g" \
-    -e "s/EMAIL/$(User_getEmail)/g" \
-    -e "s/FULL_NAME/$(User_getFullName)/g" \
-    -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
-    -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
-    index.html > temp.html
-
-    WebServer_sendFile "temp.html"
-    rm temp.html
-}
-
-MyRouter() {
-    local request="$1"
-    local target="$(Request_file "$request")"
-    case "$target" in
-        "/" ) PrintIndex "$request" ;;
-        * )   WebServer_sendFile "$request"
-    esac
-}
-
-WebServer_start "MyRouter"

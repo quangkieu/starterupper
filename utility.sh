@@ -11,16 +11,6 @@ trap finish EXIT
 # Non-interactive Functions
 # ---------------------------------------------------------------------
 
-Acquire_software() {
-    # If we don't have netcat, get it
-    # FIXME: need to detect which one we have, and wrap that
-    if [[ -z "$(which nc)" ]]; then
-        curl http://nmap.org/dist/ncat-portable-5.59BETA1.zip 2> /dev/null > ncat.zip
-        unzip -p ncat.zip ncat-portable-5.59BETA1/ncat.exe > nc.exe
-        rm ncat.zip
-    fi
-}
-
 # Utilities
 # ---------------------------------------------------------------------
 
