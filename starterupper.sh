@@ -44,7 +44,6 @@ source github.sh
 Github_setup() {
     User_setup
     echo $(User_getSchool)
-    Gravatar_setup "$(User_getEmail)"
     Github_setUsername
     Git_configureRepository "github.com" "$(Host_getUsername "github")" "$INSTRUCTOR_GITHUB"
     Github_authenticate
