@@ -80,11 +80,11 @@ git config user.email "{{email}}"</pre>
           <ol>
             {{#if githubLoggedIn}}
               {{#if !githubEmailFound}}
-               <li><a href="https://github.com/settings/emails" target="actionRequired">Add {{emailPrompt}} to Github account</a></li>
+               <li><a href="https://github.com/settings/emails" target="actionRequired">Send verification email from Github</a></li>
               {{/if}}
             {{else}}
               {{#if !githubEmailFound}}
-                <li><a href="https://github.com/settings/emails" target="actionRequired">Add email to Github account</a> or <a href="https://github.com/join" target="actionRequired">join Github</a><br />
+                <li><a href="https://github.com/settings/emails" target="actionRequired">Send verification email from Github</a> or <a href="https://github.com/join" target="actionRequired">join Github</a><br />
                 (use {{emailPrompt}})</li>
               {{/if}}
             {{/if}}

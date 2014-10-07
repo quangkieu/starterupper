@@ -1,7 +1,22 @@
 #!/bin/bash
 
+source utility.sh
+
 # Github non-interactive functions
 # ---------------------------------------------------------------------
+
+# Helpers
+
+# Invoke a Github API method requiring authorization using curl
+Github_invoke() {
+    local method=$1; shift
+    local url=$1; shift
+    local data=$1;
+    local header="Authorization: token $(git config --global github.token)"
+    curl -i --request "$method" -H "$header" -d "$data" "https://api.github.com$url" 2> /dev/null
+}
+
+# Queries
 
 # Is the name available on Github?
 Github_nameAvailable() {
@@ -29,24 +44,73 @@ Github_validUsername() {
     Utility_fail
 }
 
+# Are we logged into Github?
+Github_loggedIn() {
+    if [[ -n "$(git config --global github.token)" ]]; then
+        Utility_success
+    else
+        Utility_fail
+    fi    
+}
+
+# Did the user add their email to the Github account?
+Github_emailAdded() {
+    local email="$1"
+    local emails="$(Github_invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ')"
+    if [[ -z $(echo "$emails" | grep "$email") ]]; then
+        Utility_fail
+    else
+        Utility_success
+    fi
+}
+
+# Did the user verify their email with Github?
+Github_emailVerified() {
+    local email="$1"
+    local emails="$(Github_invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ')"
+    if [[ -z $(echo "$emails" | grep "$email" | grep "verified...true") ]]; then
+        Utility_fail
+    else
+        Utility_success
+    fi
+}
+
+# Commands
+
+# Log out of Github
+Github_logout() {
+    git config --global --unset github.login
+    git config --global --unset github.token
+}
+
+# Add email to Github account, if not already added
+# Even though this adds email programmatically, Github will not send a verification email.
+Github_addEmail() {
+    local email="$1"
+    if [[ ! $(Github_emailAdded "$email") ]]; then
+        Github_invoke POST "/user/emails" "[\"$email\"]" > /dev/null
+    fi
+}
+
 # Github CLI-interactive functions
 # ---------------------------------------------------------------------
 
-# Ask user to verify email
-Github_verifyEmail() {
-    echo "Press enter to open https://github.com/settings/emails to add your school email address."
-    echo "Open your email inbox and wait a minute for an email from Github."
-    echo "Follow its instructions: click the link in the email and click Confirm."
-    echo "$(Interactive_paste $(User_getEmail) "your school email")"
-    Interactive_fileOpen "https://github.com/settings/emails"
+Github_hasAccount() {
+    local hasAccount="n"
+    # If we don't have their github login, ...
+    if [[ -z "$(git config --global github.login)" ]]; then
+        # Ask if they're on github yet
+        read -p "Do you have a Github account (yes or No [default])? " hasAccount < /dev/tty
+        # Let's assume that they don't by default
+        if [[ $hasAccount != [Yy]* ]]; then
+            Utility_fail
+        else
+            Utility_success
+        fi
+    else
+        Utility_success
+    fi
 }
-
-# Ask the user to get the discount
-Github_getDiscount() {
-    echo "Press enter to open https://education.github.com/discount_requests/new to request an individual student educational discount from Github."
-    Interactive_fileOpen "https://education.github.com/discount_requests/new"
-}
-
 # Ask the user if they have an account yet, and guide them through onboarding
 Github_join() {
     local hasAccount="n"
@@ -87,6 +151,17 @@ Github_setUsername() {
     fi
 }
 
+# It seems AV software will run curl in a sandbox. This is fine for idempotent requests, but not good for non-idempotent requests.
+# Perhaps we can bypass the sandbox by using the /dev/tcp device...
+Github_randomIdea() {
+    # http://www.linuxjournal.com/content/more-using-bashs-built-devtcp-file-tcpip
+    exec 3<>/dev/tcp/www.google.com/80
+    echo -e "GET / HTTP/1.1\r\nhost: http://www.google.com\r\nConnection: close\r\n\r\n" >&3
+    cat <&3
+    exec 3>&-
+}
+
+# Attempt to login to Github
 Github_authorize() {
     local password="$1"; shift
     local code="$1"
@@ -152,15 +227,6 @@ Github_authenticate() {
     fi
 }
 
-# Invoke a Github API method requiring authorization using curl
-Github_invoke() {
-    local method=$1; shift
-    local url=$1; shift
-    local data=$1;
-    local header="Authorization: token $(git config --global github.token)"
-    curl -i --request "$method" -H "$header" -d "$data" "https://api.github.com$url" 2> /dev/null
-}
-
 # Share full name with Github
 Github_setFullName() {
     local fullName="$(User_getFullName)"
@@ -207,14 +273,6 @@ Github_sharePublicKey() {
             ssh_works=false
         fi
     fi
-}
-
-# Create a private repository manually
-Github_manualCreatePrivateRepo() {
-    echo "Press enter to open https://github.com/new to create private repository $REPO on Github."
-    echo "On that page, for Repository name, enter: $REPO. $(Interactive_paste "$REPO" "the repository name")"
-    echo "Then, select Private and click Create Repository (DON'T tinker with other settings)."
-    Interactive_fileOpen "https://github.com/new"
 }
 
 # Create a private repository on Github
@@ -286,27 +344,33 @@ Github_addCollaborators() {
     git fetch --all
 }
 
-# Setup a verified .edu email on github
-github_configure_email() {
-    # Check if email is validated via api
-    local emails="$(Github_invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ')"
-    local email="$(User_getEmail)"
+# Deprecate these
 
-    # Add email to github via api, if not set (FIXME: doesn't work)
-    if [[ -z $(echo "$emails" | grep "$email") ]]; then
-        Github_invoke POST "/user/emails" "\"$email\"" > /dev/null
-    fi
-    # Ask user to validate email if not validated
-    if [[ -z $(echo "$emails" | grep "verified...true") ]]; then
-        echo "IMPORTANT: Open your inbox and verify $email with Github."
-        sleep 3
-        Interactive_fileOpen "https://github.com/settings/emails"
-    else
-        return 0
-    fi
-    # Nag the user until they get it right
-    while [[ -z $(Github_invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ' | grep "verified...true") ]]; do
-        read -p "ERROR: $email is not verified yet. Verify, then press enter to continue." < /dev/tty
-    done
+# Create a private repository manually
+Github_manualCreatePrivateRepo() {
+    echo "Press enter to open https://github.com/new to create private repository $REPO on Github."
+    echo "On that page, for Repository name, enter: $REPO. $(Interactive_paste "$REPO" "the repository name")"
+    echo "Then, select Private and click Create Repository (DON'T tinker with other settings)."
+    Interactive_fileOpen "https://github.com/new"
 }
 
+# Ask user to verify email
+Github_verifyEmail() {
+    echo "Press enter to open https://github.com/settings/emails to add your school email address."
+    echo "Open your email inbox and wait a minute for an email from Github."
+    echo "Follow its instructions: click the link in the email and click Confirm."
+    echo "$(Interactive_paste $(User_getEmail) "your school email")"
+    Interactive_fileOpen "https://github.com/settings/emails"
+}
+
+# Ask the user to get the discount
+Github_getDiscount() {
+    echo "Press enter to open https://education.github.com/discount_requests/new to request an individual student educational discount from Github."
+    Interactive_fileOpen "https://education.github.com/discount_requests/new"
+}
+
+# Hmm, deep screen sandboxing mode will run a command twice. This is bad.
+# Github_authenticate
+# Github_addEmail "q2w3e4r5@mailinator.com"
+# echo $(Github_emailAdded "lawrancej@wit.edu")
+# echo $(Github_emailVerified "lawrancej@wit.edu")

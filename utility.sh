@@ -212,7 +212,7 @@ Valid_fullName() {
 # Side effect: set ~/.gitconfig user.name if unset and full name from OS validates.
 User_getFullName() {
     # First, look in the git configuration
-    local fullName="$(git config user.name)"
+    local fullName="$(git config --global user.name)"
     
     # Ask the OS for the user's full name, if it's not valid
     if [[ ! $(Valid_fullName "$fullName") ]]; then
@@ -260,7 +260,7 @@ Valid_email() {
 # Side effect: set ~/.gitconfig user.email if unset
 User_getEmail() {
     # Try to see if the user already stored the email address
-    local email="$(git config user.email | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
+    local email="$(git config --global user.email | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
     # If the stored email is bogus, ...
     if [[ ! $(Valid_email "$email") ]]; then
         # Guess an email address and save it
@@ -284,7 +284,7 @@ Valid_school() {
 
 # Get the user's school from their email address
 User_getSchool() {
-    local school="$(git config user.school)"
+    local school="$(git config --global user.school)"
     Acquire_software
     if [[ ! "$(Utility_nonEmptyValueMatchesRegex "$school" "\w+")" ]]; then
         school="$(echo -e "$(User_getEmailDomain)\r\n" | nc whois.educause.edu 43 | sed -n -e '/Registrant:/,/   .*/p' | sed -n -e '2,2p' | sed 's/^[ ]*//')"
@@ -298,7 +298,7 @@ User_getSchool() {
 # Get the project host username; defaults to machine username
 Host_getUsername() {
     local host="$1"
-    local username="$(git config $host.login)"
+    local username="$(git config --global $host.login)"
     if [[ -z "$username" ]]; then
         username="$(User_getUsername)"
     fi
