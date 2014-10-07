@@ -10,7 +10,7 @@ readonly PIPE=.httpipe
 # Is this a request line?
 Request_line() {
     local line="$1"
-    if [[ -z "$(printf "$line" | grep -E "GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE")" ]]; then
+    if [[ -z "$(echo "$line" | grep -E "^GET|^HEAD|^POST|^PUT|^DELETE|^CONNECT|^OPTIONS|^TRACE")" ]]; then
         Utility_fail
     fi
     Utility_success
@@ -28,12 +28,28 @@ Request_target() {
     echo "$request" | sed -e 's/^[^ ]* \(.*\) HTTP\/.*/\1/'
 }
 
-# Get the file from the request
+# Get the query portion of the request target URL, and return the results url decoded, line by line
+Request_query() {
+    local request="$1"
+    local target="$(Request_target "$request")"
+    echo -e "$(echo "$target" | sed -e 's/.*[?]\(.*\)$/\1/' | tr '&' '\n' | sed 'y/+/ /; s/%/\\x/g')"
+}
+
+# Given a query key, return the value
+Query_lookup() {
+    local query="$1"; shift
+    local key="$1"
+    printf "$query" | grep "$key" | sed -e "s/^$key=\(.*\)/\1/"
+}
+
+# Get the file from the request target URL
 Request_file() {
     local request="$1"
     local target="$(Request_target "$request")"
     # Leave the root request alone
     if [[ "$target" == "/" ]]; then
+        printf "/"
+    elif [[ "$target" == /?* ]]; then
         printf "/"
     # Remove attempts to look outside the current folder, strip off the leading slash and the query
     else
@@ -45,13 +61,13 @@ Request_file() {
 Request_lookup() {
     local request="$1"; shift
     local key="$1"
-    printf "$request" | grep "$key" | sed -e "s/^$key: \(.*\)/\1/"
+    echo -e "$request" | grep "$key" | sed -e "s/^$key: \(.*\)/\1/"
 }
 
 # Return the payload of the request, if any (e.g., for POST requests)
 Request_payload() {
     local request="$1"; shift
-    printf "$request" | sed -n -e '/^$/,${p}'
+    echo -e "$request" | sed -n -e '/^$/,${p}'
 }
 
 # Pipe HTTP request into a string
@@ -155,8 +171,5 @@ WebServer_start() {
     Pipe_new "$PIPE"
     local nc=$(Acquire_netcat)
     
-    while true; do
-        WebServer_respond "$routes" | "$nc" -l 8080 | WebServer_listen
-    done
+    WebServer_respond "$routes" | "$nc" -k -l 8080 | WebServer_listen
 }
-

@@ -93,7 +93,7 @@ Pipe_read() {
     if [[ -p "$pipe" ]]; then
         # Hooray for blocking reads
         read line < "$pipe"
-        printf "$line"
+        echo -e "$line"
     # Windows users can't have nice things, as usual...
     elif [[ -f "$pipe" ]]; then
         # Wait for the other side to write
@@ -103,7 +103,7 @@ Pipe_read() {
         read line < "$pipe"
         # Remove the line that we just read, because we've got to fake it
         sed -i -e "1d" "$pipe"
-        printf "$line"
+        echo -e "$line"
     fi
 }
 
