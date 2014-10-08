@@ -26,3 +26,6 @@ Test() {
     echo "$(Github_nameAvailable $(Host_getUsername "github"))"
     echo "$(Github_nameAvailable "asdlfkjawer2")"
 }
+
+query=$(Request_query "GET /?user.name=Joey+Lawrance&user.email=lawrancej%40wit.edu HTTP/1.1\n")
+Query_lookup "$query" "user.email"
