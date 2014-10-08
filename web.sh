@@ -28,18 +28,36 @@ Request_target() {
     echo "$request" | sed -e 's/^[^ ]* \(.*\) HTTP\/.*/\1/'
 }
 
-# Get the query portion of the request target URL, and return the results url decoded, line by line
+# Get the query portion of the request target URL, and return the results line by line
 Request_query() {
-    local request="$1"
-    local target="$(Request_target "$request")"
-    echo -e "$(echo "$target" | sed -e 's/.*[?]\(.*\)$/\1/' | tr '&' '\n' | sed 'y/+/ /; s/%/\\x/g')"
+    Request_target "$1" | sed -e 's/.*[?]\(.*\)$/\1/' | tr '&' '\n'
 }
 
-# Given a query key, return the value
+Request_postFormData() {
+    local request="$1"
+    local payload="$(Request_payload "$request")"
+    echo -e "REQUEST $request" >&2
+    if [[ "$(Request_lookup "$request" "Content-Type")" == "application/x-www-form-urlencoded" ]]; then
+        echo "$payload" | tr '&' '\n'
+    fi
+}
+
+# Given a query key, return the URL decoded value
 Query_lookup() {
     local query="$1"; shift
     local key="$1"
-    printf "$query" | grep "$key" | sed -e "s/^$key=\(.*\)/\1/"
+    echo -e "$(printf "$query" | grep "$key" | sed -e "s/^$key=\(.*\)/\1/" -e 'y/+/ /; s/%/\\x/g')"
+}
+
+Parameter_key() {
+    local parameter="$1"
+    echo "$parameter" | cut -d '=' -f 1
+}
+
+# Return the URL decoded value corresponding to the field
+Parameter_value() {
+    local parameter="$1"
+    echo -e "$(echo "$parameter" | cut -d '=' -f 2 | sed 'y/+/ /; s/%/\\x/g')"
 }
 
 # Get the file from the request target URL
@@ -86,11 +104,12 @@ Request_new() {
         # Sometimes, we have a payload in the request, so handle that, too...
         local length="$(Request_lookup "$request" "Content-Length")"
         local payload=""
-#        echo "length: $length" >&2
+        echo "length: $length" >&2
         if [[ -n "$length" ]] && [[ "$length" != "0" ]]; then
             read -n "$length" payload
             request="$request\n$payload"
         fi
+        echo -e "$payload" >&2
     fi
     # Return single line string
     echo "$request"

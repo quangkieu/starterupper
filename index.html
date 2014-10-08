@@ -21,11 +21,11 @@
     <script id="gravatar_template" type="text/ractive">
       <div style="display:none;"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=404" onerror="noGravatarAccount(this)" /></div>
       <section class="container_12">
-        <form>
+        <form method="get" action="/" >
         <hgroup>
           <h1 class="grid_2">Profile</h1>
           <div class="grid_4">Tell git your full name and school email address</div>
-          <div class="grid_6">Update or create your Gravatar to help the instructor learn names</div>
+          <div class="grid_6">Create or update your Gravatar to help the instructor learn names</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
@@ -35,8 +35,8 @@
           <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required autofocus /><br />
           <button>Configure Git</button>
           <pre>
-git config user.name "{{fullName}}"
-git config user.email "{{email}}"</pre>
+git config --global user.name "{{fullName}}"
+git config --global user.email "{{email}}"</pre>
         </div>
         <div class="grid_6">
           {{#if gravatarAccount }}
@@ -54,11 +54,13 @@ git config user.email "{{email}}"</pre>
       </section>
       <br />
       <form>
+      <input type="hidden" name="user.name" value="{{fullName}}" />
+      <input type="hidden" name="user.email" value="{{email}}" />
       <section class="container_12">
         <hgroup>
           <h1 class="grid_2">Github</h1>
           <div class="grid_4">Github hosts private repositories free for students</div>
-          <div class="grid_6">{{#if !githubLoggedIn}}Upgrade or create your Github account for educational use{{else}}{{#if !githubUpgradedPlan}}Upgrade your Github account for educational use{{else}}Thanks for setting up your Github account!{{/if}}{{/if}}</div>
+          <div class="grid_6">{{#if !githubLoggedIn}}Create or upgrade your Github account for educational use{{else}}{{#if !githubUpgradedPlan}}Upgrade your Github account for educational use{{else}}Thanks for setting up your Github account!{{/if}}{{/if}}</div>
           <div class="clear"></div>
           <hr />
         </hgroup>
@@ -80,11 +82,12 @@ git config user.email "{{email}}"</pre>
           <ol>
             {{#if githubLoggedIn}}
               {{#if !githubEmailFound}}
-               <li><a href="https://github.com/settings/emails" target="actionRequired">Send verification email from Github</a></li>
+               <li><a href="https://github.com/settings/emails" target="actionRequired">Add &amp; verify your email with Github</a></li>
               {{/if}}
             {{else}}
               {{#if !githubEmailFound}}
-                <li><a href="https://github.com/settings/emails" target="actionRequired">Send verification email from Github</a> or <a href="https://github.com/join" target="actionRequired">join Github</a><br />
+                <li><b>Github users:</b> <a href="https://github.com/settings/emails" target="actionRequired"> Add &amp; verify your email</a> <br />
+                <b>New to Github?</b> <a href="https://github.com/join" target="actionRequired">Join</a>
                 (use {{emailPrompt}})</li>
               {{/if}}
             {{/if}}
@@ -148,7 +151,7 @@ git push -u origin master</pre>
         emailPrompt: 'EMAIL',
 
         // Successful Github login?
-        githubLoggedIn: false,
+        githubLoggedIn: GITHUB_LOGGED_IN,
         // Does Github need two-factor auth?
         githubTwoFactor: true,
         // Is the email on the account?

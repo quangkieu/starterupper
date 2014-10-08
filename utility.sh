@@ -45,6 +45,15 @@ Utility_lastSuccess() {
     fi
 }
 
+Utility_asTrueFalse() {
+    local result="$1"
+    if [[ "$result" ]]; then
+        printf "true"
+    else
+        printf "false"
+    fi
+}
+
 # Make a named pipe. It sniffs for mkfifo and mknod first. If we don't get a real pipe, just fake it with a regular file.
 Pipe_new() {
     local pipe="$1"
@@ -208,6 +217,14 @@ Valid_fullName() {
     Utility_nonEmptyValueMatchesRegex "$fullName" "\w+ \w+"
 }
 
+# Set the full name, and return whether we were able to set it
+User_setFullName() {
+    local fullName="$1"
+    if [[ $(Valid_fullName "$fullName") ]]; then
+        git config --global user.name "$fullName"
+    fi
+}
+
 # Get the user's full name (Firstname Lastname); defaults to OS-supplied full name
 # Side effect: set ~/.gitconfig user.name if unset and full name from OS validates.
 User_getFullName() {
@@ -243,9 +260,7 @@ EOF
         esac
         
         # If we got a legit full name from the OS, update the git configuration to reflect it.
-        if [[ $(Valid_fullName "$fullName") ]]; then
-            git config --global user.name "$fullName"
-        fi
+        User_setFullName "$fullName" > /dev/null
     fi
     printf "$fullName"
 }
@@ -269,6 +284,13 @@ User_getEmail() {
     # Resave, just in case of goofups
     git config --global user.email "$email"
     printf "$email"
+}
+
+User_setEmail() {
+    local email="$1"
+    if [[ $(Valid_email "$email") ]]; then
+        git config --global user.email "$email"
+    fi
 }
 
 # Get the domain name out of the user's email address
