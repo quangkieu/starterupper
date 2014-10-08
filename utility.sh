@@ -101,7 +101,7 @@ Pipe_read() {
     # If we got a real pipe, read will block until data comes in
     if [[ -p "$pipe" ]]; then
         # Hooray for blocking reads
-        read line < "$pipe"
+        read -r line < "$pipe"
         echo -e "$line"
     # Windows users can't have nice things, as usual...
     elif [[ -f "$pipe" ]]; then
@@ -109,7 +109,7 @@ Pipe_read() {
         while [[ "0" == "$(Utility_fileSize "$pipe")" ]]; do
             sleep 1
         done
-        read line < "$pipe"
+        read -r line < "$pipe"
         # Remove the line that we just read, because we've got to fake it
         sed -i -e "1d" "$pipe"
         echo -e "$line"

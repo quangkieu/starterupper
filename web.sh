@@ -95,7 +95,7 @@ Request_new() {
     if [[ $(Request_line "$line") ]]; then
         local request="$line"
         # Read all headers
-        while read header; do
+        while read -r header; do
             request="$request\n$header"
             if [[ -z "$header" ]]; then
                 break
@@ -104,12 +104,10 @@ Request_new() {
         # Sometimes, we have a payload in the request, so handle that, too...
         local length="$(Request_lookup "$request" "Content-Length")"
         local payload=""
-        echo "length: $length" >&2
         if [[ -n "$length" ]] && [[ "$length" != "0" ]]; then
-            read -n "$length" payload
+            read -r -n "$length" payload
             request="$request\n$payload"
         fi
-        echo -e "$payload" >&2
     fi
     # Return single line string
     echo "$request"
@@ -145,7 +143,7 @@ WebServer_sendFile() {
 # Listen for requests
 WebServer_listen() {
     local request=""
-    while read line; do
+    while read -r line; do
         request=$(Request_new "$line")
         # Send the request through 
         Pipe_write "$PIPE" "$request\n"

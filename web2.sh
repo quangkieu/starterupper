@@ -9,7 +9,7 @@ PrintIndex() {
     echo "$(Request_payload "$request")" >&2
 #    printf "$(Request_query "$request")" >&2
     
-    Request_query "$request" | while read parameter; do
+    Request_postFormData "$request" | while read parameter; do
         local key="$(Parameter_key "$parameter")"
         local value="$(Parameter_value "$parameter")"
         case "$key" in
