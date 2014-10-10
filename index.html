@@ -25,7 +25,13 @@
         <hgroup>
           <h1 class="grid_2">Profile</h1>
           <div class="grid_4">Tell git your full name and school email address</div>
-          <div class="grid_6">Create or update your Gravatar to help the instructor learn names</div>
+          <div class="grid_6">
+            {{#if !gravatarAccount}}
+                Create or update your Gravatar to help the instructor learn names
+            {{else}}
+                Update your Gravatar to help the instructor learn names
+            {{/if}}
+          </div>
           <div class="clear"></div>
           <hr />
         </hgroup>
@@ -60,7 +66,17 @@ git config --global user.email "{{email}}"</pre>
         <hgroup>
           <h1 class="grid_2">Github</h1>
           <div class="grid_4">Github hosts private repositories free for students</div>
-          <div class="grid_6">{{#if !githubLoggedIn}}Create or upgrade your Github account for educational use{{else}}{{#if !githubUpgradedPlan}}Upgrade your Github account for educational use{{else}}Thanks for setting up your Github account!{{/if}}{{/if}}</div>
+          <div class="grid_6">
+            {{#if !githubLoggedIn}}
+                Create or upgrade your Github account for educational use
+            {{else}}
+                {{#if !githubUpgradedPlan}}
+                    Upgrade your Github account for educational use
+                {{else}}
+                    Thanks for setting up your Github account!
+                {{/if}}
+            {{/if}}
+          </div>
           <div class="clear"></div>
           <hr />
         </hgroup>
@@ -68,12 +84,12 @@ git config --global user.email "{{email}}"</pre>
         <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/github.svg" width="140" height="140" /></div>
         <div class="grid_4">
           {{#if githubLoggedIn}}
-          You are signed into Github <button>Sign out</button>
+            You are signed into Github <button>Sign out</button>
           {{else}}
-          <input type="text" name="github.login" value="{{githubUsername}}" placeholder="Github username" pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" required /><br />
-          <input type="password" name="github.password" placeholder="Password" pattern=".{7,}" required /><br />
+            <input type="text" name="github.login" value="{{githubUsername}}" placeholder="Github username" pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" required /><br />
+            <input type="password" name="github.password" placeholder="Password" pattern=".{7,}" required /><br />
           {{#if githubTwoFactor}}
-          <input type="text" name="github.code" placeholder="Authentication code" pattern="[0-9]{6}" required /><br />
+            <input type="text" name="github.code" placeholder="Authentication code" pattern="[0-9]{6}" required /><br />
           {{/if}}
           <button>Sign in</button> <a href="https://github.com/password_reset">Forgot password?</a>
           {{/if}}
@@ -136,30 +152,30 @@ git push -u origin master</pre>
       data: {
         // Properties we care about
         repo: 'REPOSITORY',
-        email: 'EMAIL',
+        email: 'USER_EMAIL',
         fullName: 'FULL_NAME',
         githubUsername: 'GITHUB_LOGIN',
         githubInstructorLogin: 'INSTRUCTOR_GITHUB',
         localRepo: 'LOCAL_REPO',
         
         // Gravatar ID
-        emailHash: SparkMD5.hash('EMAIL'),
+        emailHash: SparkMD5.hash('USER_EMAIL'),
         // Did we find a Gravatar image from the user's email? (Assume yes unless we get a 404 error)
         gravatarAccount: true,
         
         // Email placeholder
-        emailPrompt: 'EMAIL',
+        emailPrompt: 'USER_EMAIL',
 
         // Successful Github login?
         githubLoggedIn: GITHUB_LOGGED_IN,
         // Does Github need two-factor auth?
         githubTwoFactor: true,
         // Is the email on the account?
-        githubEmailFound: false,
+        githubEmailFound: GITHUB_EMAIL_ADDED,
         // Is the Github email verified?
-        githubVerifiedEmail: false,
+        githubVerifiedEmail: GITHUB_EMAIL_VERIFIED,
         // Can we create a private repository?
-        githubUpgradedPlan: false
+        githubUpgradedPlan: GITHUB_UPGRADED_PLAN
       }
     });
     

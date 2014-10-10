@@ -38,10 +38,13 @@ Github_validUsername() {
         if [[ ! $(Github_nameAvailable $username) ]]; then
             # It's valid
             Utility_success
+        else
+            Utility_fail
         fi
+    else
+        # Otherwise, it's not valid
+        Utility_fail
     fi
-    # Otherwise, it's not valid
-    Utility_fail
 }
 
 # Are we logged into Github?
@@ -72,6 +75,46 @@ Github_emailVerified() {
         Utility_fail
     else
         Utility_success
+    fi
+}
+
+# What plan does the user have?
+Github_plan() {
+    Github_invoke GET /user '' \
+        | sed -n -e '/[\"]plan[\"]/,${p}' \
+        | grep -E "[\"]name[\"]" \
+        | sed -e 's/ *[\"]name[\"]: [\"]\(.*\)[\"].*/\1/' \
+        | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' 'abcdefghijklmnopqrstuvwxyz'
+}
+
+# Is the user's plan upgraded?
+Github_upgradedPlan() {
+    local plan="$(Github_plan)"
+    # If we got nothing back, we're not authenticated
+    if [[ -z "$plan" ]]; then
+        Utility_fail
+    # If we got something back, and it's not the free plan, we're good
+    elif [[ "$plan" != "free" ]]; then
+        Utility_success
+    # The free plan won't cut it
+    else
+        Utility_fail
+    fi
+}
+
+# start -> logged_in -> added email -> verified email -> upgraded account
+Github_accountStatus() {
+    local email="$(User_getEmail)"
+    if [[ ! $(Github_loggedIn) ]]; then
+        printf "start"
+    elif [[ ! $(Github_emailAdded "$email") ]]; then
+        printf "logged_in"
+    elif [[ ! $(Github_emailVerified "$email") ]]; then
+        printf "added_email"
+    elif [[ ! $(Github_upgradedPlan) ]]; then
+        printf "verified_email"
+    else
+        printf "upgraded"
     fi
 }
 
@@ -111,6 +154,7 @@ Github_hasAccount() {
         Utility_success
     fi
 }
+
 # Ask the user if they have an account yet, and guide them through onboarding
 Github_join() {
     local hasAccount="n"
@@ -368,6 +412,8 @@ Github_getDiscount() {
     echo "Press enter to open https://education.github.com/discount_requests/new to request an individual student educational discount from Github."
     Interactive_fileOpen "https://education.github.com/discount_requests/new"
 }
+
+# Github_plan
 
 # Hmm, deep screen sandboxing mode will run a command twice. This is bad.
 # Github_authenticate

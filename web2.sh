@@ -8,6 +8,7 @@ PrintIndex() {
     
     echo "$(Request_payload "$request")" >&2
 #    printf "$(Request_query "$request")" >&2
+    local email
     
     Request_postFormData "$request" | while read parameter; do
         local key="$(Parameter_key "$parameter")"
@@ -17,21 +18,29 @@ PrintIndex() {
                 User_setFullName "$value"
                 ;;
             "user.email" )
+                email="$value"
                 User_setEmail "$value"
-#                echo "the email is $value" >&2 ;;
+                Github_addEmail "$value"
                 ;;
-            
+#            "github.login" )
+#                Githu
         esac
     done
     
     local githubLoggedIn=$(Utility_asTrueFalse $(Github_loggedIn))
+    local githubEmailVerified=$(Utility_asTrueFalse $(Github_emailVerified "$email"))
+    local githubUpgradedPlan=$(Utility_asTrueFalse $(Github_upgradedPlan))
+    local githubEmailAdded=$(Utility_asTrueFalse $(Github_emailAdded "$email"))
 
     sed -e "s/REPOSITORY/$REPO/g" \
-    -e "s/EMAIL/$(User_getEmail)/g" \
+    -e "s/USER_EMAIL/$(User_getEmail)/g" \
     -e "s/FULL_NAME/$(User_getFullName)/g" \
     -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
     -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
     -e "s/GITHUB_LOGGED_IN/$githubLoggedIn/g" \
+    -e "s/GITHUB_UPGRADED_PLAN/$githubUpgradedPlan/g" \
+    -e "s/GITHUB_EMAIL_ADDED/$githubEmailAdded/g" \
+    -e "s/GITHUB_EMAIL_VERIFIED/$githubEmailVerified/g" \
     index.html > temp.html
 
     WebServer_sendFile "temp.html"

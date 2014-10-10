@@ -49,6 +49,7 @@ Query_lookup() {
     echo -e "$(printf "$query" | grep "$key" | sed -e "s/^$key=\(.*\)/\1/" -e 'y/+/ /; s/%/\\x/g')"
 }
 
+# Returh the key corresponding to the field
 Parameter_key() {
     local parameter="$1"
     echo "$parameter" | cut -d '=' -f 1
