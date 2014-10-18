@@ -1,0 +1,77 @@
+<html>
+<head>
+<script src="jquery-2.1.1.min.js"></script>
+<script>
+// Courtesy: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+if ( !Date.prototype.toISOString ) {
+  ( function() {
+    function pad(number) {
+      var r = String(number);
+      if ( r.length === 1 ) {
+        r = '0' + r;
+      }
+      return r;
+    }
+    Date.prototype.toISOString = function() {
+      return this.getUTCFullYear()
+        + '-' + pad( this.getUTCMonth() + 1 )
+        + '-' + pad( this.getUTCDate() )
+        + 'T' + pad( this.getUTCHours() )
+        + ':' + pad( this.getUTCMinutes() )
+        + ':' + pad( this.getUTCSeconds() )
+        + '.' + String( (this.getUTCMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
+        + 'Z';
+    };
+  }() );
+}
+
+function iGot(event) {
+    var date = new Date();
+    var theData = '{"scopes":["repo","public_repo","user","write:public_key","user:email"],"note":"starterupper ' + date.toISOString() + '"}';
+    var username = $("#username").val();
+    var password = $("#password").val();
+    
+    alert(username);
+
+    $.ajax({
+        url: "https://api.github.com/authorizations",
+        type: "POST",
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader("Content-Type", "application/json");
+//            xhr.setRequestHeader("X-Github-OTP", $("#otp").val());
+            xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+        },
+        dataType: "json",
+        data: theData,
+//        header: {
+//            "X-GitHub-OTP" : $("#otp").value
+//        },
+//        password: $("#password").value,
+//        username: $("#username").value,
+        success: function( response ) {
+            for (key in response) { 
+                $( "#user" ).append( "<li>" + key + ": " + response[key] + "</li>" );
+            }
+        },
+        error: function( response ) {
+            alert("boo");
+            for (key in response) { 
+                $( "#user" ).append( "<li>" + key + ": " + response[key] + "</li>" );
+            //        alert(key + ": " + data[key]);
+            }
+        }
+    });
+}
+</script>
+</head>
+<body>
+<form>
+<input type="text" name="username" id="username" placeholder="Github username" /><br />
+<input type="password" name="password" id="password" placeholder="Password" /><br/>
+<input type="text" name="otp" id="otp" placeholder="Two-factor code" /><br/>
+<input type="button" onclick="iGot(this);" value="Login" />
+</form>
+
+<ul id="user"></ul>
+</body>
+</html>
