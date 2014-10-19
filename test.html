@@ -25,6 +25,9 @@ if ( !Date.prototype.toISOString ) {
   }() );
 }
 
+// btoa (worry about this) IE10+
+// JSON.stringify (don't worry about this) IE8+
+
 var badCredentials=false;
 var setOTP=false;
 var token="";
@@ -37,39 +40,53 @@ function getAuthorization() {
     }
 }
 
-function login(event) {
-    var date = new Date();
-    var theData = '{"scopes":["repo","public_repo","user","write:public_key","user:email"],"note":"starterupper ' + date.toISOString() + '"}';
-    
+// Generic Github API invoker
+function githubInvoke(settings) {
     $.ajax({
-        url: "https://api.github.com/authorizations",
-        type: "POST",
+        url: "https://api.github.com" + settings.url,
+        type: settings.method,
         beforeSend: function(xhr) {
             xhr.setRequestHeader("Authorization", getAuthorization());
             xhr.setRequestHeader("Content-Type", "application/json");
             if (setOTP) {
                 xhr.setRequestHeader("X-Github-OTP", $("#otp").val());
+                // It is one time, after all
+                setOTP=false;
             }
         },
+        contentType: "application/json",
         dataType: "json",
+        processData: false,
+        data: JSON.stringify(settings.data),
+        success: settings.success,
+        error: settings.fail
+    });
+}
+
+function login(event) {
+    var date = new Date();
+    var theData = {
+        scopes:["repo","public_repo","user","write:public_key","user:email"],
+        note:"starterupper " + date.toISOString()
+    };
+    githubInvoke({
+        url: "/authorizations",
+        method: "POST",
         data: theData,
         success: function( response ) {
+            badCredentials = false;
             token = response.token;
             for (key in response) { 
                 $( "#user" ).append( "<li>" + key + ": " + response[key] + "</li>" );
             }
         },
-        error: function( response ) {
+        fail: function( response ) {
             if (response.status == 401) {
                 if (response.responseJSON.message == "Bad credentials") {
-                    badCredentials=true;
+                    badCredentials = true;
                 } else if (response.responseJSON.message == "Must specify two-factor authentication OTP code.") {
-                    setOTP=true;
+                    setOTP = true;
                 }
-            }
-            $("#user").append("<li>" + response.responseJSON.message + "</li>" );
-            for (key in response) { 
-                $( "#user" ).append( "<li>" + key + ": " + response[key] + "</li>" );
             }
         }
     });
