@@ -25,39 +25,51 @@ if ( !Date.prototype.toISOString ) {
   }() );
 }
 
-function iGot(event) {
+var badCredentials=false;
+var setOTP=false;
+var token="";
+
+function getAuthorization() {
+    if (token=="") {
+        return "Basic " + btoa($("#username").val() + ":" + $("#password").val())
+    } else {
+        return "token " + token;
+    }
+}
+
+function login(event) {
     var date = new Date();
     var theData = '{"scopes":["repo","public_repo","user","write:public_key","user:email"],"note":"starterupper ' + date.toISOString() + '"}';
-    var username = $("#username").val();
-    var password = $("#password").val();
     
-    alert(username);
-
     $.ajax({
         url: "https://api.github.com/authorizations",
         type: "POST",
         beforeSend: function(xhr) {
+            xhr.setRequestHeader("Authorization", getAuthorization());
             xhr.setRequestHeader("Content-Type", "application/json");
-//            xhr.setRequestHeader("X-Github-OTP", $("#otp").val());
-            xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+            if (setOTP) {
+                xhr.setRequestHeader("X-Github-OTP", $("#otp").val());
+            }
         },
         dataType: "json",
         data: theData,
-//        header: {
-//            "X-GitHub-OTP" : $("#otp").value
-//        },
-//        password: $("#password").value,
-//        username: $("#username").value,
         success: function( response ) {
+            token = response.token;
             for (key in response) { 
                 $( "#user" ).append( "<li>" + key + ": " + response[key] + "</li>" );
             }
         },
         error: function( response ) {
-            alert("boo");
+            if (response.status == 401) {
+                if (response.responseJSON.message == "Bad credentials") {
+                    badCredentials=true;
+                } else if (response.responseJSON.message == "Must specify two-factor authentication OTP code.") {
+                    setOTP=true;
+                }
+            }
+            $("#user").append("<li>" + response.responseJSON.message + "</li>" );
             for (key in response) { 
                 $( "#user" ).append( "<li>" + key + ": " + response[key] + "</li>" );
-            //        alert(key + ": " + data[key]);
             }
         }
     });
@@ -69,7 +81,7 @@ function iGot(event) {
 <input type="text" name="username" id="username" placeholder="Github username" /><br />
 <input type="password" name="password" id="password" placeholder="Password" /><br/>
 <input type="text" name="otp" id="otp" placeholder="Two-factor code" /><br/>
-<input type="button" onclick="iGot(this);" value="Login" />
+<input type="button" onclick="login(this);" value="Login" />
 </form>
 
 <ul id="user"></ul>
