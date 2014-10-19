@@ -23,7 +23,7 @@ PrintIndex() {
                 Github_addEmail "$value"
                 ;;
 #            "github.login" )
-#                Githu
+#                Github
         esac
     done
     

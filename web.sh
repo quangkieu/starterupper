@@ -183,6 +183,13 @@ Acquire_netcat() {
     printf $netcat
 }
 
+server::works() {
+    local nc=$(Acquire_netcat)
+    "$nc" -l 8080 &
+    sleep 10
+    echo "works" > /dev/tcp/localhost/8080
+}
+
 # Start the web server, using the supplied routing function
 WebServer_start() {
     local routes="$1"
