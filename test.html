@@ -1,93 +1,21 @@
 <html>
 <head>
 <script src="jquery-2.1.1.min.js"></script>
+<script src="github.js"></script>
 <script>
-// Courtesy: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
-if ( !Date.prototype.toISOString ) {
-  ( function() {
-    function pad(number) {
-      var r = String(number);
-      if ( r.length === 1 ) {
-        r = '0' + r;
-      }
-      return r;
-    }
-    Date.prototype.toISOString = function() {
-      return this.getUTCFullYear()
-        + '-' + pad( this.getUTCMonth() + 1 )
-        + '-' + pad( this.getUTCDate() )
-        + 'T' + pad( this.getUTCHours() )
-        + ':' + pad( this.getUTCMinutes() )
-        + ':' + pad( this.getUTCSeconds() )
-        + '.' + String( (this.getUTCMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
-        + 'Z';
-    };
-  }() );
-}
-
-// btoa (worry about this) IE10+
-// JSON.stringify (don't worry about this) IE8+
-
-var badCredentials=false;
-var setOTP=false;
-var token="";
-
-function getAuthorization() {
-    if (token=="") {
-        return "Basic " + btoa($("#username").val() + ":" + $("#password").val())
-    } else {
-        return "token " + token;
-    }
-}
-
-// Generic Github API invoker
-function githubInvoke(settings) {
-    $.ajax({
-        url: "https://api.github.com" + settings.url,
-        type: settings.method,
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader("Authorization", getAuthorization());
-            xhr.setRequestHeader("Content-Type", "application/json");
-            if (setOTP) {
-                xhr.setRequestHeader("X-Github-OTP", $("#otp").val());
-                // It is one time, after all
-                setOTP=false;
-            }
-        },
-        contentType: "application/json",
-        dataType: "json",
-        processData: false,
-        data: JSON.stringify(settings.data),
-        success: settings.success,
-        error: settings.fail
-    });
-}
-
 function login(event) {
-    var date = new Date();
-    var theData = {
-        scopes:["repo","public_repo","user","write:public_key","user:email"],
-        note:"starterupper " + date.toISOString()
-    };
-    githubInvoke({
-        url: "/authorizations",
-        method: "POST",
-        data: theData,
-        success: function( response ) {
-            badCredentials = false;
-            token = response.token;
-            for (key in response) { 
-                $( "#user" ).append( "<li>" + key + ": " + response[key] + "</li>" );
-            }
+    Github.login({
+        username: $("#username").val(),
+        password: $("#password").val(),
+        otp: $("#otp").val(),
+        authenticated: function() {
+            $( "#user" ).append( "<li>Yay, authenticated!</li>" );
         },
-        fail: function( response ) {
-            if (response.status == 401) {
-                if (response.responseJSON.message == "Bad credentials") {
-                    badCredentials = true;
-                } else if (response.responseJSON.message == "Must specify two-factor authentication OTP code.") {
-                    setOTP = true;
-                }
-            }
+        badCredential: function() {
+            $( "#user" ).append( "<li>Boo, bad credential!</li>" );
+        },
+        twoFactor: function() {
+            $( "#user" ).append( "<li>Two factor OTP needed!</li>" );
         }
     });
 }
