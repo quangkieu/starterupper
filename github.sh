@@ -195,16 +195,6 @@ Github_setUsername() {
     fi
 }
 
-# It seems AV software will run curl in a sandbox. This is fine for idempotent requests, but not good for non-idempotent requests.
-# Perhaps we can bypass the sandbox by using the /dev/tcp device...
-Github_randomIdea() {
-    # http://www.linuxjournal.com/content/more-using-bashs-built-devtcp-file-tcpip
-    exec 3<>/dev/tcp/www.google.com/80
-    echo -e "GET / HTTP/1.1\r\nhost: http://www.google.com\r\nConnection: close\r\n\r\n" >&3
-    cat <&3
-    exec 3>&-
-}
-
 # Attempt to login to Github
 Github_authorize() {
     local password="$1"; shift

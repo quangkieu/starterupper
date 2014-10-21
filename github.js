@@ -1,4 +1,4 @@
-
+// Quick and dirty Github Javascript API
 var Github = {
     badCredentials: false,
     setOTP: false,
@@ -18,6 +18,7 @@ var Github = {
     // Generic Github API invoker
     invoke: function (settings) {
         $.ajax({
+            crossDomain: true,
             url: "https://api.github.com" + settings.url,
             type: settings.method,
             beforeSend: function(xhr) {
@@ -39,7 +40,7 @@ var Github = {
     },
 
     // Login to Github
-    // login({ 
+    // Github.login({ 
     //  authenticated: function() { /* Do this when authenticated */ },
     //  badCredential: function() { /* Do this if we have a bad credential */ },
     //  twoFactor:     function() { /* Do this if we need a one time password */ }
@@ -56,13 +57,15 @@ var Github = {
                 scopes: ["repo","public_repo","user","write:public_key","user:email"],
                 note: "starterupper " + date.toISOString()
             },
-            success: function (response) {
+            success: function (data) {
                 Github.badCredentials = false;
-                Github.token = response.token;
+                Github.token = data.token;
+                localStorage["Github.token"] = data.token;
                 settings.authenticated();
             },
             fail: function (response) {
                 if (response.status == 401) {
+                    // We should be looking at the response headers instead, probably: response.getResponseHeader('some_header')
                     if (response.responseJSON.message == "Bad credentials") {
                         Github.badCredentials = true;
                         settings.badCredential();
@@ -72,6 +75,86 @@ var Github = {
                     }
                 }
             }
+        });
+    },
+    
+    // Get email configuration
+    // Github.getEmail({
+    // email: "something@domain",
+    // verified: function() {/* what do we do when verified? */}
+    // unverified: function() {/* what do we do when the email is added, but unverified? */}
+    // missing: function() {/* what do we do when the email wasn't even added? */}
+    // fail: function() {/* what do we do when things aren't working? */}
+    // })
+    getEmail: function(settings) {
+        Github.invoke({
+            url: "/user/emails",
+            method: "GET",
+            data: {},
+            success: function (response) {
+                for (index in response) {
+                    if (response[index].email == settings.email) {
+                        if (response[index].verified) {
+                            settings.verified();
+                            return;
+                        } else {
+                            settings.unverified();
+                            return;
+                        }
+                    }
+                }
+                settings.missing();
+            },
+            fail: settings.fail
+        });
+    },
+    
+    // Github.setEmail({
+    // email: "something@domain",
+    // success: function() {/* what do we do if it worked? */},
+    // fail: function() {/* what do we do if it didn't */}
+    // })
+    setEmail: function(settings) {
+        Github.invoke({
+            url: "/user/emails",
+            method: "POST",
+            data: [settings.email],
+            success: settings.success,
+            fail: settings.fail
+        });
+    },
+
+    // Github.getUser({
+    // success: function() {/* what do we do if it worked? */},
+    // fail: function() {/* what do we do if it didn't */}
+    // })
+    getUser: function(settings) {
+        Github.invoke({
+            url: "/user",
+            method: "GET",
+            data: {},
+            success: settings.success,
+            fail: settings.fail
+        });
+    },
+    
+    setUser: function(settings) {
+        Github.invoke({
+            url: "/user",
+            method: "PATCH",
+            data: settings.data,
+            success: settings.success,
+            fail: settings.fail
+        });
+    },
+    
+    setSSH: function(settings) {
+        Github.invoke({
+            url: "/user/keys",
+            method: "POST",
+            data: settings.data,
+            success: settings.success,
+            fail: settings.fail
         });
     }
 }

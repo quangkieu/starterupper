@@ -14,9 +14,10 @@
   </style>
   <script src="http://lawrancej.github.io/starterupper/ractive-legacy.min.js"></script>
   <script src="http://lawrancej.github.io/starterupper/sparkMD5.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
+  <script src="github.js"></script>
 </head>
 <body>
-  <noscript>Sorry, you must enable Javascript in your browser.</noscript>
   <article>
     <div id="gravatar_container"></div>
     <script id="gravatar_template" type="text/ractive">
@@ -36,7 +37,7 @@
           <div class="clear"></div>
           <hr />
         </hgroup>
-        <div class="grid_2"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=retro&s=140" title="Gravatar for {{emailPrompt}}" width="140" height="140" /></div>
+        <div class="grid_2"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=retro&s=140" title="Your Gravatar" width="140" height="140" /></div>
         <div class="grid_4">
           <input type="text" name="user.name" value="{{fullName}}" placeholder="Full name" pattern="[a-zA-Z.]+ [a-zA-Z. ]+" required /><br />
           <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required autofocus /><br />
@@ -88,11 +89,11 @@ git config --global user.email "{{email}}"</pre>
             You are signed into Github <button>Sign out</button>
           {{else}}
             <input type="text" name="github.login" value="{{githubUsername}}" placeholder="Github username" pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" required /><br />
-            <input type="password" name="github.password" placeholder="Password" pattern=".{7,}" required /><br />
+            <input type="password" id="password" placeholder="Password" pattern=".{7,}" required /><br />
           {{#if githubTwoFactor}}
-            <input type="text" name="github.code" placeholder="Authentication code" pattern="[0-9]{6}" required /><br />
+            <input type="text" id="otp" placeholder="Authentication code" pattern="[0-9]{6}" required /><br />
           {{/if}}
-          <button>Sign in</button> <a href="https://github.com/password_reset">Forgot password?</a>
+          <input type="button" onclick="login(this);" value="Sign in" /> <a href="https://github.com/password_reset">Forgot password?</a>
           {{/if}}
         </div>
         <div class="grid_6">
@@ -168,15 +169,15 @@ git push -u origin master</pre>
         emailPrompt: 'USER_EMAIL',
 
         // Successful Github login?
-        githubLoggedIn: GITHUB_LOGGED_IN,
+        githubLoggedIn: false,
         // Does Github need two-factor auth?
-        githubTwoFactor: true,
+        githubTwoFactor: false,
         // Is the email on the account?
-        githubEmailFound: GITHUB_EMAIL_ADDED,
+        githubEmailFound: false,
         // Is the Github email verified?
-        githubVerifiedEmail: GITHUB_EMAIL_VERIFIED,
+        githubVerifiedEmail: false,
         // Can we create a private repository?
-        githubUpgradedPlan: GITHUB_UPGRADED_PLAN
+        githubUpgradedPlan: false
       }
     });
     
@@ -191,8 +192,94 @@ git push -u origin master</pre>
       ractive.set('emailPrompt', (validEmail && schoolEmail) ? newEmail: "your school email");
       ractive.set('gravatarAccount',validEmail && schoolEmail);
     });
+    
     function noGravatarAccount(source) {
       ractive.set('gravatarAccount', false);
+    }
+    function setupUser() {
+        // Setup user profile
+        Github.getUser({
+            success: function(response) {
+                // Nag the user if they're not on an upgraded plan
+                if (response.plan.name.toLowerCase() != "free") {
+                    ractive.set('githubUpgradedPlan', true);
+                } else {
+                    ractive.set('githubUpgradedPlan', false);
+                }
+                // Set the user name for the instructor's benefit
+                if (response.hasOwnProperty("name") && response.name != ractive.get('fullName')) {
+                    Github.setUser({
+                        data: {name: ractive.get('fullName')},
+                        success: function(response) {},
+                        fail: function(response) {
+                        // TODO: tell the user what to do if this breaks
+                        }
+                    });
+                }
+                // Set the company for the instructor's benefit
+                // TODO: http://www.whoisxmlapi.com/whois-api-doc.php
+                /*
+                if (response.hasOwnProperty("company") && response.company == "") {
+                    Github.setUser({
+                        data: {company: ""},
+                        success: function(response) {},
+                        fail: function(response) {
+                        // TODO: tell the user what to do if this breaks
+                        }
+                    });
+                }
+                */
+            }
+        });
+    }
+    function setupEmail() {
+        // Setup email
+        Github.getEmail({
+            email: ractive.get('email'),
+            verified: function() {
+                ractive.set('githubEmailFound', true);
+                ractive.set('githubVerifiedEmail', true);
+            },
+            unverified: function() {
+                ractive.set('githubEmailFound', true);
+                ractive.set('githubVerifiedEmail', false);
+            },
+            missing: function() {
+                Github.setEmail({
+                    email: ractive.get('email'),
+                    success: function() {
+                        ractive.set('githubEmailFound', true);
+                        ractive.set('githubVerifiedEmail', false);
+                    },
+                    fail: function() {
+                        ractive.set('githubEmailFound', false);
+                        ractive.set('githubVerifiedEmail', false);
+                    }
+                });
+            }
+        });
+    }
+    function setupSSH() {
+//        Github.
+    }
+    function login(event) {
+        Github.login({
+            username: ractive.get('githubUsername'),
+            password: $("#password").val(),
+            otp: $("#otp").val(),
+            authenticated: function() {
+                ractive.set('githubLoggedIn', true);
+                setupUser();
+                setupEmail();
+                setupSSH();
+            },
+            badCredential: function() {
+                $("#password").attr('value', '');
+            },
+            twoFactor: function() {
+                ractive.set('githubTwoFactor', true);
+            }
+        });
     }
   </script>
 </body>

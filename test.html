@@ -19,6 +19,36 @@ function login(event) {
         }
     });
 }
+function email(event) {
+    Github.getEmail({
+        email: "lawrancej@wit.edu",
+        verified: function() {
+            $("#user").append( "<li>Yay, your email is verified!</li>");
+        }
+    });
+}
+function user(event) {
+    // Setup user profile
+    Github.getUser({
+        success: function(response) {
+            if (response.plan.name.toLowerCase() != "free") {
+                $( "#user" ).append( "<li>good for you: " + response.plan.name.toLowerCase() + "</li>" );
+            }
+            for (key in response) {
+                $( "#user" ).append( "<li>" + key + ": " + JSON.stringify(response[key]) + "</li>" );
+            }
+        }
+    });
+    Github.setUser({
+        data: {name: "Joseph Lawrance"},
+        success: function(response) {
+            alert("yay");
+        },
+        fail: function(response) {
+            alert("boo");
+        }
+    });
+}
 </script>
 </head>
 <body>
@@ -27,6 +57,8 @@ function login(event) {
 <input type="password" name="password" id="password" placeholder="Password" /><br/>
 <input type="text" name="otp" id="otp" placeholder="Two-factor code" /><br/>
 <input type="button" onclick="login(this);" value="Login" />
+<input type="button" onclick="email(this);" value="Email" />
+<input type="button" onclick="user(this);" value="User" />
 </form>
 
 <ul id="user"></ul>
