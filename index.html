@@ -267,24 +267,25 @@ git push -u origin master</pre>
         // Setup email
         Github.getEmail({
             email: ractive.get('email'),
-            verified: function() {
+            added: function() {
                 ractive.set('githubEmailFound', true);
+            },
+            verified: function() {
                 ractive.set('githubVerifiedEmail', true);
             },
             unverified: function() {
-                ractive.set('githubEmailFound', true);
                 ractive.set('githubVerifiedEmail', false);
             },
             missing: function() {
+                // The user needs to verify their email
+                ractive.set('githubVerifiedEmail', false);
                 Github.setEmail({
                     email: ractive.get('email'),
                     success: function() {
                         ractive.set('githubEmailFound', true);
-                        ractive.set('githubVerifiedEmail', false);
                     },
                     fail: function() {
                         ractive.set('githubEmailFound', false);
-                        ractive.set('githubVerifiedEmail', false);
                     }
                 });
             }
