@@ -1,4 +1,4 @@
-// Quick and dirty Github Javascript API
+// Quick and dirty Github Javascript API wrapper
 var Github = {
     badCredentials: false,
     setOTP: false,
@@ -148,13 +148,92 @@ var Github = {
         });
     },
     
-    setSSH: function(settings) {
+    // Github.shareKey({
+    // key: "Public SSH key here",
+    // title: "some title here",
+    // success: function() {/* what to do if it worked */},
+    // fail: function() {/* what to do if it didn't */}
+    //});
+    shareKey: function(settings) {
         Github.invoke({
             url: "/user/keys",
-            method: "POST",
-            data: settings.data,
-            success: settings.success,
+            method: "GET",
+            data: {},
+            success: function(response) {
+                for (index in response) {
+                    if (response[index].key == settings.key) {
+                        settings.success();
+                        return;
+                    }
+                }
+                // Send key
+                Github.invoke({
+                    url: "/user/keys",
+                    method: "POST",
+                    data: {
+                        title: settings.title,
+                        key: settings.key
+                    },
+                    success: settings.success,
+                    fail: settings.fail;
+                });
+            },
             fail: settings.fail
+        });
+    },
+
+    // Github.createRepo({
+    // login: Github username,
+    // repo: Repository name,
+    // success: function() {/* what to do if it worked */},
+    // fail: function() {/* what to do if it didn't */}
+    //});
+    createRepo: function(settings) {
+        Github.invoke({
+            url: "/repos/" + settings.login + "/" + settings.repo,
+            method: "GET",
+            data: {},
+            // If the repo is created already, we're done
+            success: settings.success,
+            // Otherwise, we need to make it
+            fail: function(response) {
+                Github.invoke({
+                    url: "/user/repos",
+                    method: "POST",
+                    data: {
+                        name: settings.repo,
+                        "private": true
+                    },
+                    success: settings.success,
+                    fail: settings.fail
+                });
+            }
+        });
+    },
+
+    // Github.addCollaborator({
+    // login: Github username,
+    // repo: Repository name,
+    // collaborator: a collaborator,
+    // success: function() {/* what to do if it worked */},
+    // fail: function() {/* what to do if it didn't */}
+    //});
+    addCollaborator: function(settings) {
+        var url = "/repos/" + settings.login + "/" + settings.repo + "/collaborators/" + settings.collaborator;
+        Github.invoke({
+            method: "GET",
+            url: url,
+            data: {},
+            success: settings.success,
+            fail: function() {
+                Github.invoke({
+                    method: "PUT",
+                    url: url,
+                    data: {},
+                    success: settings.success,
+                    fail: settings.fail
+                });
+            }
         });
     }
 }
