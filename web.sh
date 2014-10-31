@@ -191,10 +191,11 @@ server::works() {
 }
 
 # Start the web server, using the supplied routing function
-WebServer_start() {
+server::start() {
     local routes="$1"
     Pipe_new "$PIPE"
     local nc=$(Acquire_netcat)
     
     WebServer_respond "$routes" | "$nc" -k -l 8080 | WebServer_listen
 }
+

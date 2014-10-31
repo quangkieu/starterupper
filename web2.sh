@@ -57,7 +57,7 @@ MyRouter() {
 }
 
 Utility_fileOpen http://localhost:8080
-WebServer_start "MyRouter"
+server::start "MyRouter"
 
 # if [[ "$(Utility_fileOpen http://localhost:8080)" ]]; then
     # echo -e "Opened web browser to http://localhost:8080                                [\e[1;32mOK\e[0m]" >&2
