@@ -2,16 +2,18 @@
 var Github = {
     badCredentials: false,
     setOTP: false,
-    token: "",
     username: "",
     password: "",
     otp: "",
 
+    authenticated: function () {
+        return localStorage.hasOwnProperty("Github.token");
+    },
     getAuthorization: function () {
-        if (this.token == "") {
-            return "Basic " + btoa(this.username + ":" + this.password)
+        if (localStorage.hasOwnProperty("Github.token")) {
+            return "token " + localStorage.getItem("Github.token");
         } else {
-            return "token " + this.token;
+            return "Basic " + btoa(this.username + ":" + this.password)
         }
     },
 
@@ -50,32 +52,35 @@ var Github = {
         this.password = settings.password;
         this.otp = settings.otp;
         var date = new Date();
-        this.invoke({
-            url: "/authorizations",
-            method: "POST",
-            data: {
-                scopes: ["repo","public_repo","user","write:public_key","user:email"],
-                note: "starterupper " + date.toISOString()
-            },
-            success: function (data) {
-                Github.badCredentials = false;
-                Github.token = data.token;
-                localStorage["Github.token"] = data.token;
-                settings.authenticated();
-            },
-            fail: function (response) {
-                if (response.status == 401) {
-                    // We should be looking at the response headers instead, probably: response.getResponseHeader('some_header')
-                    if (response.responseJSON.message == "Bad credentials") {
-                        Github.badCredentials = true;
-                        settings.badCredential();
-                    } else if (response.responseJSON.message == "Must specify two-factor authentication OTP code.") {
-                        Github.setOTP = true;
-                        settings.twoFactor();
+        if (localStorage.hasOwnProperty("Github.token")) {
+            settings.authenticated();
+        } else {
+            this.invoke({
+                url: "/authorizations",
+                method: "POST",
+                data: {
+                    scopes: ["repo","public_repo","user","write:public_key","user:email"],
+                    note: "starterupper " + date.toISOString()
+                },
+                success: function (data) {
+                    Github.badCredentials = false;
+                    localStorage.setItem("Github.token", data.token);
+                    settings.authenticated();
+                },
+                fail: function (response) {
+                    if (response.status == 401) {
+                        // We should be looking at the response headers instead, probably: response.getResponseHeader('some_header')
+                        if (response.responseJSON.message == "Bad credentials") {
+                            Github.badCredentials = true;
+                            settings.badCredential();
+                        } else if (response.responseJSON.message == "Must specify two-factor authentication OTP code.") {
+                            Github.setOTP = true;
+                            settings.twoFactor();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     },
     
     // Get email configuration
