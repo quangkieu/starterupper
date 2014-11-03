@@ -11,6 +11,12 @@
   <link rel="stylesheet" href="960.css" />
   <script src="modernizr-latest.js"></script>
   <style>
+  .success {
+    color:green;
+  }
+  .fail {
+    color:red;
+  }
   h1 {
     margin:0px;
     padding:0px;
@@ -38,7 +44,7 @@
   .webcam { display: none; }
   .manual { display: none; }
   
-  .no-github-upgraded { display: none; }
+  .js .no-github-upgraded { display: none; }
   .github-upgraded { display: none; }
   .github-profile { display:none; }
   .github-collaborator {display: none;}
@@ -64,9 +70,9 @@
     <!-- Nag the user if JavaScript is disabled -->
       <section class="container_12" id="javascript-warning">
         <header>
-            <h1 class="grid_2" style="color:red;">Warning</h1>
-            <div class="grid_10"><b>Enable JavaScript in your web browser
-            to setup git and hosting reliably</b></div>
+            <h1 class="grid_2" style="color:red;"><i class="fa fa-warning fail"></i> Warning</h1>
+            <div class="grid_10"><b>This page requires JavaScript
+            to setup git and hosting</b></div>
             <div class="clear"></div>
         </header>
         
@@ -341,56 +347,56 @@
             <div class="github-authenticated">
                 <ul class="fa-ul">
                     <li class="no-github-email-verified">
-                        <i class="fa-li fa fa-warning"></i>
+                        <i class="fa-li fa fa-warning fail"></i>
                         <a href="https://github.com/settings/emails"
                         target="actionRequired">Add &amp; verify
                         your school email</a><br/>(Github will email a link: click it to verify)
                     </li>
                     <li class="no-github-upgraded">
-                        <i class="fa-li fa fa-warning"></i>
+                        <i class="fa-li fa fa-warning fail"></i>
                         <a href="https://education.github.com/discount_requests/new"
                         target="actionRequired">Request an educational discount</a>
                     </li>
                     <li class="no-github-profile">
-                        <i class="fa-li fa fa-warning"></i>
+                        <i class="fa-li fa fa-warning fail"></i>
                         <!-- Only ask the user to do stuff themselves if Javascript's disabled (or failed) and the server's dead (or failed) -->
                         <a target="actionRequired"
                         href="https://github.com/settings/profile">
                             Share your name with Github</a>
                     </li>
                     <li class="github-profile">
-                        <i class="fa-li fa fa-check"></i>
+                        <i class="fa-li fa fa-check success"></i>
                         Shared your name with Github
                         (<a target="actionRequired"
                         href="https://github.com/settings/profile">Update profile</a>)
                     </li>
                     <li class="no-github-repository">
-                        <i class="fa-li fa fa-warning"></i>
+                        <i class="fa-li fa fa-warning fail"></i>
                         <a target="actionRequired" href="https://github.com/new">
                             Create private repository REPOSITORY</a>
                     </li>
                     <li class="github-repository">
-                        <i class="fa-li fa fa-check"></i>
+                        <i class="fa-li fa fa-check success"></i>
                         Created private repository
                         <a href="#" target="actionRequired">REPOSITORY</a>
                     </li>
                     <li class="no-github-collaborator">
-                        <i class="fa-li fa fa-warning"></i>
+                        <i class="fa-li fa fa-warning fail"></i>
                         Add INSTRUCTOR_GITHUB as a collaborator for REPOSITORY
                     </li>
                     <li class="github-collaborator">
-                        <i class="fa-li fa fa-check"></i>
+                        <i class="fa-li fa fa-check success"></i>
                         <a href="#" target="actionRequired">
                             Added INSTRUCTOR_GITHUB as a collaborator for REPOSITORY</a>
                     </li>
                     <li class="no-github-key">
-                        <i class="fa-li fa fa-warning"></i>
+                        <i class="fa-li fa fa-warning fail"></i>
                         <a href="https://github.com/settings/ssh"
                         target="actionRequired">Share public key</a><br/>
                         <textarea>PUBLIC_KEY</textarea>
                     </li>
                     <li class="github-key">
-                        <i class="fa-li fa fa-check"></i>
+                        <i class="fa-li fa fa-check success"></i>
                         Shared public key
                         (<a href="https://github.com/settings/ssh"
                         target="actionRequired">Update</a>)
