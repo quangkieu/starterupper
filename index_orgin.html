@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Git and Hosting Setup</title>
+  <!-- Suppress favicon -->
+  <link rel="shortcut icon" href="#" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/reset.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />
+  <style>
+  h1 {margin:0px; padding:0px;}
+  hgroup div {position: relative; top: 50%; transform: translateY(70%);}
+  </style>
+  <script src="http://lawrancej.github.io/starterupper/ractive-legacy.min.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/sparkMD5.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
+  <script src="github.js"></script>
+</head>
+<body>
+  <article>
+    <div id="gravatar_container"></div>
+    <script id="gravatar_template" type="text/ractive">
+      <div style="display:none;"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=404" onerror="noGravatarAccount(this)" /></div>
+      <section class="container_12">
+        <form method="post" action="/" >
+        <hgroup>
+          <h1 class="grid_2">Profile</h1>
+          <div class="grid_4">Tell git your full name and school email address</div>
+          <div class="grid_6">
+            {{#if !gravatarAccount}}
+                Create or update your Gravatar to help the instructor learn names
+            {{else}}
+                Update your Gravatar to help the instructor learn names
+            {{/if}}
+          </div>
+          <div class="clear"></div>
+          <hr />
+        </hgroup>
+        <div class="grid_2"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=retro&s=140" title="Your Gravatar" width="140" height="140" /></div>
+        <div class="grid_4">
+          <input type="text" name="user.name" value="{{fullName}}" placeholder="Full name" pattern="[a-zA-Z.]+ [a-zA-Z. ]+" required /><br />
+          <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required autofocus /><br />
+          <button>Configure Git</button>
+          <pre>
+git config --global user.name "{{fullName}}"
+git config --global user.email "{{email}}"</pre>
+        </div>
+        <div class="grid_6">
+          {{#if gravatarAccount }}
+          Thanks for creating a Gravatar! (<a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Update</a>)
+          {{else}}
+            <ol>
+              <li><a href="https://en.gravatar.com/emails/new" target="actionRequired">Add email to Gravatar account</a> or <a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">join Gravatar</a><br />
+              (use {{emailPrompt}})</li>
+              <li>Gravatar will email a link: click to verify your school email</li>
+              <li><a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Add an image</a></li>
+            </ol>
+          {{/if}}
+        </div>
+        </form>
+      </section>
+      <br />
+      <form>
+      <input type="hidden" name="user.name" value="{{fullName}}" />
+      <input type="hidden" name="user.email" value="{{email}}" />
+      <section class="container_12">
+        <hgroup>
+          <h1 class="grid_2">Github</h1>
+          <div class="grid_4">Github hosts private repositories free for students</div>
+          <div class="grid_6">
+            {{#if !githubLoggedIn}}
+                Create or upgrade your Github account for educational use
+            {{else}}
+                {{#if !githubUpgradedPlan}}
+                    Upgrade your Github account for educational use
+                {{else}}
+                    Thanks for setting up your Github account!
+                {{/if}}
+            {{/if}}
+          </div>
+          <div class="clear"></div>
+          <hr />
+        </hgroup>
+        <div class="clear"></div>
+        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/github.svg" width="140" height="140" /></div>
+        <div class="grid_4">
+          {{#if githubLoggedIn}}
+            You are signed into Github <button>Sign out</button>
+          {{else}}
+            <input type="text" name="github.login" value="{{githubUsername}}" placeholder="Github username" pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" required /><br />
+            <input type="password" id="password" placeholder="Password" pattern=".{7,}" required /><br />
+          {{#if githubTwoFactor}}
+            <input type="text" id="otp" placeholder="Authentication code" pattern="[0-9]{6}" required /><br />
+          {{/if}}
+          <input type="button" onclick="login(this);" value="Sign in" /> <a href="https://github.com/password_reset">Forgot password?</a>
+          {{/if}}
+        </div>
+        <div class="grid_6">
+          <ol>
+            {{#if githubLoggedIn}}
+              {{#if !githubEmailFound}}
+               <li><a href="https://github.com/settings/emails" target="actionRequired">Add &amp; verify your email with Github</a></li>
+              {{/if}}
+            {{else}}
+              {{#if !githubEmailFound}}
+                <li><b>Github users:</b> <a href="https://github.com/settings/emails" target="actionRequired"> Add &amp; verify your email</a> <br />
+                <b>New to Github?</b> <a href="https://github.com/join" target="actionRequired">Join</a>
+                (use {{emailPrompt}})</li>
+              {{/if}}
+            {{/if}}
+            {{#if !githubVerifiedEmail}}
+              <li>Github will email a link: click to verify your school email</li>
+            {{/if}}
+            {{#if !githubUpgradedPlan}}
+              <li><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an individual student discount</a></li>
+            {{/if}}
+          </ol>
+        </div>
+      </section>
+      <br />
+      <section class="container_12">
+        <hgroup>
+          <h1 class="grid_2">Git Setup</h1>
+          <div class="grid_10">Set up your git repositories: <b>local</b> (<a href="{{localRepo}}" target="_blank"><code>~/{{repo}}</code></a>), <b>origin</b> (<a href="https://github.com/{{githubUsername}}/{{repo}}" target="_blank">your private repository</a>), and <b>upstream</b> (<a href="https://github.com/{{githubInstructorLogin}}/{{repo}}" target="_blank">course repository</a>)</div>
+          <div class="clear"></div>
+          <hr />
+        </hgroup>
+        <div class="clear"></div>
+        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/git.svg" width="140" height="140" /></div>
+        <div class="grid_10">
+          <button>Set up {{repo}}</button>
+          <pre>git clone https://github.com/{{githubInstructorLogin}}/{{repo}}.git
+cd {{repo}}
+git remote rm origin
+git remote add origin git@github.com:{{githubUsername}}/{{repo}}.git
+git remote add upstream https://github.com/{{githubInstructorLogin}}/{{repo}}.git
+git push -u origin master</pre>
+        </div>
+      </section>
+      </form>
+    </script>
+  </article>
+  <script>
+    var ractive = new Ractive({
+      // The `el` option can be a node, an ID, or a CSS selector.
+      el: 'gravatar_container',
+
+      // We could pass in a string, but for the sake of convenience
+      // we're passing the ID of the <script> tag above.
+      template: '#gravatar_template',
+
+      // Here, we're passing in some initial data
+      data: {
+        // Name of the repository only
+        repo: 'REPOSITORY',
+        // file:// path to local repository
+        localRepo: 'LOCAL_REPO',
+
+        // User's full name
+        fullName: 'FULL_NAME',
+        // User's OS username
+        localUsername: 'USER_NAME',
+        // User's login at their machine
+        hostLogin: 'USER_NAME@HOSTNAME',
+        // User's public key
+        publicKey: 'PUBLIC_KEY',
+        
+        // User's email
+        email: 'USER_EMAIL',
+        // Is the user's email valid?
+        validEmail: false,
+        // Is the user's email a school email?
+        schoolEmail: false,
+        
+        // Gravatar ID
+        emailHash: SparkMD5.hash('USER_EMAIL'),
+        // Did we find a Gravatar image from the user's email? (Assume yes unless we get a 404 error)
+        gravatarAccount: true,
+        
+        // Email placeholder
+        emailPrompt: 'USER_EMAIL',
+
+        // What's the username?
+        githubUsername: 'GITHUB_LOGIN',
+        // Who's the instructor?
+        githubInstructorLogin: 'INSTRUCTOR_GITHUB',
+        // Successful Github login?
+        githubLoggedIn: false,
+        // Does Github need two-factor auth?
+        githubTwoFactor: false,
+        // Is the email on the account?
+        githubEmailFound: false,
+        // Is the Github email verified?
+        githubVerifiedEmail: false,
+        // Can we create a private repository?
+        githubUpgradedPlan: false,
+        // Did we create a private repository?
+        githubRepositoryCreated: false,
+        // Did we add a collaborator?
+        githubCollaboratorAdded: false,
+        // Did we share the public key?
+        githubPublicKeyShared: false,
+        // Did we share the full name?
+        githubFullNameShared: false
+      }
+    });
+    
+    ractive.observe('email', function ( newValue, oldValue ) {
+        var newEmail=newValue.toLowerCase().trim();
+        var regex=/edu$/;
+        var emailValid=/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        var validEmail=emailValid.test(newEmail);
+        var schoolEmail=regex.test(newEmail);
+        ractive.set('validEmail',validEmail);
+        ractive.set('schoolEmail',schoolEmail);
+        ractive.set('email',newEmail);
+        ractive.set('emailHash', SparkMD5.hash(newEmail));
+        ractive.set('emailPrompt', (validEmail && schoolEmail) ? newEmail: "your school email");
+        ractive.set('gravatarAccount',validEmail && schoolEmail);
+    });
+    
+    function noGravatarAccount(source) {
+        ractive.set('gravatarAccount', false);
+    }
+    function setupUser() {
+        // Setup user profile
+        Github.getUser({
+            success: function(response) {
+                // Nag the user if they're not on an upgraded plan
+                if (response.plan.name.toLowerCase() != "free") {
+                    ractive.set('githubUpgradedPlan', true);
+                } else {
+                    ractive.set('githubUpgradedPlan', false);
+                }
+                // Set the user name for the instructor's benefit
+                if (response.hasOwnProperty("name") && response.name != ractive.get('fullName')) {
+                    Github.setUser({
+                        data: {
+                            name: ractive.get('fullName')
+                        },
+                        success: function(response) {
+                            ractive.set('githubFullNameShared', true);
+                        },
+                        fail: function(response) {
+                            ractive.set('githubFullNameShared', false);
+                        }
+                    });
+                }
+                // Set the company for the instructor's benefit
+                // TODO: http://www.whoisxmlapi.com/whois-api-doc.php
+                /*
+                if (response.hasOwnProperty("company") && response.company == "") {
+                    Github.setUser({
+                        data: {company: ""},
+                        success: function(response) {},
+                        fail: function(response) {
+                        // TODO: tell the user what to do if this breaks
+                        }
+                    });
+                }
+                */
+            }
+        });
+    }
+    function setupEmail() {
+        // Setup email
+        Github.getEmail({
+            email: ractive.get('email'),
+            added: function() {
+                ractive.set('githubEmailFound', true);
+            },
+            verified: function() {
+                ractive.set('githubVerifiedEmail', true);
+            },
+            unverified: function() {
+                ractive.set('githubVerifiedEmail', false);
+            },
+            missing: function() {
+                // The user needs to verify their email
+                ractive.set('githubVerifiedEmail', false);
+                Github.setEmail({
+                    email: ractive.get('email'),
+                    success: function() {
+                        ractive.set('githubEmailFound', true);
+                    },
+                    fail: function() {
+                        ractive.set('githubEmailFound', false);
+                    }
+                });
+            }
+        });
+    }
+    function setupSSH() {
+        Github.shareKey({
+            title: ractive.get('hostLogin'),
+            key: ractive.get('publicKey'),
+            success: function() {
+                ractive.set('githubPublicKeyShared', true);
+            },
+            fail: function() {
+                ractive.set('githubPublicKeyShared', false);
+            }
+        });
+    }
+    function setupRepo() {
+        Github.createRepo({
+            login: ractive.get('githubUsername'),
+            repo: ractive.get('repo'),
+            success: function(response) {
+                ractive.set('githubRepositoryCreated', true);
+            },
+            fail: function(response) {
+                ractive.set('githubRepositoryCreated', false);
+            }
+        });
+        Github.addCollaborator({
+            login: ractive.get('githubUsername'),
+            repo: ractive.get('repo'),
+            collaborator: ractive.get('githubInstructorLogin'),
+            success: function(response) {
+                ractive.set('githubCollaboratorAdded', true);
+            },
+            fail: function(response) {
+                ractive.set('githubCollaboratorAdded', false);
+            }
+        });
+    }
+    function login(event) {
+        Github.login({
+            username: ractive.get('githubUsername'),
+            password: $("#password").val(),
+            otp: $("#otp").val(),
+            authenticated: function() {
+                ractive.set('githubLoggedIn', true);
+                setupUser();
+                setupEmail();
+//                setupSSH();
+                setupRepo();
+            },
+            badCredential: function() {
+                $("#password").attr('value', '');
+            },
+            twoFactor: function() {
+                ractive.set('githubTwoFactor', true);
+            }
+        });
+    }
+  </script>
+</body>
+</html>

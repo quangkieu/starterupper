@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00 
+ 
+[HKEY_CLASSES_ROOT\gitconfig] 
+@="URL:gitconfig Protocol" 
+"URL Protocol"="" 
+[HKEY_CLASSES_ROOT\gitconfig\shell] 
+[HKEY_CLASSES_ROOT\gitconfig\shell\open] 
+[HKEY_CLASSES_ROOT\gitconfig\shell\open\command] 
+@="\"C:\\Users\\kieuq\\startnew\\windows.bat\" %1 %2 %3 %4 %5 %6" 

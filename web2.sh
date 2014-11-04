@@ -3,6 +3,9 @@
 source web.sh
 source github.sh
 
+#check for any argument: if none open the HTML file, if more than 1 run the automate
+#if [[$1!=""]]
+
 PrintIndex() {
     local request="$1"
     
@@ -42,9 +45,9 @@ PrintIndex() {
     -e "s/GITHUB_EMAIL_ADDED/$githubEmailAdded/g" \
     -e "s/GITHUB_EMAIL_VERIFIED/$githubEmailVerified/g" \
     index.html > temp.html
-
-    WebServer_sendFile "temp.html"
-    rm temp.html
+	Utility_fileOpen "./temp.html"
+    #WebServer_sendFile "temp.html"
+    #rm temp.html
 }
 
 MyRouter() {
@@ -56,8 +59,10 @@ MyRouter() {
     esac
 }
 
-Utility_fileOpen http://localhost:8080
-server::start "MyRouter"
+PrintIndex "$(Request_file "GET / HTTP/1.1")"
+#Utility_fileOpen "./temp.html"
+#http://localhost:8080
+#server::start "MyRouter"
 
 # if [[ "$(Utility_fileOpen http://localhost:8080)" ]]; then
     # echo -e "Opened web browser to http://localhost:8080                                [\e[1;32mOK\e[0m]" >&2

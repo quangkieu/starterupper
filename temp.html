@@ -155,12 +155,12 @@
             <label for="name">Full name</label>
         </div>
         <div class="grid_3">
-            <input id="name" type="text" name="name" value="FULL_NAME"
+            <input id="name" type="text" name="name" value="Quang Kieu"
             placeholder="Full name" pattern="^[^\s]+ [^\s]+$" required
             title="[FirstName] [LastName] (one space only)" autocomplete="on" /><br/>
         </div>
         <code class="grid_7"
-        id="git-config-name">git config --global user.name "FULL_NAME"</code>
+        id="git-config-name">git config --global user.name "Quang Kieu"</code>
         <div class="clear"></div>
         
         <!-- Email -->
@@ -169,12 +169,12 @@
         </div>
 		<!--We want to sign in with edu email to check if edu email is added to account-->
         <div class="grid_3">
-            <input id="email" type="text" name="email" value="USER_EMAIL"
+            <input id="email" type="text" name="email" value="kieuq@wit.edu"
             placeholder="School email address" pattern="^[^\s]+@[^\s]+\.edu$" required 
             autofocus autocomplete="on" title="School email (*@*.edu) no space" />
         </div>
         <code class="grid_7"
-        id="git-config-email">git config --global user.email USER_EMAIL</code>
+        id="git-config-email">git config --global user.email kieuq@wit.edu</code>
         <div class="clear"></div>
      </section>
      
@@ -307,12 +307,12 @@
                         <span class="success">Shared your name with Github (<a target="actionRequired" href="https://github.com/settings/profile">Update profile</a>)</span>
                     </li>
                     <li class="status githubRepositoryCreated">
-                        <a class="fail" target="actionRequired" href="https://github.com/new">Create <b>private</b> repository REPOSITORY</a>
-                        <span class="success">Created private repository <a href="#" target="actionRequired">REPOSITORY</a></span>
+                        <a class="fail" target="actionRequired" href="https://github.com/new">Create <b>private</b> repository </a>
+                        <span class="success">Created private repository <a href="#" target="actionRequired"></a></span>
                     </li>
                     <li class="status githubCollaboratorAdded">
-                        <span class="fail">Add INSTRUCTOR as a collaborator for REPOSITORY</span>
-                        <span class="success"><a href="#" target="actionRequired">Added INSTRUCTOR as a collaborator for REPOSITORY</a></span>
+                        <span class="fail">Add INSTRUCTOR as a collaborator for </span>
+                        <span class="success"><a href="#" target="actionRequired">Added INSTRUCTOR as a collaborator for </a></span>
                     </li>
                     <li class="status githubPublicKeyShared">
                         <div class="fail">
@@ -350,12 +350,12 @@ git push -u origin master</pre>
   <script>
     var model = {
         // Name of the repository only
-        repo: 'REPOSITORY',
+        repo: '',
         // file:// path to local repository
         localRepo: 'LOCAL_REPO',
 
         // User's full name
-        fullName: 'FULL_NAME',
+        fullName: 'Quang Kieu',
         // User's OS username
         localUsername: 'USER_NAME',
         // User's login at their machine
@@ -364,7 +364,7 @@ git push -u origin master</pre>
         publicKey: 'PUBLIC_KEY',
         
         // User's email (DO NOT set directly, use model.setEmail())
-        email: 'USER_EMAIL',
+        email: 'kieuq@wit.edu',
         // Sanitize email address before setting it
         setEmail: function(address) {
             this.email = address.toLowerCase().trim();
@@ -387,9 +387,9 @@ git push -u origin master</pre>
         gravatarAccount: true,
         
         // What's the username?
-        githubUsername: 'GITHUB_LOGIN',
+        githubUsername: 'kieuq',
         // Who's the instructor?
-        githubInstructorLogin: 'INSTRUCTOR_GITHUB',
+        githubInstructorLogin: '',
         // Successful Github login?
         githubLoggedIn: false,
         // Does Github need two-factor auth?
