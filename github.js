@@ -5,16 +5,19 @@ var Github = {
     username: "",
     password: "",
     otp: "",
-
+    
     authenticated: function () {
-        return localStorage.hasOwnProperty("Github.token");
+        return localStorage.hasOwnProperty("Github.token") && localStorage.hasOwnProperty("Github.username");
     },
     getAuthorization: function () {
         if (localStorage.hasOwnProperty("Github.token")) {
             return "token " + localStorage.getItem("Github.token");
         } else {
-            return "Basic " + btoa(this.username + ":" + this.password)
+            return "Basic " + btoa(Github.username + ":" + Github.password)
         }
+    },
+    getUsername: function() {
+        return localStorage.getItem("Github.username");
     },
 
     // Generic Github API invoker
@@ -48,14 +51,15 @@ var Github = {
     //  twoFactor:     function() { /* Do this if we need a one time password */ }
     // })
     login: function (settings) {
-        this.username = settings.username;
-        this.password = settings.password;
-        this.otp = settings.otp;
+        // username could be the email or Github username
+        Github.username = settings.username;
+        Github.password = settings.password;
+        Github.otp = settings.otp;
         var date = new Date();
-        if (localStorage.hasOwnProperty("Github.token")) {
+        if (Github.authenticated()) {
             settings.authenticated();
         } else {
-            this.invoke({
+            Github.invoke({
                 url: "/authorizations",
                 method: "POST",
                 data: {
@@ -65,7 +69,14 @@ var Github = {
                 success: function (data) {
                     Github.badCredentials = false;
                     localStorage.setItem("Github.token", data.token);
-                    settings.authenticated();
+                    Github.getUser({
+                        success: function (response) {
+                            // Change Github.username to Github login
+                            localStorage.setItem("Github.username", response.login);
+
+                            settings.authenticated();
+                        }
+                    });
                 },
                 fail: function (response) {
                     if (response.status == 401) {
@@ -81,6 +92,11 @@ var Github = {
                 }
             });
         }
+    },
+    
+    logout: function() {
+        localStorage.removeItem('Github.token');
+        localStorage.removeItem('Github.username');
     },
     
     // Get email configuration
@@ -131,10 +147,6 @@ var Github = {
         });
     },
 
-    // Github.getUser({
-    // success: function() {/* what do we do if it worked? */},
-    // fail: function() {/* what do we do if it didn't */}
-    // })
     getUser: function(settings) {
         Github.invoke({
             url: "/user",
@@ -169,7 +181,7 @@ var Github = {
             success: function(response) {
                 for (index in response) {
                     if (response[index].key == settings.key) {
-                        settings.success();
+                        settings.success(response);
                         return;
                     }
                 }
@@ -190,14 +202,13 @@ var Github = {
     },
 
     // Github.createRepo({
-    // login: Github username,
     // repo: Repository name,
     // success: function() {/* what to do if it worked */},
     // fail: function() {/* what to do if it didn't */}
     //});
     createRepo: function(settings) {
         Github.invoke({
-            url: "/repos/" + settings.login + "/" + settings.repo,
+            url: "/repos/" + Github.getUsername() + "/" + settings.repo,
             method: "GET",
             data: {},
             // If the repo is created already, we're done
@@ -219,14 +230,13 @@ var Github = {
     },
 
     // Github.addCollaborator({
-    // login: Github username,
     // repo: Repository name,
     // collaborator: a collaborator,
     // success: function() {/* what to do if it worked */},
     // fail: function() {/* what to do if it didn't */}
     //});
     addCollaborator: function(settings) {
-        var url = "/repos/" + settings.login + "/" + settings.repo + "/collaborators/" + settings.collaborator;
+        var url = "/repos/" + Github.getUsername() + "/" + settings.repo + "/collaborators/" + settings.collaborator;
         Github.invoke({
             method: "GET",
             url: url,
