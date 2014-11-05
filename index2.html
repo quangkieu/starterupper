@@ -6,9 +6,9 @@
   <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- Suppress favicon -->
   <link rel="shortcut icon" href="#" />
-  <link rel="stylesheet" href="reset.css" />
-  <link rel="stylesheet" href="text.css" />
-  <link rel="stylesheet" href="960.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/reset.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />
   <script src="modernizr-latest.js"></script>
   <style>
   .success {
@@ -55,9 +55,9 @@
       .login-control {display: none;}
     </style>
   </noscript>
-  <script src="sparkMD5.js"></script>
-  <script src="jquery-2.1.1.min.js"></script>
-  <script src="github.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/sparkMD5.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/github.js"></script>
 <!--  <script>
   // Borrowed from Modernizr, switch no-js to js if javascript is available
   document.documentElement.className=document.documentElement.className.replace(/\bno-js\b/,'') + ' js';
@@ -72,7 +72,7 @@
         <header>
             <h1 class="grid_2" style="color:red;"><i class="fa fa-warning fail"></i> Warning</h1>
             <div class="grid_10"><b>This page requires JavaScript
-            to setup git and hosting</b></div>
+            to setup git and hosting automatically</b></div>
             <div class="clear"></div>
         </header>
         
@@ -397,7 +397,9 @@
                     <li class="github-repository">
                         <i class="fa-li fa fa-lg fa-check success"></i>
                         Created private repository
-                        <a href="#" target="actionRequired">REPOSITORY</a>
+                        <a href="https://github.com/USER_NAME/REPOSITORY"
+                        target="actionRequired"
+                        class="origin-href">REPOSITORY</a>
                     </li>
                     <li class="no-github-collaborator">
                         <i class="fa-li fa fa-lg fa-warning fail"></i>
@@ -405,7 +407,8 @@
                     </li>
                     <li class="github-collaborator">
                         <i class="fa-li fa fa-lg fa-check success"></i>
-                        <a href="#" target="actionRequired">
+                        <a href="https://github.com/USER_NAME/REPOSITORY/settings/collaboration"
+                        id="collaborator-href" target="actionRequired">
                             Added INSTRUCTOR_GITHUB as a collaborator for REPOSITORY</a>
                     </li>
                 </ul>
@@ -417,7 +420,8 @@
           <h1 class="grid_2">Git Setup</h1>
           <div class="grid_10">Set up your git repositories:
           <b>local</b> (<a href="REPOSITORY" target="_blank"><code>~/REPOSITORY</code></a>),
-          <b>origin</b> (<a id="origin-href" href="https://github.com/USER_NAME/REPOSITORY"
+          <b>origin</b> (<a class="origin-href"
+          href="https://github.com/USER_NAME/REPOSITORY"
           target="_blank">your private repository</a>), and 
           <b>upstream</b> (<a href="https://github.com/INSTRUCTOR_GITHUB/REPOSITORY"
           target="_blank">course repository</a>)</div>
@@ -430,6 +434,7 @@
           <ul class="fa-ul" style="margin-left: 0px;">
             <li>
             <i class="fa-li fa fa-lg fa-check success"></i>
+            <code>cd</code><br/>
             <code>git clone https://github.com/INSTRUCTOR_GITHUB/REPOSITORY.git</code><br/>
             <code>cd REPOSITORY</code><br/>
             <code>git remote rm origin</code><br/>
@@ -447,22 +452,46 @@
   </article>
   <script>
     var model = {
+        // Server-set constants
         // Name of the repository
         repo: 'REPOSITORY',
         // Who's the instructor?
         githubInstructorLogin: 'INSTRUCTOR_GITHUB',
-        // User's full name
-        fullName: 'FULL_NAME',
         // User's login at their machine
         hostLogin: 'USER_NAME@HOSTNAME',
         // User's public key
         publicKey: 'PUBLIC_KEY',
+
+        // Server-initialized variables
+        // User's full name (DO NOT set directly, use model.setEmail())
+        fullName: localStorage.hasOwnProperty("Model.fullName") ? 
+                    localStorage.getItem("Model.fullName") : 'FULL_NAME',
+        getName: function() {
+            return localStorage.getItem("Model.fullName");
+        },
+        setName: function(name) {
+            model.fullName = name.trim();
+            if (model.validName()) {
+                localStorage.setItem("Model.fullName", model.fullName);
+            }
+        },
+        validName: function() {
+            var regex = /[^ ]+( [^ ]+)+/;
+            return regex.test(model.fullName);
+        },
         
         // User's email (DO NOT set directly, use model.setEmail())
-        email: 'USER_EMAIL',
-        // Sanitize email address before setting it
+        email: localStorage.hasOwnProperty("Model.email") ? 
+                    localStorage.getItem("Model.email") : 'USER_EMAIL',
+        // Sanitize and validate email address before setting it
         setEmail: function(address) {
             model.email = address.toLowerCase().trim();
+            if (model.validEmail()) {
+                localStorage.setItem("Model.email", model.email);
+            }
+        },
+        getEmail: function() {
+            return localStorage.getItem("Model.email");
         },
         // Is the user's email valid?
         validEmail: function() {
@@ -472,23 +501,24 @@
         // Is the user's email a school email?
         schoolEmail: function() {
             var regex = /edu$/;
-            return regex.test(model.email);
+            return regex.test(model.getEmail());
         },
         // Gravatar ID
         gravatarId: function() {
-            return SparkMD5.hash(model.email);
+            return SparkMD5.hash(model.getEmail());
         },
     };
 
     var controller = {
         name: function() {
-            model.fullName = $("#name").val();
-            $( "#git-config-name" ).html('git config --global user.name "' + model.fullName + '"');
+        // TODO: FIXME: use local storage and validate
+            model.setName($("#name").val());
+            $( "#git-config-name" ).html('git config --global user.name "' + model.getName() + '"');
         },
         email: function() {
+        // TODO: FIXME: use local storage and validate
             model.setEmail($("#email").val());
-//            alert(model.email);
-            $( "#git-config-email" ).html('git config --global user.email ' + model.email);
+            $( "#git-config-email" ).html('git config --global user.email ' + model.getEmail());
             
             $("#visible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=retro&s=140');
             $.ajax({
@@ -527,7 +557,12 @@
                 setupEmail();
 //                setupSSH();
                 setupRepo();
-//                $().html();
+                // Doesn't work
+                // Another bug: check if email and full name are valid before sharing them
+                // Perhaps just use local storage?
+                $(".origin-href").attr("href", "https://github.com/" + Github.getUsername() + "/REPOSITORY");
+                $("#collaborator-href").attr("href", "https://github.com/" + Github.getUsername() + "/REPOSITORY/settings/collaboration");
+                $("#origin-code").html("git remote add origin git@github.com:" + Github.getUsername() + "/REPOSITORY.git");
                 controller.update('github-authenticated', true);
             } else {
                 controller.update('github-authenticated', false);
@@ -547,6 +582,8 @@
         controller.github();
     });
     $(function() {
+        $("#name").val(model.getName());
+        $("#email").val(model.getEmail());
         controller.name();
         controller.email();
         controller.gravatar();
@@ -564,7 +601,7 @@
         });
         Github.setUser({
             data: {
-                name: model.fullName
+                name: model.getName()
             },
             success: function(response) {
                 controller.update('github-profile',true);
@@ -591,7 +628,7 @@
     function setupEmail() {
         // Setup email
         Github.getEmail({
-            email: model.email,
+            email: model.getEmail(),
             added: function() {
                 controller.update('github-email-found',true);
             },
@@ -605,7 +642,7 @@
                 // The user needs to verify their email
                 controller.update('github-email-verified',false);
                 Github.setEmail({
-                    email: model.email,
+                    email: model.getEmail(),
                     success: function() {
                         controller.update('github-email-found',true);
                     },
