@@ -2,17 +2,22 @@
 var Github = {
     badCredentials: false,
     setOTP: false,
-    token: "",
     username: "",
     password: "",
     otp: "",
-
+    
+    authenticated: function () {
+        return localStorage.hasOwnProperty("Github.token") && localStorage.hasOwnProperty("Github.username");
+    },
     getAuthorization: function () {
-        if (this.token == "") {
-            return "Basic " + btoa(this.username + ":" + this.password)
+        if (localStorage.hasOwnProperty("Github.token")) {
+            return "token " + localStorage.getItem("Github.token");
         } else {
-            return "token " + this.token;
+            return "Basic " + btoa(Github.username + ":" + Github.password)
         }
+    },
+    getUsername: function() {
+        return localStorage.getItem("Github.username");
     },
 
     // Generic Github API invoker
@@ -46,36 +51,52 @@ var Github = {
     //  twoFactor:     function() { /* Do this if we need a one time password */ }
     // })
     login: function (settings) {
-        this.username = settings.username;
-        this.password = settings.password;
-        this.otp = settings.otp;
+        // username could be the email or Github username
+        Github.username = settings.username;
+        Github.password = settings.password;
+        Github.otp = settings.otp;
         var date = new Date();
-        this.invoke({
-            url: "/authorizations",
-            method: "POST",
-            data: {
-                scopes: ["repo","public_repo","user","write:public_key","user:email"],
-                note: "starterupper " + date.toISOString()
-            },
-            success: function (data) {
-                Github.badCredentials = false;
-                Github.token = data.token;
-                localStorage["Github.token"] = data.token;
-                settings.authenticated();
-            },
-            fail: function (response) {
-                if (response.status == 401) {
-                    // We should be looking at the response headers instead, probably: response.getResponseHeader('some_header')
-                    if (response.responseJSON.message == "Bad credentials") {
-                        Github.badCredentials = true;
-                        settings.badCredential();
-                    } else if (response.responseJSON.message == "Must specify two-factor authentication OTP code.") {
-                        Github.setOTP = true;
-                        settings.twoFactor();
+        if (Github.authenticated()) {
+            settings.authenticated();
+        } else {
+            Github.invoke({
+                url: "/authorizations",
+                method: "POST",
+                data: {
+                    scopes: ["repo","public_repo","user","write:public_key","user:email"],
+                    note: "starterupper " + date.toISOString()
+                },
+                success: function (data) {
+                    Github.badCredentials = false;
+                    localStorage.setItem("Github.token", data.token);
+                    Github.getUser({
+                        success: function (response) {
+                            // Change Github.username to Github login
+                            localStorage.setItem("Github.username", response.login);
+
+                            settings.authenticated();
+                        }
+                    });
+                },
+                fail: function (response) {
+                    if (response.status == 401) {
+                        // We should be looking at the response headers instead, probably: response.getResponseHeader('some_header')
+                        if (response.responseJSON.message == "Bad credentials") {
+                            Github.badCredentials = true;
+                            settings.badCredential();
+                        } else if (response.responseJSON.message == "Must specify two-factor authentication OTP code.") {
+                            Github.setOTP = true;
+                            settings.twoFactor();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+    },
+    
+    logout: function() {
+        localStorage.removeItem('Github.token');
+        localStorage.removeItem('Github.username');
     },
     
     // Get email configuration
@@ -126,10 +147,6 @@ var Github = {
         });
     },
 
-    // Github.getUser({
-    // success: function() {/* what do we do if it worked? */},
-    // fail: function() {/* what do we do if it didn't */}
-    // })
     getUser: function(settings) {
         Github.invoke({
             url: "/user",
@@ -164,7 +181,7 @@ var Github = {
             success: function(response) {
                 for (index in response) {
                     if (response[index].key == settings.key) {
-                        settings.success();
+                        settings.success(response);
                         return;
                     }
                 }
@@ -185,14 +202,13 @@ var Github = {
     },
 
     // Github.createRepo({
-    // login: Github username,
     // repo: Repository name,
     // success: function() {/* what to do if it worked */},
     // fail: function() {/* what to do if it didn't */}
     //});
     createRepo: function(settings) {
         Github.invoke({
-            url: "/repos/" + settings.login + "/" + settings.repo,
+            url: "/repos/" + Github.getUsername() + "/" + settings.repo,
             method: "GET",
             data: {},
             // If the repo is created already, we're done
@@ -214,14 +230,13 @@ var Github = {
     },
 
     // Github.addCollaborator({
-    // login: Github username,
     // repo: Repository name,
     // collaborator: a collaborator,
     // success: function() {/* what to do if it worked */},
     // fail: function() {/* what to do if it didn't */}
     //});
     addCollaborator: function(settings) {
-        var url = "/repos/" + settings.login + "/" + settings.repo + "/collaborators/" + settings.collaborator;
+        var url = "/repos/" + Github.getUsername() + "/" + settings.repo + "/collaborators/" + settings.collaborator;
         Github.invoke({
             method: "GET",
             url: url,
