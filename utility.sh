@@ -185,6 +185,10 @@ SSH_getPublicKey() {
     cat ~/.ssh/id_rsa.pub
 }
 
+SSH_getPublicKeyForSed() {
+    SSH_getPublicKey | sed -e 's/[/]/\\\//g'
+}
+
 # Test connection
 SSH_connected() {
     local hostDomain="$1"; shift

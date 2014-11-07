@@ -37,11 +37,13 @@ PrintIndex() {
     -e "s/FULL_NAME/$(User_getFullName)/g" \
     -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
     -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
+    -e "s/PUBLIC_KEY/$(SSH_getPublicKeyForSed)/g" \
+    -e "s/HOSTNAME/$(hostname)/g" \
     -e "s/GITHUB_LOGGED_IN/$githubLoggedIn/g" \
     -e "s/GITHUB_UPGRADED_PLAN/$githubUpgradedPlan/g" \
     -e "s/GITHUB_EMAIL_ADDED/$githubEmailAdded/g" \
     -e "s/GITHUB_EMAIL_VERIFIED/$githubEmailVerified/g" \
-    index.html > temp.html
+    index2.html > temp.html
 
     WebServer_sendFile "temp.html"
     rm temp.html

@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/reset.css" />
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />
-  <script src="modernizr-latest.js"></script>
   <style>
   .success {
     color:green;
@@ -55,9 +54,7 @@
       .login-control {display: none;}
     </style>
   </noscript>
-  <script src="http://lawrancej.github.io/starterupper/sparkMD5.js"></script>
-  <script src="http://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
-  <script src="http://lawrancej.github.io/starterupper/github.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/modernizr-latest.js"></script>
 <!--  <script>
   // Borrowed from Modernizr, switch no-js to js if javascript is available
   document.documentElement.className=document.documentElement.className.replace(/\bno-js\b/,'') + ' js';
@@ -78,7 +75,7 @@
         
         <!-- IE users -->
         <div class="grid_2" style="text-align: right;">
-            <img src="ie.svg" width="140" height="140"
+            <img src="http://lawrancej.github.io/starterupper/ie.svg" width="140" height="140"
             title="Internet Explorer" />
         </div>
         <div class="grid_10">
@@ -110,7 +107,7 @@
 
         <!-- Chrome users -->
         <div class="grid_2">
-            <img src="chrome.svg" width="140" height="140" title="Chrome" />
+            <img src="http://lawrancej.github.io/starterupper/chrome.svg" width="140" height="140" title="Chrome" />
         </div>
         <div class="grid_10">
             <b>Chrome users</b>: if you installed ScriptSafe or NotScripts,
@@ -134,7 +131,7 @@
         <div class="grid_2">
             <a href="http://kb.mozillazine.org/About:config"
             target="actionRequired">
-                <img src="firefox.svg" width="140"
+                <img src="http://lawrancej.github.io/starterupper/firefox.svg" width="140"
                 height="140" title="Firefox" />
             </a>
         </div>
@@ -450,6 +447,9 @@
       </section>
     </form>
   </article>
+  <script src="http://lawrancej.github.io/starterupper/sparkMD5.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/github.js"></script>
   <script>
     var model = {
         // Server-set constants
@@ -462,73 +462,70 @@
         // User's public key
         publicKey: 'PUBLIC_KEY',
 
-        // Server-initialized variables
-        // User's full name (DO NOT set directly, use model.setEmail())
-        fullName: localStorage.hasOwnProperty("Model.fullName") ? 
-                    localStorage.getItem("Model.fullName") : 'FULL_NAME',
-        getName: function() {
-            return localStorage.getItem("Model.fullName");
-        },
-        setName: function(name) {
-            model.fullName = name.trim();
-            if (model.validName()) {
-                localStorage.setItem("Model.fullName", model.fullName);
-            }
-        },
-        validName: function() {
+        // Validate name and email
+        validName: function(name) {
             var regex = /[^ ]+( [^ ]+)+/;
-            return regex.test(model.fullName);
+            return regex.test(name);
         },
         
-        // User's email (DO NOT set directly, use model.setEmail())
-        email: localStorage.hasOwnProperty("Model.email") ? 
-                    localStorage.getItem("Model.email") : 'USER_EMAIL',
-        // Sanitize and validate email address before setting it
-        setEmail: function(address) {
-            model.email = address.toLowerCase().trim();
-            if (model.validEmail()) {
-                localStorage.setItem("Model.email", model.email);
-            }
-        },
-        getEmail: function() {
-            return localStorage.getItem("Model.email");
-        },
         // Is the user's email valid?
-        validEmail: function() {
-            var regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-            return regex.test(model.email);
-        },
-        // Is the user's email a school email?
-        schoolEmail: function() {
-            var regex = /edu$/;
-            return regex.test(model.getEmail());
-        },
-        // Gravatar ID
-        gravatarId: function() {
-            return SparkMD5.hash(model.getEmail());
+        validEmail: function(email) {
+            var regex1 = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+            var regex2 = /edu$/;
+            return regex1.test(email) && regex2.test(email);
         },
     };
 
     var controller = {
+        getName: function() {
+            // BEST: Get name from localStorage (user confirmed value)
+            if (localStorage.hasOwnProperty("User.name") && model.validName(localStorage.getItem("User.name"))) {
+                return localStorage.getItem("User.name");
+            }
+            // OKAY: Get name from the form element
+            else if (model.validName($("#name").val().trim())) {
+                localStorage.setItem("User.name", $("#name").val().trim());
+                return $("#name").val().trim();
+            }
+            // WORST: Get name from the server
+            else if (model.validName('FULL_NAME')) {
+                return 'FULL_NAME'
+            }
+            // FAIL
+            return "";
+        },
+        getEmail: function() {
+            // BEST: Get email from localStorage (user confirmed value)
+            if (localStorage.hasOwnProperty("User.email") && model.validEmail(localStorage.getItem("User.email"))) {
+                return localStorage.getItem("User.email");
+            }
+            // OKAY: Get email from the form element
+            else if (model.validEmail($("#email").val().toLowerCase().trim())) {
+                localStorage.setItem("User.email", $("#email").val().toLowerCase().trim());
+                return $("#email").val().toLowerCase().trim();
+            }
+            // WORST: Get email from the server
+            else if (model.validEmail('USER_EMAIL')) {
+                return 'USER_EMAIL'
+            }
+            // FAIL
+            return "";
+        },
         name: function() {
-        // TODO: FIXME: use local storage and validate
-            model.setName($("#name").val());
-            $( "#git-config-name" ).html('git config --global user.name "' + model.getName() + '"');
+            $( "#git-config-name" ).html('git config --global user.name "' + controller.getName() + '"');
         },
         email: function() {
-        // TODO: FIXME: use local storage and validate
-            model.setEmail($("#email").val());
-            $( "#git-config-email" ).html('git config --global user.email ' + model.getEmail());
+            $( "#git-config-email" ).html('git config --global user.email ' + controller.getEmail());
             
-            $("#visible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=retro&s=140');
+            $("#visible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + controller.gravatarId() + '?d=retro&s=140');
             $.ajax({
                 method: "GET",
                 dataType: "jsonp",
                 crossDomain: true,
                 processData: false,
-                url: 'https://en.gravatar.com/' + model.gravatarId() + '.json',
+                url: 'https://en.gravatar.com/' + controller.gravatarId() + '.json',
                 success: function(response) {
-                    localStorage.setItem("Gravatar", model.gravatarId());
+                    localStorage.setItem("Gravatar", controller.gravatarId());
                     controller.update('gravatar-account',true);
                 },
                 error: function(response) {
@@ -539,13 +536,12 @@
         },
         // Show class and hide its opposite
         update: function(klass, value) {
-            if (value) {
-                $('.'+klass).show();
-                $('.no-'+klass).hide();
-            } else {
-                $('.'+klass).hide();
-                $('.no-'+klass).show();
-            }
+            $(((value) ? "." : ".no-")+klass).show();
+            $(((value) ? ".no-" : ".")+klass).hide();
+        },
+        // Gravatar ID
+        gravatarId: function() {
+            return SparkMD5.hash(controller.getEmail());
         },
         gravatar: function() {
             controller.update('gravatar-authenticated',false);
@@ -581,17 +577,16 @@
     $( "#github-password" ).on( "change", function( event) {
         controller.github();
     });
+    
     $(function() {
-        $("#name").val(model.getName());
-        $("#email").val(model.getEmail());
+        $("#name").val(controller.getName());
+        $("#email").val(controller.getEmail());
         controller.name();
         controller.email();
         controller.gravatar();
         controller.github();
     });
-  </script>
 
-  <script>
     function setupUser() {
         // Nag the user if they're not on an upgraded plan
         Github.getUser({
@@ -600,9 +595,7 @@
             }
         });
         Github.setUser({
-            data: {
-                name: model.getName()
-            },
+            data: { name: controller.getName() },
             success: function(response) {
                 controller.update('github-profile',true);
             },
@@ -628,7 +621,7 @@
     function setupEmail() {
         // Setup email
         Github.getEmail({
-            email: model.getEmail(),
+            email: controller.getEmail(),
             added: function() {
                 controller.update('github-email-found',true);
             },
@@ -642,7 +635,7 @@
                 // The user needs to verify their email
                 controller.update('github-email-verified',false);
                 Github.setEmail({
-                    email: model.getEmail(),
+                    email: controller.getEmail(),
                     success: function() {
                         controller.update('github-email-found',true);
                     },
