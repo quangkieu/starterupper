@@ -37,6 +37,7 @@
   input[type="email"] { width:200px; }
   input[type="password"] { width:200px; }
   .js #javascript-warning {display: none;}
+  .js #manual-github-login {display: none;}
   .github-two-factor {display: none; }
   .webcam { display: none; }
   .manual { display: none; }
@@ -329,8 +330,16 @@
                 <br/>
                 <i class="fa fa-fw fa-lg fa-hand-o-right"></i> Either way, use school email<br/>
             </div>
+            
+            <!-- Show this only when JavaScript is disabled -->
+            <input type="text" id="manual-github-login" name="github.login"
+            placeholder="Github username" pattern="[0-9a-zA-Z][0-9a-zA-Z-]*"
+            title="Github username (must be alphanumeric)" required />
+            <br />
+            
             <div class="github-authenticated login-control">
                 <i class="fa fa-fw fa-lg fa-lock"></i> You are signed in
+                <input type="hidden" name="github.login" id="github-login" />
                 <input type="button" onclick="logout(this);" value="Sign out" />
             </div>
             <div class="no-github-authenticated login-control">

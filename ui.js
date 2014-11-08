@@ -29,7 +29,7 @@ if ( !Date.prototype.toISOString ) {
 // see: https://github.com/douglascrockford/JSON-js/blob/master/json2.js
 
 
-
+// The M in MVC
 var model = {
     // Name of the repository
     repo: function() {
@@ -92,6 +92,7 @@ var model = {
     },
 };
 
+// The C in MVC :-)
 var controller = {
     // Show class and hide its opposite
     update: function(klass, value) {
@@ -128,6 +129,7 @@ var controller = {
     },
     github: function() {
         if (Github.authenticated()) {
+            $("#github-login").val(Github.getUsername());
             setupUser();
             setupEmail();
 //            setupSSH();
@@ -146,9 +148,6 @@ $( "#name" ).on( "change", function( event ) {
 });
 $( "#email" ).on( "change", function( event ) {
     controller.email();
-});
-$( "#github-login" ).on( "change", function( event) {
-    controller.github();
 });
 $( "#github-password" ).on( "change", function( event) {
     controller.github();
