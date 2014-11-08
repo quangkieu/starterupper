@@ -335,7 +335,6 @@
             <input type="text" id="manual-github-login" name="github.login"
             placeholder="Github username" pattern="[0-9a-zA-Z][0-9a-zA-Z-]*"
             title="Github username (must be alphanumeric)" required />
-            <br />
             
             <div class="github-authenticated login-control">
                 <i class="fa fa-fw fa-lg fa-lock"></i> You are signed in
@@ -441,12 +440,11 @@
         <div class="clear"></div>
         <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/git.svg" width="140" height="140" /></div>
         <div class="grid_10">
-          <button>Set up REPOSITORY</button>
+          <button>Finish setup</button>
           <ul class="fa-ul" style="margin-left: 0px;">
             <li>
             <i class="fa-li fa fa-lg fa-check success"></i>
-            <code>cd</code><br/>
-            <code>git clone https://github.com/INSTRUCTOR_GITHUB/REPOSITORY.git</code><br/>
+            <code>cd && git clone https://github.com/INSTRUCTOR_GITHUB/REPOSITORY.git</code><br/>
             <code>cd REPOSITORY</code><br/>
             <code>git remote rm origin</code><br/>
             <code>git remote add upstream https://github.com/INSTRUCTOR_GITHUB/REPOSITORY.git</code>
@@ -454,9 +452,21 @@
             <li>
             <i class="fa-li fa fa-lg fa-warning fail" id="origin-status"></i>
             <code id="origin-code">git remote add origin git@github.com:USER_NAME/REPOSITORY.git</code><br/>
-            <code>git push -u origin master</code>
-</li>
+            <code>git push -u origin master</code></li>
           </ul>
+        </div>
+      </section>
+      <section class="container_12">
+        <hr/>
+        <div class="grid_12">
+          <ul class="fa-ul" style="margin-left: 0px;">
+            <li>
+            <i class="fa-li fa fa-lg fa-warning fail"></i>
+          <b>DO NOT</b> move your local git repository to any folder synchronized
+          with Google Drive or Dropbox.
+            </li>
+          </ul>
+          
         </div>
       </section>
     </form>
