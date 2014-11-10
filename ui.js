@@ -23,14 +23,14 @@ var model = {
             var regex = /[^ ]+( [^ ]+)+/;
             return regex.test(value);
         };
+        // Get name from the form element
+        if (isValid($("#name").val().trim())) {
+            localStorage.setItem("User.name", $("#name").val().trim());
+            return $("#name").val().trim();
+        }
         // Get name from localStorage (user confirmed value)
         if (localStorage.hasOwnProperty("User.name") && isValid(localStorage.getItem("User.name"))) {
             return localStorage.getItem("User.name");
-        }
-        // Otherwise, get name from the form element
-        else if (isValid($("#name").val().trim())) {
-            localStorage.setItem("User.name", $("#name").val().trim());
-            return $("#name").val().trim();
         }
         // FAIL
         return "";
@@ -43,14 +43,15 @@ var model = {
             var regex2 = /edu$/;
             return regex1.test(value) && regex2.test(value);
         };
+        var theEmail = $("#email").val().toLowerCase().trim();
+        // Otherwise, get email from the form element
+        if (isValid(theEmail)) {
+            localStorage.setItem("User.email", theEmail);
+            return theEmail;
+        }
         // Get email from localStorage (user confirmed value)
         if (localStorage.hasOwnProperty("User.email") && isValid(localStorage.getItem("User.email"))) {
             return localStorage.getItem("User.email");
-        }
-        // Otherwise, get email from the form element
-        else if (isValid($("#email").val().toLowerCase().trim())) {
-            localStorage.setItem("User.email", $("#email").val().toLowerCase().trim());
-            return $("#email").val().toLowerCase().trim();
         }
         // FAIL
         return "";
@@ -112,13 +113,16 @@ var controller = {
         }
     },
 };
-$( "#name" ).on( "change", function( event ) {
+$( "#name" ).on( "change", function(event) {
     controller.name();
 });
-$( "#email" ).on( "change", function( event ) {
+$( "#email" ).on( "change", function(event) {
     controller.email();
 });
-$( "#github-password" ).on( "change", function( event) {
+$( "#github-password" ).on( "change", function(event) {
+    controller.github();
+});
+$( "#github-retry" ).on( "click", function(event) {
     controller.github();
 });
 
