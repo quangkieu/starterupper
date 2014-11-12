@@ -10,6 +10,9 @@
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />
   <style>
+  .error {
+    color:red;
+  }
   .success {
     color:green;
   }
@@ -20,15 +23,12 @@
     margin:0px;
     padding:0px;
   }
-  header div {
-    position: relative;
-    top: 50%;
-    transform: translateY(70%);
-  }
   header {
     display: block;
     border-bottom: 1px solid lightgray;
+    margin-top: 10px;
     margin-bottom: 10px;
+    padding-bottom: 5px;
   }
   section {
     margin-bottom:10px;
@@ -40,7 +40,7 @@
   .js #manual-github-login {display: none;}
   .github-two-factor {display: none; }
   .webcam { display: none; }
-  .manual { display: none; }
+  .manual { display: none; } 
   
   .js .no-github-upgraded { display: none; }
   .github-email-verified {display: none;}
@@ -75,9 +75,9 @@
     <!-- Nag the user if JavaScript is disabled -->
       <section class="container_12" id="javascript-warning">
         <header>
-            <h1 class="grid_2" style="color:red;"><i class="fa fa-warning fa-fw"></i> Warning</h1>
-            <div class="grid_10"><b>This page requires JavaScript
-            to setup git and hosting automatically</b></div>
+            <div class="grid_12"><i class="fa fa-warning fa-fw fa-lg error"></i>
+            <b>JavaScript disabled or unsupported</b>:
+            Enable to automate setup</div>
             <div class="clear"></div>
         </header>
         
@@ -160,16 +160,14 @@
       <!-- What to do if the script is offline -->
       <section class="container_12 manual">
         <header>
-            <h1 class="grid_2" style="color:red;">Error</h1>
-            <div class="grid_10">
-                Script off-line: troubleshoot or complete steps manually
+            <div class="grid_12"><i class="fa fa-warning fa-fw fa-lg error"></i>
+                <b>Server off-line</b>: Troubleshoot or complete steps manually
             </div>
             <div class="clear"></div>
         </header>
-        <div class="grid_2">Troubleshooting</div>
-        <div class="grid_3">
+        <div class="grid_2">
             <b>Possible cause</b><br/>
-            Firewall is blocking <code>netcat</code>
+            Firewall blocked <code>netcat</code>
         </div>
         <div class="grid_7">
             <b>Solution</b><br/>
@@ -184,11 +182,12 @@
         </div>
         <div class="clear"></div>
         
-        <div class="grid_2">&nbsp;</div>
-        <div class="grid_3">
-            Another program is using port 8080
+        <div class="grid_2">
+            <b>Possible cause</b><br/>
+            Port 8080 is in use
         </div>
         <div class="grid_7">
+            <b>Solution</b><br/>
             <ol>
                 <li>Close any web servers on your machine</li>
                 <li>Close this window and restart the script in the command line</li>
@@ -199,8 +198,9 @@
       <!-- Profile -->
       <section class="container_12">
         <header>
-            <h1 class="grid_2">Profile</h1>
-            <div class="grid_10">
+            <div class="grid_12">
+                <i class="fa fa-user fa-fw fa-lg"></i>
+                <b>Profile</b>:
                 Confirm your full name and school email address
             </div>
             <div class="clear"></div>
@@ -216,11 +216,6 @@
             title="Full name (first and last)" autocomplete="on" /><br/>
         </div>
         <div class="grid_7">
-            <span class="fa-stack fa-fw">
-              <i class="fa fa-square fa-stack-1x fa-lg"></i>
-              <i class="fa fa-terminal fa-stack-1x fa-inverse"></i>
-            </span><code
-            id="git-config-name">git config --global user.name "FULL_NAME"</code>
         </div>
         <div class="clear"></div>
         
@@ -234,11 +229,6 @@
             autofocus autocomplete="on" title="School email address (ends with .edu)" />
         </div>
         <div class="grid_7">
-            <span class="fa-stack fa-fw">
-              <i class="fa fa-square fa-stack-1x fa-lg"></i>
-              <i class="fa fa-terminal fa-stack-1x fa-inverse"></i>
-            </span><code
-            id="git-config-email">git config --global user.email USER_EMAIL</code>
         </div>
         <div class="clear"></div>
      </section>
@@ -246,9 +236,10 @@
      <!-- Gravatar -->
      <section class="container_12">
         <header>
-        <h1 class="grid_2">Gravatar</h1>
-        <div class="grid_10">
-            Create or update your Gravatar (global profile picture)
+        <div class="grid_12">
+            <i class="fa fa-camera fa-fw fa-lg"></i>
+            <b>Gravatar</b>: 
+            Create or update your profile picture
             to help the instructor learn names
         </div>
         <div class="clear"></div>
@@ -288,13 +279,11 @@
                 <a href="https://en.wordpress.com/wp-login.php?action=lostpassword&wpcom_connect=1"
                 target="actionRequired">Forgot password?</a>
             </div>
-        </div>
-        <div class="grid_7">
             <div class="no-js">
                 <i class="fa fa-fw fa-lg fa-camera"></i>
                 <a href="https://en.gravatar.com/gravatars/new"
                 target="actionRequired"
-                title="Update Gravatar profile picture">Update</a>
+                title="Update Gravatar profile picture">Update picture</a>
             </div>
             <div class="webcam">
                 How about webcam.js here? http://pixlcore.com/read/WebcamJS
@@ -305,9 +294,10 @@
       <!-- Github -->
       <section class="container_12">
         <header>
-          <h1 class="grid_2">Github</h1>
           <div class="grid_10">
-            Create and upgrade your Github account for educational use to
+            <i class="fa fa-github fa-fw fa-lg"></i>
+            <b>Github</b>:
+            Create &amp; upgrade your account to
             get free private repositories
           </div>
           <div class="clear"></div>
@@ -316,9 +306,10 @@
         <div class="clear"></div>
         <div class="grid_2">
             <img src="http://lawrancej.github.io/starterupper/github.svg"
+            title="Github"
             width="140" height="140" />
         </div>
-        <div class="grid_3">
+        <div class="grid_7">
             <div class="no-github-authenticated onboard">
                 <i class="fa fa-fw fa-lg fa-user"></i>
                 <a href="https://github.com/join" target="actionRequired"
@@ -361,8 +352,6 @@
                 <a href="https://github.com/password_reset"
                 target="actionRequired">Forgot password?</a>
             </div>
-        </div>
-        <div class="grid_7">
             <div class="github-authenticated">
                 <div class="no-github">
                     Setup checklist
@@ -440,8 +429,9 @@
       </section>
       <section class="container_12">
         <header>
-          <h1 class="grid_2">Git Setup</h1>
-          <div class="grid_10">Set up your git repositories:
+          <div class="grid_10">
+            <i class="fa fa-git-square fa-fw fa-lg error"></i>
+<b>Setup git repositories</b>:
           <b>local</b> (<a href="REPOSITORY" target="_blank"><code>~/REPOSITORY</code></a>),
           <b>origin</b> (<a class="origin-href"
           href="https://github.com/USER_NAME/REPOSITORY"
@@ -451,10 +441,17 @@
           <div class="clear"></div>
         </header>
         <div class="clear"></div>
-        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/git.svg" width="140" height="140" /></div>
+        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/git.svg" width="140" height="140" title="Git" /></div>
         <div class="grid_10">
           <button>Finish setup</button>
-          <ul class="fa-ul" style="margin-left: 0px;">
+          <ul class="fa-ul" style="margin-left: 0px; font-size: 10pt;">
+            <li><i class="fa fa-li fa-lg fa-user success"></i>
+            <code id="git-config-name">git config --global user.name "FULL_NAME"</code>
+            </li>
+            <li>
+            <i class="fa fa-envelope fa-li fa-lg success"></i><code
+            id="git-config-email">git config --global user.email USER_EMAIL</code>
+            </li>
             <li>
             <i class="fa-li fa fa-lg fa-code-fork success"></i>
             <code>cd && git clone https://github.com/INSTRUCTOR_GITHUB/REPOSITORY.git</code>
@@ -478,20 +475,17 @@
             <i class="fa-li fa fa-lg fa-cloud-upload fail origin"></i>
             <code>git push -u origin master</code>
             </li>
-          </ul>
-        </div>
-      </section>
-      <section class="container_12">
-        <hr/>
-        <div class="grid_12">
-          <ul class="fa-ul" style="margin-left: 0px;">
             <li>
             <i class="fa-li fa fa-lg fa-warning" style="color:red;"></i>
           <b>DO NOT</b> move your local git repository to any folder synchronized
           with Google Drive or Dropbox
             </li>
           </ul>
-          
+        </div>
+      </section>
+      <section class="container_12">
+        <hr/>
+        <div class="grid_12">
         </div>
       </section>
     </form>

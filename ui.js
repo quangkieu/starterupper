@@ -100,6 +100,8 @@ var controller = {
     github: function() {
         if (Github.authenticated()) {
             $("#github-login").val(Github.getUsername());
+//            $("#github-password").val("bogus password");
+//            $("#otp").val("010101");
             setupUser();
             setupEmail();
 //            setupSSH();
@@ -129,6 +131,7 @@ $( "#github-retry" ).on( "click", function(event) {
 $(function() {
     $("#name").val(model.name());
     $("#email").val(model.email());
+    $("#manual-github-login").prop('required',false);
     controller.name();
     controller.email();
     controller.gravatar();
