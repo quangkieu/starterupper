@@ -3,13 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <title>Git and Hosting Setup</title>
-  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- Suppress favicon -->
   <link rel="shortcut icon" href="#" />
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/reset.css" />
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />
   <style>
+  ul {
+    margin-bottom: 0px;
+  }
+  .subheading {
+    text-align: right;
+  }
   .error {
     color:red;
   }
@@ -38,6 +44,7 @@
   input[type="password"] { width:200px; }
   .js #javascript-warning {display: none;}
   .js #manual-github-login {display: none;}
+  .js #manual-github-login-label {display: none;}
   .github-two-factor {display: none; }
   .webcam { display: none; }
   .manual { display: none; } 
@@ -54,7 +61,7 @@
   <noscript>
     <style>
       .login-control {display: none;}
-      #github-retry {display: none;}
+/*      #github-retry {display: none;} */
     </style>
   </noscript>
   <script src="http://lawrancej.github.io/starterupper/modernizr-latest.js"></script>
@@ -82,7 +89,7 @@
         </header>
         
         <!-- IE users -->
-        <div class="grid_2" style="text-align: right;">
+        <div class="grid_2 subheading">
             <img src="http://lawrancej.github.io/starterupper/ie.svg" width="140" height="140"
             title="Internet Explorer" />
         </div>
@@ -207,7 +214,7 @@
         </header>
         
         <!-- Full name -->
-        <div class="grid_2" style="text-align: right;">
+        <div class="grid_2 subheading">
             <label for="name">Full name</label>
         </div>
         <div class="grid_3">
@@ -220,7 +227,7 @@
         <div class="clear"></div>
         
         <!-- Email -->
-        <div class="grid_2" style="text-align: right;">
+        <div class="grid_2 subheading">
             <label for="email">School email</label>
         </div>
         <div class="grid_3">
@@ -297,47 +304,52 @@
           <div class="grid_10">
             <i class="fa fa-github fa-fw fa-lg"></i>
             <b>Github</b>:
-            Create &amp; upgrade your account to
+            Create &amp; upgrade your account for educational use to
             get free private repositories
           </div>
           <div class="clear"></div>
         </header>
         
         <div class="clear"></div>
-        <div class="grid_2">
-            <img src="http://lawrancej.github.io/starterupper/github.svg"
-            title="Github"
-            width="140" height="140" />
+        <div class="grid_2 no-github-authenticated onboard subheading">
+            Setup account
+        </div>
+        <div class="grid_7 no-github-authenticated onboard">
+            <i class="fa fa-fw fa-lg fa-user"></i>
+            <a href="https://github.com/join" target="actionRequired"
+            title="New to Github? Join with your school email">
+            <b>Join</b></a> or
+            <i class="fa fa-fw fa-lg fa-envelope"></i>
+            <a href="https://github.com/settings/emails"
+            target="actionRequired"
+            title="Already use Github? Add and verify your school email">
+                <b>Add &amp; verify email</b></a>
+            <br/>
+            <i class="fa fa-fw fa-lg fa-hand-o-right"></i> Either way, use school email<br/>
+        </div>
+        <div class="clear"></div>
+        <div class="grid_2 subheading">
+            <div id="manual-github-login-label">
+                Github username
+            </div>
+            <div class="github-authenticated login-control">
+                You're signed in <i class="fa fa-lg fa-lock"></i>
+            </div>
+            <div class="no-github-authenticated login-control">
+                You're not signed in <i class="fa fa-lg fa-unlock"></i>
+            </div>
         </div>
         <div class="grid_7">
-            <div class="no-github-authenticated onboard">
-                <i class="fa fa-fw fa-lg fa-user"></i>
-                <a href="https://github.com/join" target="actionRequired"
-                title="New to Github? Join with your school email">
-                <b>Join</b></a> or
-                <i class="fa fa-fw fa-lg fa-envelope"></i>
-                <a href="https://github.com/settings/emails"
-                target="actionRequired"
-                title="Already use Github? Add and verify your school email">
-                    <b>Add &amp; verify email</b></a>
-                <br/>
-                <i class="fa fa-fw fa-lg fa-hand-o-right"></i> Either way, use school email<br/>
-            </div>
-            
             <!-- Show this only when JavaScript is disabled -->
             <input type="text" id="manual-github-login" name="github.login"
             placeholder="Github username" pattern="[0-9a-zA-Z][0-9a-zA-Z-]*"
             title="Github username (must be alphanumeric)" required />
             
             <div class="github-authenticated login-control">
-                <i class="fa fa-fw fa-lg fa-lock"></i> You are signed in
                 <input type="hidden" name="github.login" id="github-login" />
                 <input type="button" onclick="logout(this);" value="Sign out" />
             </div>
             <div class="no-github-authenticated login-control">
-
-                <i class="fa fa-fw fa-lg fa-unlock"></i> You are not signed in<br/>
-                
                 <input type="password" id="github-password"
                 placeholder="Github password" pattern=".{7,}"
                 title="Github password (must be 7+ characters)" required />
@@ -352,98 +364,101 @@
                 <a href="https://github.com/password_reset"
                 target="actionRequired">Forgot password?</a>
             </div>
-            <div class="github-authenticated">
-                <div class="no-github">
-                    Setup checklist
-                    <input type="button" id="github-retry" value="Refresh" />
-                </div>
-                <ul class="fa-ul" style="margin-left: 0px;">
-                    <li class="no-github-email-verified">
-                        <i class="fa-li fa fa-lg fa-envelope fail"></i>
-                        <a href="https://github.com/settings/emails"
-                        target="actionRequired">Verify
-                        your school email</a>
-                    </li>
-                    <li class="github-email-verified">
-                        <i class="fa-li fa fa-lg fa-check success"></i>
-                        <a href="https://github.com/settings/emails"
-                        target="actionRequired">Verified school email</a>
-                    </li>
-                    <li class="no-github-upgraded">
-                        <i class="fa-li fa fa-lg fa-graduation-cap fail"></i>
-                        <a href="https://education.github.com/discount_requests/new"
-                        target="actionRequired">Request an educational discount</a>
-                    </li>
-                    <li class="github-upgraded">
-                        <i class="fa-li fa fa-lg fa-check success"></i>
-                        <a href="https://education.github.com/discount_requests/new"
-                        target="actionRequired">Educational discount approved</a>
-                    </li>
-                    <li class="no-github-profile">
-                        <i class="fa-li fa fa-lg fa-user fail"></i>
-                        <a target="actionRequired"
-                        href="https://github.com/settings/profile">
-                            Share your full name</a>
-                    </li>
-                    <li class="github-profile">
-                        <i class="fa-li fa fa-lg fa-check success"></i>
-                        <a target="actionRequired"
-                        href="https://github.com/settings/profile">Updated profile</a>
-                    </li>
-                    <li class="no-github-key">
-                        <i class="fa-li fa fa-lg fa-key fail"></i>
-                        <a href="https://github.com/settings/ssh"
-                        target="actionRequired">Share public key</a>:
-                        <input type="text" value="PUBLIC_KEY" style="width:100px;" />
-                    </li>
-                    <li class="github-key">
-                        <i class="fa-li fa fa-lg fa-check success"></i>
-                        Shared public key
-                        (<a href="https://github.com/settings/ssh"
-                        target="actionRequired">Update</a>)
-                    </li>
-                    <li class="no-github-repository">
-                        <i class="fa-li fa fa-lg fa-database fail"></i>
-                        <a target="actionRequired" href="https://github.com/new">
-                            Create private repository REPOSITORY</a>
-                    </li>
-                    <li class="github-repository">
-                        <i class="fa-li fa fa-lg fa-check success"></i>
-                        <a href="https://github.com/USER_NAME/REPOSITORY"
-                        target="actionRequired"
-                        class="origin-href">Created repository REPOSITORY</a>
-                    </li>
-                    <li class="no-github-collaborator">
-                        <i class="fa-li fa fa-lg fa-users fail"></i>
-                        Add INSTRUCTOR_GITHUB as a collaborator to REPOSITORY
-                    </li>
-                    <li class="github-collaborator">
-                        <i class="fa-li fa fa-lg fa-check success"></i>
-                        <a href="https://github.com/USER_NAME/REPOSITORY/settings/collaboration"
-                        id="collaborator-href" target="actionRequired">
-                            Added INSTRUCTOR_GITHUB as a collaborator to REPOSITORY</a>
-                    </li>
-                </ul>
+        </div>
+        <div class="clear"></div>
+        <div class="grid_2 github-authenticated subheading">
+            Setup checklist
+        </div>
+        <div class="grid_7 github-authenticated">
+            <div class="no-github">
+                <input type="button" id="github-retry" value="Finish setup" />
             </div>
+            <ul class="fa-ul" style="margin-left: 0px;">
+                <li class="no-github-email-verified">
+                    <i class="fa-li fa fa-lg fa-envelope fail"></i>
+                    <a href="https://github.com/settings/emails"
+                    target="actionRequired">Verify
+                    your school email</a>
+                </li>
+                <li class="github-email-verified">
+                    <i class="fa-li fa fa-lg fa-check success"></i>
+                    <a href="https://github.com/settings/emails"
+                    target="actionRequired">Verified school email</a>
+                </li>
+                <li class="no-github-upgraded">
+                    <i class="fa-li fa fa-lg fa-graduation-cap fail"></i>
+                    <a href="https://education.github.com/discount_requests/new"
+                    target="actionRequired">Request an educational discount</a>
+                </li>
+                <li class="github-upgraded">
+                    <i class="fa-li fa fa-lg fa-check success"></i>
+                    <a href="https://education.github.com/discount_requests/new"
+                    target="actionRequired">Educational discount approved</a>
+                </li>
+                <li class="no-github-profile">
+                    <i class="fa-li fa fa-lg fa-user fail"></i>
+                    <a target="actionRequired"
+                    href="https://github.com/settings/profile">
+                        Share your full name</a>
+                </li>
+                <li class="github-profile">
+                    <i class="fa-li fa fa-lg fa-check success"></i>
+                    <a target="actionRequired"
+                    href="https://github.com/settings/profile">Updated profile</a>
+                </li>
+                <li class="no-github-key">
+                    <i class="fa-li fa fa-lg fa-key fail"></i>
+                    <a href="https://github.com/settings/ssh"
+                    target="actionRequired">Share public key</a>:
+                    <input type="text" value="PUBLIC_KEY" style="width:100px;" />
+                </li>
+                <li class="github-key">
+                    <i class="fa-li fa fa-lg fa-check success"></i>
+                    Shared public key
+                    (<a href="https://github.com/settings/ssh"
+                    target="actionRequired">Update</a>)
+                </li>
+                <li class="no-github-repository">
+                    <i class="fa-li fa fa-lg fa-database fail"></i>
+                    <a target="actionRequired" href="https://github.com/new">
+                        Create private repository REPOSITORY</a>
+                </li>
+                <li class="github-repository">
+                    <i class="fa-li fa fa-lg fa-check success"></i>
+                    <a href="https://github.com/USER_NAME/REPOSITORY"
+                    target="actionRequired"
+                    class="origin-href">Created repository REPOSITORY</a>
+                </li>
+                <li class="no-github-collaborator">
+                    <i class="fa-li fa fa-lg fa-users fail"></i>
+                    Add INSTRUCTOR_GITHUB as a collaborator to REPOSITORY
+                </li>
+                <li class="github-collaborator">
+                    <i class="fa-li fa fa-lg fa-check success"></i>
+                    <a href="https://github.com/USER_NAME/REPOSITORY/settings/collaboration"
+                    id="collaborator-href" target="actionRequired">
+                        Added INSTRUCTOR_GITHUB as a collaborator to REPOSITORY</a>
+                </li>
+            </ul>
         </div>
       </section>
       <section class="container_12">
         <header>
           <div class="grid_10">
             <i class="fa fa-git-square fa-fw fa-lg error"></i>
-<b>Setup git repositories</b>:
-          <b>local</b> (<a href="REPOSITORY" target="_blank"><code>~/REPOSITORY</code></a>),
-          <b>origin</b> (<a class="origin-href"
+<b>Git</b>: Configure git, your repository (<a href="REPOSITORY" target="_blank"><code>~/REPOSITORY</code></a>), and remotes: 
+          origin (<a class="origin-href"
           href="https://github.com/USER_NAME/REPOSITORY"
-          target="_blank">your private repository</a>), and 
-          <b>upstream</b> (<a href="https://github.com/INSTRUCTOR_GITHUB/REPOSITORY"
+          target="_blank">your private repository</a>) and 
+          upstream (<a href="https://github.com/INSTRUCTOR_GITHUB/REPOSITORY"
           target="_blank">course repository</a>)</div>
           <div class="clear"></div>
         </header>
         <div class="clear"></div>
-        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/git.svg" width="140" height="140" title="Git" /></div>
+        <div class="grid_2 subheading" >
+            Configure git
+        </div>
         <div class="grid_10">
-          <button>Finish setup</button>
           <ul class="fa-ul" style="margin-left: 0px; font-size: 10pt;">
             <li><i class="fa fa-li fa-lg fa-user success"></i>
             <code id="git-config-name">git config --global user.name "FULL_NAME"</code>
@@ -452,6 +467,14 @@
             <i class="fa fa-envelope fa-li fa-lg success"></i><code
             id="git-config-email">git config --global user.email USER_EMAIL</code>
             </li>
+          </ul>
+        </div>
+        <div class="clear"></div>
+        <div class="grid_2 subheading">
+            Clone upstream
+        </div>
+        <div class="grid_10">
+          <ul class="fa-ul" style="margin-left: 0px; font-size: 10pt;">
             <li>
             <i class="fa-li fa fa-lg fa-code-fork success"></i>
             <code>cd && git clone https://github.com/INSTRUCTOR_GITHUB/REPOSITORY.git</code>
@@ -459,6 +482,14 @@
             <li>
             <i class="fa-li fa fa-lg fa-folder-open success"></i>
             <code>cd REPOSITORY</code></li>
+          </ul>
+        </div>
+        <div class="clear"></div>
+        <div class="grid_2 subheading">
+            Configure remotes
+        </div>
+        <div class="grid_10">
+          <ul class="fa-ul" style="margin-left: 0px; font-size: 10pt;">
             <li>
             <i class="fa-li fa fa-lg fa-chain-broken success"></i>
             <code>git remote rm origin</code>
@@ -475,17 +506,15 @@
             <i class="fa-li fa fa-lg fa-cloud-upload fail origin"></i>
             <code>git push -u origin master</code>
             </li>
-            <li>
-            <i class="fa-li fa fa-lg fa-warning" style="color:red;"></i>
-          <b>DO NOT</b> move your local git repository to any folder synchronized
-          with Google Drive or Dropbox
-            </li>
           </ul>
         </div>
       </section>
       <section class="container_12">
-        <hr/>
+        <hr style="margin-bottom: 10px;"/>
         <div class="grid_12">
+          <i class="fa fa-fw fa-lg fa-warning" style="color:red;"></i>
+          <b>DO NOT</b> move your local git repository to any folder synchronized
+          with Google Drive or Dropbox
         </div>
       </section>
     </form>
