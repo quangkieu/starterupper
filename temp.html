@@ -3,13 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <title>Git and Hosting Setup</title>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- Suppress favicon -->
   <link rel="shortcut icon" href="#" />
-  <link rel="stylesheet" href="reset.css" />
-  <link rel="stylesheet" href="text.css" />
-  <link rel="stylesheet" href="960.css" />
+  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/reset.css" />
+  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/text.css" />
+  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/960.css" />
   <script src="modernizr-latest.js"></script>
   <style>
+  .success {
+    color:green;
+  }
+  .fail {
+    color:red;
+  }
   h1 {
     margin:0px;
     padding:0px;
@@ -30,19 +37,29 @@
   input[type="text"] { width:200px; }
   input[type="email"] { width:200px; }
   input[type="password"] { width:200px; }
-  .js #warning {display: none;}
-  #invisible-gravatar {display: none;}
+  .js #javascript-warning {display: none;}
   .github-two-factor {display: none; }
-  .gravatar-account { display: none; }
   .webcam { display: none; }
-//  .no-gravatar-account {display: none;}
-//  .no-server {display:none;}
-  .githubLoggedIn {display: none;}
+  .manual { display: none; }
+  
+  .js .no-github-upgraded { display: none; }
+  .github-upgraded { display: none; }
+  .github-profile { display:none; }
+  .github-collaborator {display: none;}
+  .github-repository {display: none;}
+  .github-key {display: none;}
+  
   </style>
-  <script src="sparkMD5.js"></script>
-  <script src="jquery-2.1.1.min.js"></script>
-  <script src="github.js"></script>
-<!--  <script>navigator.registerProtocolHandler("web+git", ", title)</script>-->
+  <noscript>
+    <style>
+      .login-control {display: none;}
+    </style>
+  </noscript>
+  <script src="https://lawrancej.github.io/starterupper/sparkMD5.js"></script>
+  <script src="https://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
+  <script src="https://lawrancej.github.io/starterupper/github.js"></script>
+  <!-- <script type="text/javascript" src="easyXDM.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/easyXDM/2.4.18.25/json2.js"></script> -->
 <!--  <script>
   // Borrowed from Modernizr, switch no-js to js if javascript is available
   document.documentElement.className=document.documentElement.className.replace(/\bno-js\b/,'') + ' js';
@@ -51,16 +68,13 @@
 <body>
   <article>
     <form method="post" action="/" >
-    <!-- How we determine if the user has a Gravatar -->
-      <img id="invisible-gravatar" onerror="noGravatarAccount(this)" 
-      src="http://www.gravatar.com/avatar/EMAIL_HASH?d=404"  />
       
     <!-- Nag the user if JavaScript is disabled -->
-      <section class="container_12" id="warning">
+      <section class="container_12" id="javascript-warning">
         <header>
-            <h1 class="grid_2" style="color:red;">Warning</h1>
-            <div class="grid_10"><b>Enable JavaScript in your web browser
-            to setup git and hosting reliably</b></div>
+            <h1 class="grid_2" style="color:red;"><i class="fa fa-warning fail"></i> Warning</h1>
+            <div class="grid_10"><b>This page requires JavaScript
+            to setup git and hosting automatically</b></div>
             <div class="clear"></div>
         </header>
         
@@ -74,9 +88,9 @@
         <!--[if lte IE 9]>
             <b>Your browser is obsolete</b>:
             Please <a target="actionRequired"
-            href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">upgrade</a>
+            href="https://windows.microsoft.com/en-us/internet-explorer/download-ie">upgrade</a>
             first, or install
-            <a href="http://www.google.com/chrome/" 
+            <a href="https://www.google.com/chrome/" 
             target="actionRequired">Chrome</a> or 
             <a href="https://www.mozilla.org/en-US/firefox/new/"
             target="actionRequired">Firefox</a> instead<br/><br/>
@@ -101,7 +115,7 @@
             <img src="chrome.svg" width="140" height="140" title="Chrome" />
         </div>
         <div class="grid_10">
-            Chrome users: if you installed ScriptSafe or NotScripts,
+            <b>Chrome users</b>: if you installed ScriptSafe or NotScripts,
             enable (allow or trust) JavaScript
             <ol>
                 <li>Otherwise, open a new tab and type
@@ -120,26 +134,65 @@
         
         <!-- Firefox users -->
         <div class="grid_2">
-            <a href="http://kb.mozillazine.org/About:config"
+            <a href="https://kb.mozillazine.org/About:config"
             target="actionRequired">
                 <img src="firefox.svg" width="140"
                 height="140" title="Firefox" />
             </a>
         </div>
         <div class="grid_10">
-            Firefox users: if you installed NoScript,
+            <b>Firefox users</b>: if you installed NoScript,
             enable (allow or trust) JavaScript
             <ol>
                 <li>Otherwise, open a new tab and type <code>about:config</code>
                 in the location (address) bar</li>
-                <li>Set <code>javascript.enabled</code> to <b>true</b></li>
+                <li>Type <code>javascript.enabled</code> in the <b>Search</b> box</li>
+                <li>Double-click to set <code>javascript.enabled</code> to <b>true</b></li>
                 <li>Reload this page</li>
             </ol>
         </div>
         <div class="clear"></div>
       </section>
-      <a href="gitconfig://a b"
-                    ><center>test</center></a>
+      
+      <!-- What to do if the script is offline -->
+      <section class="container_12 manual">
+        <header>
+            <h1 class="grid_2" style="color:red;">Error</h1>
+            <div class="grid_10">
+                Script off-line: troubleshoot or complete steps manually
+            </div>
+            <div class="clear"></div>
+        </header>
+        <div class="grid_2">Troubleshooting</div>
+        <div class="grid_3">
+            <b>Possible cause</b><br/>
+            Firewall is blocking <code>netcat</code>
+        </div>
+        <div class="grid_7">
+            <b>Solution</b><br/>
+            <ol>
+                <li>Open the firewall</li>
+                <li>Allow programs to communicate through the firewall</li>
+                <li>Change settings</li>
+                <li>Select <code>nc.exe</code> and ensure <b>Domain</b> is checked</li>
+                <li>Click <b>OK</b></li>
+                <li>Close this window and restart the script in the command line</li>
+            </ol>
+        </div>
+        <div class="clear"></div>
+        
+        <div class="grid_2">&nbsp;</div>
+        <div class="grid_3">
+            Another program is using port 8080
+        </div>
+        <div class="grid_7">
+            <ol>
+                <li>Close any web servers on your machine</li>
+                <li>Close this window and restart the script in the command line</li>
+            </ol>
+        </div>
+      </section>
+
       <!-- Profile -->
       <section class="container_12">
         <header>
@@ -156,31 +209,42 @@
         </div>
         <div class="grid_3">
             <input id="name" type="text" name="name" value="Quang Kieu"
-            placeholder="Full name" pattern="^[^\s]+ [^\s]+$" required
-            title="[FirstName] [LastName] (one space only)" autocomplete="on" /><br/>
+            placeholder="Full name" pattern="[^ ]+( [^ ]+)+" required
+            title="Full name (first and last)" autocomplete="on" /><br/>
         </div>
-        <code class="grid_7"
-        id="git-config-name">git config --global user.name "Quang Kieu"</code>
+        <div class="grid_7">
+            <span class="fa-stack fa-fw">
+              <i class="fa fa-square fa-stack-1x fa-lg"></i>
+              <i class="fa fa-terminal fa-stack-1x fa-inverse"></i>
+            </span><code
+            id="git-config-name">git config --global user.name "Quang Kieu"</code>
+        </div>
         <div class="clear"></div>
         
         <!-- Email -->
         <div class="grid_2" style="text-align: right;">
             <label for="email">School email</label>
         </div>
-		<!--We want to sign in with edu email to check if edu email is added to account-->
         <div class="grid_3">
-            <input id="email" type="text" name="email" value="kieuq@wit.edu"
-            placeholder="School email address" pattern="^[^\s]+@[^\s]+\.edu$" required 
-            autofocus autocomplete="on" title="School email (*@*.edu) no space" />
+            <input id="email" type="email" name="email" value="kieuq@wit.edu"
+            placeholder="School email address" required pattern="^[^@ ]+@{1}[^@ ]+\.edu$"
+            autofocus autocomplete="on" title="School email address (ends with .edu)" />
         </div>
-        <code class="grid_7"
-        id="git-config-email">git config --global user.email kieuq@wit.edu</code>
+        <div class="grid_7">
+            <span class="fa-stack fa-fw">
+              <i class="fa fa-square fa-stack-1x fa-lg"></i>
+              <i class="fa fa-terminal fa-stack-1x fa-inverse"></i>
+            </span><code
+            id="git-config-email">git config --global user.email kieuq@wit.edu</code>
+        </div>
         <div class="clear"></div>
      </section>
      
      <!-- Gravatar -->
      <section class="container_12">
-        <header>
+		<iframe id="SGravatar" width=960 height=900 src="https://myweb.wit.edu/kieuq/New_folder/webcam.html?hash="><p>No internet connection or server is down</p></iframe>
+	 </section>
+     <!--   <header>
         <h1 class="grid_2">Gravatar</h1>
         <div class="grid_10">
             Create or update your Gravatar (global profile picture)
@@ -191,42 +255,82 @@
         
         <div class="grid_2">
             <img id="visible-gravatar"
-            src="http://www.gravatar.com/avatar/EMAIL_HASH?d=retro&s=140"
+            src="https://www.gravatar.com/avatar/EMAIL_HASH?d=retro&s=140"
             title="Your Gravatar" width="140" height="140" />
         </div>
         <div class="grid_3">
-            <div class="gravatar-account">
-                Thanks for creating a Gravatar!
-            </div>
-            <div class="no-gravatar-account">
-                <b>
-                    <a href="https://en.gravatar.com/connect/?source=_signup"
-                    target="actionRequired"
-                    title="New to Gravatar? Join with your school email">
-                        Join</a>
-                </b>
+            <div class="no-gravatar-authenticated onboard no-gravatar-account">
+                <i class="fa fa-fw fa-lg fa-user"></i>
+                <a href="https://en.gravatar.com/connect/?source=_signup"
+                target="actionRequired"
+                title="New to Gravatar? Join with your school email">
+                    <b>Join</b></a>
                 or
-                <b>
-                    <a href="https://en.gravatar.com/emails/new"
-                    target="actionRequired"
-                    title="Already use Gravatar? Add and verify your school email">
-                        Add &amp; verify school email</a>
-                </b>
+                <i class="fa fa-fw fa-lg fa-envelope"></i>
+                <a href="https://en.gravatar.com/emails/new"
+                target="actionRequired"
+                title="Already use Gravatar? Add and verify your school email">
+                    <b>Add &amp; verify email</b></a>
+                <br/>
+                <i class="fa fa-fw fa-lg fa-hand-o-right"></i> Either way, use school email<br/>
             </div>
-            <div class="gravatar-login">
+            <div class="gravatar-authenticated login-control">
+                <i class="fa fa-fw fa-lg fa-lock"></i> You are signed in
+                <input type="button" onclick="controller.gravatar.logout(this);" value="Sign out" />
+            </div>
+            <div class="no-gravatar-authenticated login-control">
+                <i class="fa fa-fw fa-lg fa-unlock"></i> You are not signed in<br/>
+            
                 <input type="password" id="gravatarPassword"
                 placeholder="Gravatar password" pattern=".{7,}" />
-                <input type="button" value="Sign in" /> 
-                <a href="https://en.wordpress.com/wp-login.php?action=lostpassword&wpcom_connect=1">Forgot password?</a>
+                <input type="button" value="Sign in" onclick="controller.gravatar.login(this)" /> 
+                <a href="https://en.wordpress.com/wp-login.php?action=lostpassword&wpcom_connect=1"
+                target="actionRequired">Forgot password?</a>
             </div>
         </div>
         <div class="grid_7">
             <div class="no-js">
+                <i class="fa fa-fw fa-lg fa-camera"></i>
                 <a href="https://en.gravatar.com/gravatars/new"
-                target="actionRequired">Add an image</a>
+                target="actionRequired"
+                title="Update Gravatar profile picture">Update</a>
             </div>
+			<iframe id="webcamera" width=500 height=600 src="https://myweb.wit.edu/kieuq/New_folder/webcam.html" onload="finishload()"></iframe>
+			<script>
+				//try {document.getElementById("webcamera").contentWindow;}
+				/*
+ * In window A's scripts, with A being on <https://example.com:8080>:
+ 
+
+function finishload(){ var popup=document.getElementById("webcamera");
+
+popup=popup.contentWindow;
+
+
+// When the popup has fully loaded, if not blocked by a popup blocker:
+
+// This does nothing, assuming the window hasn't changed its location.
+popup.postMessage("The user is 'bob' and the password is 'secret'",
+                  "https://myweb.wit.edu");
+
+// This will successfully queue a message to be sent to the popup, assuming
+// the window hasn't changed its location.
+
+
+function receiveMessage(event)
+{
+  // Do we trust the sender of this message?  (might be
+  // different from what we originally opened, for example).
+  alert(event.data+' '+event.origin);
+
+  // event.source is popup
+  // event.data is "hi there yourself!  the secret response is: rheeeeet!"
+}
+window.addEventListener("message", receiveMessage, false);}*/
+
+			</script>
             <div class="webcam">
-                How about webcam.js here? http://pixlcore.com/read/WebcamJS
+                How about webcam.js here? https://pixlcore.com/read/WebcamJS
             </div>
         </div>
       </section>
@@ -235,290 +339,354 @@
       <section class="container_12">
         <header>
           <h1 class="grid_2">Github</h1>
-          <div class="grid_10">Github hosts private repositories free for students: 
-            <span class="no-githubLoggedIn">
-                create or upgrade your account for educational use
-            </span>
-            <span class="githubLoggedIn no-githubUpgradedPlan">
-                upgrade your account for educational use
-            </span>
-            <span class="githubLoggedIn githubUpgradedPlan">
-                thanks for setting up your account!
-            </span>
+          <div class="grid_10">
+            Create and upgrade your Github account for educational use to
+            get free private repositories
           </div>
           <div class="clear"></div>
         </header>
         
         <div class="clear"></div>
-        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/github.svg" width="140" height="140" /></div>
+        <div class="grid_2">
+            <img src="https://lawrancej.github.io/starterupper/github.svg"
+            width="140" height="140" />
+        </div>
         <div class="grid_3">
-            <div class="githubLoggedIn">
-                <span class="fail">Sorry, I was unable to sign in. You need to complete setup steps yourself.</span>
-                <span class="success">
-                    You are signed into Github
-                    <button>Sign out</button>
-                </span>
-            </div>
-            <div class="no-githubLoggedIn">
-                <a href="https://github.com/join"
-                target="actionRequired"
+            <div class="no-github-authenticated onboard">
+                <i class="fa fa-fw fa-lg fa-user"></i>
+                <a href="https://github.com/join" target="actionRequired"
                 title="New to Github? Join with your school email">
-                    <b>Join</b></a>
-                or 
+                <b>Join</b></a> or
+                <i class="fa fa-fw fa-lg fa-envelope"></i>
                 <a href="https://github.com/settings/emails"
-                target="actionRequired" 
+                target="actionRequired"
                 title="Already use Github? Add and verify your school email">
-                    <b>Add &amp; verify school email</b></a>
+                    <b>Add &amp; verify email</b></a>
                 <br/>
+                <i class="fa fa-fw fa-lg fa-hand-o-right"></i> Either way, use school email<br/>
+            </div>
+            <div class="github-authenticated login-control">
+                <i class="fa fa-fw fa-lg fa-lock"></i> You are signed in
+                <input type="button" onclick="logout(this);" value="Sign out" />
+            </div>
+            <div class="no-github-authenticated login-control">
+
+                <i class="fa fa-fw fa-lg fa-unlock"></i> You are not signed in<br/>
                 
-                <input type="text" name="github.login" id="githubLogin"
-                value="{{githubUsername}}" placeholder="Github username"
-                pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" title="Github username" required />
-                <br />
-                
-                <input type="password" id="githubPassword"
+                <input type="password" id="github-password"
                 placeholder="Github password" pattern=".{7,}"
-                required />
+                title="Github password (must be 7+ characters)" required />
                 <br />
                 
                 <div class="github-two-factor">
-                    <input type="text" id="otp"
-                    placeholder="Authentication code"
-                    pattern="[0-9]{6}"
-                    required />
+                    <input type="text" id="otp" placeholder="Authentication code"
+                    pattern="[0-9]{6}" required />
                     <br />
                 </div>
-                <input type="button"
-                onclick="login(this);"
-                value="Sign in" /> <a href="https://github.com/password_reset">Forgot password?</a>
+                <input type="button" onclick="login(this);" value="Sign in" />
+                <a href="https://github.com/password_reset"
+                target="actionRequired">Forgot password?</a>
             </div>
         </div>
         <div class="grid_7">
-            <div class="githubLoggedIn">
-                Setup steps
-                <ol>
-                    <li class="no-githubVerifiedEmail"><a href="https://github.com/settings/emails" target="actionRequired">Add &amp; verify your school email</a></li>
-                    <li class="no-githubVerifiedEmail">Github will email a link: click to verify your school email</li>
-                    <li class="no-githubUpgradedPlan"><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an educational discount</a></li>
-                    <li class="githubUpgradedPlan">Thanks for creating your account!</li>
-                    <li class="status githubFullNameShared">
+            <div class="github-authenticated">
+                <ul class="fa-ul" style="margin-left: 0px;">
+                    <li class="no-github-email-verified">
+                        <i class="fa-li fa fa-lg fa-warning fail"></i>
+                        <a href="https://github.com/settings/emails"
+                        target="actionRequired">Add &amp; verify
+                        your school email</a><br/>(Github will email a link: click it to verify)
+                    </li>
+                    <li class="no-github-upgraded">
+                        <i class="fa-li fa fa-lg fa-warning fail"></i>
+                        <a href="https://education.github.com/discount_requests/new"
+                        target="actionRequired">Request an educational discount</a>
+                    </li>
+                    <li class="no-github-profile">
+                        <i class="fa-li fa fa-lg fa-warning fail"></i>
                         <!-- Only ask the user to do stuff themselves if Javascript's disabled (or failed) and the server's dead (or failed) -->
-                        <a class="fail" target="actionRequired" href="https://github.com/settings/profile">Share your name with Github</a>
-                        <span class="success">Shared your name with Github (<a target="actionRequired" href="https://github.com/settings/profile">Update profile</a>)</span>
+                        <a target="actionRequired"
+                        href="https://github.com/settings/profile">
+                            Share your name with Github</a>
                     </li>
-                    <li class="status githubRepositoryCreated">
-                        <a class="fail" target="actionRequired" href="https://github.com/new">Create <b>private</b> repository </a>
-                        <span class="success">Created private repository <a href="#" target="actionRequired"></a></span>
+                    <li class="github-profile">
+                        <i class="fa-li fa fa-lg fa-check success"></i>
+                        Shared your name with Github
+                        (<a target="actionRequired"
+                        href="https://github.com/settings/profile">Update profile</a>)
                     </li>
-                    <li class="status githubCollaboratorAdded">
-                        <span class="fail">Add INSTRUCTOR as a collaborator for </span>
-                        <span class="success"><a href="#" target="actionRequired">Added INSTRUCTOR as a collaborator for </a></span>
+                    <li class="no-github-key">
+                        <i class="fa-li fa fa-lg fa-warning fail"></i>
+                        <a href="https://github.com/settings/ssh"
+                        target="actionRequired">Share public key</a>:
+                        <input type="text" value="PUBLIC_KEY" style="width:100px;" />
                     </li>
-                    <li class="status githubPublicKeyShared">
-                        <div class="fail">
-                            <a href="https://github.com/settings/ssh" target="actionRequired">Share public key</a><br/>
-                            <textarea>PUBLIC_KEY</textarea>
-                        </div>
-                        <div class="success">
-                            Shared public key (<a href="https://github.com/settings/ssh" target="actionRequired">Update</a>)
-                        </div>
+                    <li class="github-key">
+                        <i class="fa-li fa fa-lg fa-check success"></i>
+                        Shared public key
+                        (<a href="https://github.com/settings/ssh"
+                        target="actionRequired">Update</a>)
                     </li>
-                </ol>
+                    <li class="no-github-repository">
+                        <i class="fa-li fa fa-lg fa-warning fail"></i>
+                        <a target="actionRequired" href="https://github.com/new">
+                            Create private repository </a>
+                    </li>
+                    <li class="github-repository">
+                        <i class="fa-li fa fa-lg fa-check success"></i>
+                        Created private repository
+                        <a href="https://github.com/USER_NAME/"
+                        target="actionRequired"
+                        class="origin-href"></a>
+                    </li>
+                    <li class="no-github-collaborator">
+                        <i class="fa-li fa fa-lg fa-warning fail"></i>
+                        Add  as a collaborator for 
+                    </li>
+                    <li class="github-collaborator">
+                        <i class="fa-li fa fa-lg fa-check success"></i>
+                        <a href="https://github.com/USER_NAME//settings/collaboration"
+                        id="collaborator-href" target="actionRequired">
+                            Added  as a collaborator for </a>
+                    </li>
+                </ul>
             </div>
         </div>
       </section>
       <section class="container_12">
         <header>
           <h1 class="grid_2">Git Setup</h1>
-          <div class="grid_10">Set up your git repositories: <b>local</b> (<a href="{{localRepo}}" target="_blank"><code>~/{{repo}}</code></a>), <b>origin</b> (<a href="https://github.com/{{githubUsername}}/{{repo}}" target="_blank">your private repository</a>), and <b>upstream</b> (<a href="https://github.com/{{githubInstructorLogin}}/{{repo}}" target="_blank">course repository</a>)</div>
+          <div class="grid_10">Set up your git repositories:
+          <b>local</b> (<a href="" target="_blank"><code>~/</code></a>),
+          <b>origin</b> (<a class="origin-href"
+          href="https://github.com/USER_NAME/"
+          target="_blank">your private repository</a>), and 
+          <b>upstream</b> (<a href="https://github.com//"
+          target="_blank">course repository</a>)</div>
           <div class="clear"></div>
         </header>
         <div class="clear"></div>
-        <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/git.svg" width="140" height="140" /></div>
+        <div class="grid_2"><img src="https://lawrancej.github.io/starterupper/git.svg" width="140" height="140" /></div>
         <div class="grid_10">
-          <button>Set up {{repo}}</button>
-          <pre>git clone https://github.com/{{githubInstructorLogin}}/{{repo}}.git
-cd {{repo}}
-git remote rm origin
-git remote add origin git@github.com:{{githubUsername}}/{{repo}}.git
-git remote add upstream https://github.com/{{githubInstructorLogin}}/{{repo}}.git
-git push -u origin master</pre>
+          <button>Set up </button>
+          <ul class="fa-ul" style="margin-left: 0px;">
+            <li>
+            <i class="fa-li fa fa-lg fa-check success"></i>
+            <code>cd</code><br/>
+            <code>git clone https://github.com//.git</code><br/>
+            <code>cd </code><br/>
+            <code>git remote rm origin</code><br/>
+            <code>git remote add upstream https://github.com//.git</code>
+            </li>
+            <li>
+            <i class="fa-li fa fa-lg fa-warning fail" id="origin-status"></i>
+            <code id="origin-code">git remote add origin git@github.com:USER_NAME/.git</code><br/>
+            <code>git push -u origin master</code>
+</li>
+          </ul>
         </div>
       </section>
     </form>
   </article>
   <script>
     var model = {
-        // Name of the repository only
+        // Server-set constants
+        // Name of the repository
         repo: '',
-        // file:// path to local repository
-        localRepo: 'LOCAL_REPO',
-
-        // User's full name
-        fullName: 'Quang Kieu',
-        // User's OS username
-        localUsername: 'USER_NAME',
+        // Who's the instructor?
+        githubInstructorLogin: '',
         // User's login at their machine
         hostLogin: 'USER_NAME@HOSTNAME',
         // User's public key
         publicKey: 'PUBLIC_KEY',
+
+        // Server-initialized variables
+        // User's full name (DO NOT set directly, use model.setEmail())
+        fullName: localStorage.hasOwnProperty("Model.fullName") ? 
+                    localStorage.getItem("Model.fullName") : 'Quang Kieu',
+        getName: function() {
+            return localStorage.getItem("Model.fullName");
+        },
+        setName: function(name) {
+            model.fullName = name.trim();
+            if (model.validName()) {
+                localStorage.setItem("Model.fullName", model.fullName);
+            }
+        },
+        validName: function() {
+            var regex = /[^ ]+( [^ ]+)+/;
+            return regex.test(model.fullName);
+        },
         
         // User's email (DO NOT set directly, use model.setEmail())
-        email: 'kieuq@wit.edu',
-        // Sanitize email address before setting it
+        email: localStorage.hasOwnProperty("Model.email") ? 
+                    localStorage.getItem("Model.email") : 'kieuq@wit.edu',
+        // Sanitize and validate email address before setting it
         setEmail: function(address) {
-            this.email = address.toLowerCase().trim();
+            model.email = address.toLowerCase().trim();
+            if (model.validEmail()) {
+                localStorage.setItem("Model.email", model.email);
+            }
+        },
+        getEmail: function() {
+            return localStorage.getItem("Model.email");
         },
         // Is the user's email valid?
-		validEmail: function() {
+        validEmail: function() {
             var regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-            return regex.test(this.email);
+            return regex.test(model.email);
         },
-        //Is the user's email a school email?
+        // Is the user's email a school email?
         schoolEmail: function() {
             var regex = /edu$/;
-            return regex.test(this.email);
+            return regex.test(model.getEmail());
         },
         // Gravatar ID
         gravatarId: function() {
-            return SparkMD5.hash(this.email);
+            return SparkMD5.hash(model.getEmail());
         },
-        // Did we find a Gravatar image from the user's email? (Assume yes unless we get a 404 error)
-        gravatarAccount: true,
-        
-        // What's the username?
-        githubUsername: 'kieuq',
-        // Who's the instructor?
-        githubInstructorLogin: '',
-        // Successful Github login?
-        githubLoggedIn: false,
-        // Does Github need two-factor auth?
-        githubTwoFactor: false,
-        // Is the email on the account?
-        githubEmailFound: false,
-        // Is the Github email verified?
-        githubVerifiedEmail: false,
-        // Can we create a private repository?
-        githubUpgradedPlan: false,
-        // Did we create a private repository?
-        githubRepositoryCreated: false,
-        // Did we add a collaborator?
-        githubCollaboratorAdded: false,
-        // Did we share the public key?
-        githubPublicKeyShared: false,
-        // Did we share the full name?
-        githubFullNameShared: false
     };
-	
-    var updateView = {
+
+    var controller = {
         name: function() {
-            model.name = $("#name").val();
-            $( "#git-config-name" ).html('git config --global user.name "' + model.name + '"');
+        // TODO: FIXME: use local storage and validate
+            model.setName($("#name").val());
+            $( "#git-config-name" ).html('git config --global user.name "' + model.getName() + '"');
         },
         email: function() {
+        // TODO: FIXME: use local storage and validate
             model.setEmail($("#email").val());
-            $( "#git-config-email" ).html('git config --global user.email ' + model.email);
-           
-            model.gravatarAccount = model.validEmail && model.schoolEmail;
-            this.gravatar();
-            $("#invisible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=404');
-            $("#visible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=retro&s=140'); 
-			$( "#githubLogin" ).val(model.email.match(/(^.*?)(?=@)/gmi));
+            $( "#git-config-email" ).html('git config --global user.email ' + model.getName() + '"');
+            
+            $("#visible-gravatar").attr('src', 'https://www.gravatar.com/avatar/' + model.gravatarId() + '?d=retro&s=80');
+			$("#SGravatar").attr('src', 'https://myweb.wit.edu/kieuq/New_folder/webcam.html?hash='+model.gravatarId());
+            $.ajax({
+                method: "GET",
+                dataType: "jsonp",
+                crossDomain: true,
+                processData: false,
+                url: 'https://en.gravatar.com/' + model.gravatarId() + '.json',
+                success: function(response) {
+                    localStorage.setItem("Gravatar", model.gravatarId());
+                    controller.update('gravatar-account',true);
+                },
+                error: function(response) {
+                    localStorage.removeItem("Gravatar");
+                    controller.update('gravatar-account',false);
+                }
+            });
         },
-        noGravatar: function() {
-            model.gravatarAccount = false;
-            $('.no-gravatar-account').show();
-            $('.gravatar-account').hide();
-        },
-        yesGravatar: function() {
-            $('.no-gravatar-account').hide();
-            $('.gravatar-account').show();
+        // Show class and hide its opposite
+        update: function(klass, value) {
+            if (value) {
+                $('.'+klass).show();
+                $('.no-'+klass).hide();
+            } else {
+                $('.'+klass).hide();
+                $('.no-'+klass).show();
+            }
         },
         gravatar: function() {
-            (model.gravatarAccount) ? this.yesGravatar() : this.noGravatar();
-        }
+            controller.update('gravatar-authenticated',false);
+        },
+        github: function() {
+            model.githubPassword = $("#github-password").val();
+            if (Github.authenticated()) {
+                setupUser();
+                setupEmail();
+//                setupSSH();
+                setupRepo();
+                // Doesn't work
+                // Another bug: check if email and full name are valid before sharing them
+                // Perhaps just use local storage?
+                $(".origin-href").attr("href", "https://github.com/" + Github.getUsername() + "/");
+                $("#collaborator-href").attr("href", "https://github.com/" + Github.getUsername() + "//settings/collaboration");
+                $("#origin-code").html("git remote add origin git@github.com:" + Github.getUsername() + "/.git");
+                controller.update('github-authenticated', true);
+            } else {
+                controller.update('github-authenticated', false);
+            }
+        },
     };
     $( "#name" ).on( "change", function( event ) {
-        updateView.name();
+        controller.name();
     });
     $( "#email" ).on( "change", function( event ) {
-        updateView.email();
+        controller.email();
     });
-    $( "#invisible-gravatar" ).on( "error", function( event ) {
-        updateView.noGravatar();
+    $( "#github-login" ).on( "change", function( event) {
+        controller.github();
+    });
+    $( "#github-password" ).on( "change", function( event) {
+        controller.github();
     });
     $(function() {
-        updateView.name();
-        updateView.email();
-        updateView.gravatar();
+        $("#name").val(model.getName());
+        $("#email").val(model.getEmail());
+        controller.name();
+        controller.email();
+        controller.gravatar();
+        controller.github();
     });
   </script>
 
   <script>
-    var ractive = {}
     function setupUser() {
-        // Setup user profile
+        // Nag the user if they're not on an upgraded plan
         Github.getUser({
             success: function(response) {
-                // Nag the user if they're not on an upgraded plan
-                if (response.plan.name.toLowerCase() != "free") {
-                    ractive.set('githubUpgradedPlan', true);
-                } else {
-                    ractive.set('githubUpgradedPlan', false);
-                }
-                // Set the user name for the instructor's benefit
-                if (response.hasOwnProperty("name") && response.name != ractive.get('fullName')) {
-                    Github.setUser({
-                        data: {
-                            name: ractive.get('fullName')
-                        },
-                        success: function(response) {
-                            ractive.set('githubFullNameShared', true);
-                        },
-                        fail: function(response) {
-                            ractive.set('githubFullNameShared', false);
-                        }
-                    });
-                }
-                // Set the company for the instructor's benefit
-                // TODO: http://www.whoisxmlapi.com/whois-api-doc.php
-                /*
-                if (response.hasOwnProperty("company") && response.company == "") {
-                    Github.setUser({
-                        data: {company: ""},
-                        success: function(response) {},
-                        fail: function(response) {
-                        // TODO: tell the user what to do if this breaks
-                        }
-                    });
-                }
-                */
+                controller.update('github-upgraded', (response.plan.name.toLowerCase() != "free"));
             }
         });
+        Github.setUser({
+            data: {
+                name: model.getName()
+            },
+            success: function(response) {
+                controller.update('github-profile',true);
+            },
+            fail: function(response) {
+                controller.update('github-profile',false);
+            }
+        });
+        // Set the company for the instructor's benefit
+        // (if a company isn't already set)
+        // TODO: https://www.whoisxmlapi.com/whois-api-doc.php
+        /*
+        if (response.hasOwnProperty("company") && response.company == "") {
+            Github.setUser({
+                data: {company: ""},
+                success: function(response) {},
+                fail: function(response) {
+                // TODO: tell the user what to do if this breaks
+                }
+            });
+        }
+        */
     }
     function setupEmail() {
         // Setup email
         Github.getEmail({
-            email: ractive.get('email'),
+            email: model.getEmail(),
             added: function() {
-                ractive.set('githubEmailFound', true);
+                controller.update('github-email-found',true);
             },
             verified: function() {
-                ractive.set('githubVerifiedEmail', true);
+                controller.update('github-email-verified',true);
             },
             unverified: function() {
-                ractive.set('githubVerifiedEmail', false);
+                controller.update('github-email-verified',false);
             },
             missing: function() {
                 // The user needs to verify their email
-                ractive.set('githubVerifiedEmail', false);
+                controller.update('github-email-verified',false);
                 Github.setEmail({
-                    email: ractive.get('email'),
+                    email: model.getEmail(),
                     success: function() {
-                        ractive.set('githubEmailFound', true);
+                        controller.update('github-email-found',true);
                     },
                     fail: function() {
-                        ractive.set('githubEmailFound', false);
+                        controller.update('github-email-found',false);
                     }
                 });
             }
@@ -526,46 +694,44 @@ git push -u origin master</pre>
     }
     function setupSSH() {
         Github.shareKey({
-            title: ractive.get('hostLogin'),
-            key: ractive.get('publicKey'),
+            title: model.hostLogin,
+            key: model.publicKey,
             success: function() {
-                ractive.set('githubPublicKeyShared', true);
+                controller.update('github-key',true);
             },
             fail: function() {
-                ractive.set('githubPublicKeyShared', false);
+                controller.update('github-key',false);
             }
         });
     }
     function setupRepo() {
         Github.createRepo({
-            login: ractive.get('githubUsername'),
-            repo: ractive.get('repo'),
+            repo: model.repo,
             success: function(response) {
-                ractive.set('githubRepositoryCreated', true);
+                controller.update('github-repository',true);
             },
             fail: function(response) {
-                ractive.set('githubRepositoryCreated', false);
+                controller.update('github-repository',false);
             }
         });
         Github.addCollaborator({
-            login: ractive.get('githubUsername'),
-            repo: ractive.get('repo'),
-            collaborator: ractive.get('githubInstructorLogin'),
+            repo: model.repo,
+            collaborator: model.githubInstructorLogin,
             success: function(response) {
-                ractive.set('githubCollaboratorAdded', true);
+                controller.update('github-collaborator', true);
             },
             fail: function(response) {
-                ractive.set('githubCollaboratorAdded', false);
+                controller.update('github-collaborator', false);
             }
         });
     }
     function login(event) {
         Github.login({
-            username: ractive.get('githubUsername'),
-            password: $("#password").val(),
+            username: $("#email").val(),
+            password: $("#github-password").val(),
             otp: $("#otp").val(),
             authenticated: function() {
-                ractive.set('githubLoggedIn', true);
+                controller.update('github-authenticated', true);
                 setupUser();
                 setupEmail();
 //                setupSSH();
@@ -574,11 +740,17 @@ git push -u origin master</pre>
             badCredential: function() {
                 // Clear the password
                 $("#password").attr('value', '');
+                controller.github();
             },
             twoFactor: function() {
-                ractive.set('githubTwoFactor', true);
+                $('.github-two-factor').show();
+                $('#otp').focus();
             }
         });
+    }
+    function logout(event) {
+        Github.logout();
+        controller.update('github-authenticated', false);
     }
   </script>
 </body>

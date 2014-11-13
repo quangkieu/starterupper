@@ -5,334 +5,127 @@
   <title>Git and Hosting Setup</title>
   <!-- Suppress favicon -->
   <link rel="shortcut icon" href="#" />
-  <link rel="stylesheet" href="reset.css" />
-  <link rel="stylesheet" href="text.css" />
-  <link rel="stylesheet" href="960.css" />
-  <script src="modernizr-latest.js"></script>
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/reset.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />
   <style>
-  h1 {
-    margin:0px;
-    padding:0px;
-  }
-  header div {
-    position: relative;
-    top: 50%;
-    transform: translateY(70%);
-  }
-  header {
-    display: block;
-    border-bottom: 1px solid lightgray;
-    margin-bottom: 10px;
-  }
-  section {
-    margin-bottom:10px;
-  }
-  input[type="text"] { width:200px; }
-  input[type="email"] { width:200px; }
-  input[type="password"] { width:200px; }
-  .js #warning {display: none;}
-  #invisible-gravatar {display: none;}
-  .github-two-factor {display: none; }
-  .gravatar-account { display: none; }
-  .webcam { display: none; }
-//  .no-gravatar-account {display: none;}
-//  .no-server {display:none;}
-  .githubLoggedIn {display: none;}
+  h1 {margin:0px; padding:0px;}
+  hgroup div {position: relative; top: 50%; transform: translateY(70%);}
   </style>
-  <script src="sparkMD5.js"></script>
-  <script src="jquery-2.1.1.min.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/ractive-legacy.min.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/sparkMD5.js"></script>
+  <script src="http://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
   <script src="github.js"></script>
-<!--  <script>navigator.registerProtocolHandler("web+git", ", title)</script>-->
-<!--  <script>
-  // Borrowed from Modernizr, switch no-js to js if javascript is available
-  document.documentElement.className=document.documentElement.className.replace(/\bno-js\b/,'') + ' js';
-  </script> -->
 </head>
 <body>
   <article>
-    <form method="post" action="/" >
-    <!-- How we determine if the user has a Gravatar -->
-      <img id="invisible-gravatar" onerror="noGravatarAccount(this)" 
-      src="http://www.gravatar.com/avatar/EMAIL_HASH?d=404"  />
-      
-    <!-- Nag the user if JavaScript is disabled -->
-      <section class="container_12" id="warning">
-        <header>
-            <h1 class="grid_2" style="color:red;">Warning</h1>
-            <div class="grid_10"><b>Enable JavaScript in your web browser
-            to setup git and hosting reliably</b></div>
-            <div class="clear"></div>
-        </header>
-        
-        <!-- IE users -->
-        <div class="grid_2" style="text-align: right;">
-            <img src="ie.svg" width="140" height="140"
-            title="Internet Explorer" />
-        </div>
-        <div class="grid_10">
-        <!-- IE5 through IE9 -->
-        <!--[if lte IE 9]>
-            <b>Your browser is obsolete</b>:
-            Please <a target="actionRequired"
-            href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">upgrade</a>
-            first, or install
-            <a href="http://www.google.com/chrome/" 
-            target="actionRequired">Chrome</a> or 
-            <a href="https://www.mozilla.org/en-US/firefox/new/"
-            target="actionRequired">Firefox</a> instead<br/><br/>
-        <![endif]-->
-            If <b>Internet Explorer restricted this webpage from running scripts
-            or ActiveX controls</b>, click <b>Allow blocked content</b>
-            <ol>
-                <li>Otherwise, click <b>Tools</b> and select
-                <b>Internet options</b></li>
-                <li>Select the <b>Security</b> tab within Internet Options</li>
-                <li>Click <b>Custom level...</b></li>
-                <li>Scroll until you find the &quot;Scripting&quot; section</li>
-                <li>Under &quot;Active Scripting&quot;, click <b>Enable</b></li>
-                <li>Click <b>OK</b></li>
-                <li>Reload this page</li>
-            </ol>
-        </div>
-        <div class="clear"></div>
-
-        <!-- Chrome users -->
-        <div class="grid_2">
-            <img src="chrome.svg" width="140" height="140" title="Chrome" />
-        </div>
-        <div class="grid_10">
-            Chrome users: if you installed ScriptSafe or NotScripts,
-            enable (allow or trust) JavaScript
-            <ol>
-                <li>Otherwise, open a new tab and type
-                <code>chrome://settings</code> in the location (address) bar</li>
-                <li>Click <b>Show advanced settings...</b></li>
-                <li>In the "Privacy" section,
-                click <b>Content settings...</b></li>
-                <li>In the "Javascript" section, select
-                <b>Allow all sites to run JavaScript (recommended)</b></li>
-                <li>Click <b>Done</b></li>
-                <li>Reload this page</li>
-            </ol>
-        </div>
-        <div class="clear"></div>
-        <br/>
-        
-        <!-- Firefox users -->
-        <div class="grid_2">
-            <a href="http://kb.mozillazine.org/About:config"
-            target="actionRequired">
-                <img src="firefox.svg" width="140"
-                height="140" title="Firefox" />
-            </a>
-        </div>
-        <div class="grid_10">
-            Firefox users: if you installed NoScript,
-            enable (allow or trust) JavaScript
-            <ol>
-                <li>Otherwise, open a new tab and type <code>about:config</code>
-                in the location (address) bar</li>
-                <li>Set <code>javascript.enabled</code> to <b>true</b></li>
-                <li>Reload this page</li>
-            </ol>
-        </div>
-        <div class="clear"></div>
-      </section>
-      <a href="gitconfig://a b"
-                    ><center>test</center></a>
-      <!-- Profile -->
+    <div id="gravatar_container"></div>
+    <script id="gravatar_template" type="text/ractive">
+      <div style="display:none;"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=404" onerror="noGravatarAccount(this)" /></div>
       <section class="container_12">
-        <header>
-            <h1 class="grid_2">Profile</h1>
-            <div class="grid_10">
-                Confirm your full name and school email address
-            </div>
-            <div class="clear"></div>
-        </header>
-        
-        <!-- Full name -->
-        <div class="grid_2" style="text-align: right;">
-            <label for="name">Full name</label>
-        </div>
-        <div class="grid_3">
-            <input id="name" type="text" name="name" value="FULL_NAME"
-            placeholder="Full name" pattern="^[^\s]+ [^\s]+$" required
-            title="[FirstName] [LastName] (one space only)" autocomplete="on" /><br/>
-        </div>
-        <code class="grid_7"
-        id="git-config-name">git config --global user.name "FULL_NAME"</code>
-        <div class="clear"></div>
-        
-        <!-- Email -->
-        <div class="grid_2" style="text-align: right;">
-            <label for="email">School email</label>
-        </div>
-		<!--We want to sign in with edu email to check if edu email is added to account-->
-        <div class="grid_3">
-            <input id="email" type="text" name="email" value="USER_EMAIL"
-            placeholder="School email address" pattern="^[^\s]+@[^\s]+\.edu$" required 
-            autofocus autocomplete="on" title="School email (*@*.edu) no space" />
-        </div>
-        <code class="grid_7"
-        id="git-config-email">git config --global user.email USER_EMAIL</code>
-        <div class="clear"></div>
-     </section>
-     
-     <!-- Gravatar -->
-     <section class="container_12">
-        <header>
-        <h1 class="grid_2">Gravatar</h1>
-        <div class="grid_10">
-            Create or update your Gravatar (global profile picture)
-            to help the instructor learn names
-        </div>
-        <div class="clear"></div>
-        </header>
-        
-        <div class="grid_2">
-            <img id="visible-gravatar"
-            src="http://www.gravatar.com/avatar/EMAIL_HASH?d=retro&s=140"
-            title="Your Gravatar" width="140" height="140" />
-        </div>
-        <div class="grid_3">
-            <div class="gravatar-account">
-                Thanks for creating a Gravatar!
-            </div>
-            <div class="no-gravatar-account">
-                <b>
-                    <a href="https://en.gravatar.com/connect/?source=_signup"
-                    target="actionRequired"
-                    title="New to Gravatar? Join with your school email">
-                        Join</a>
-                </b>
-                or
-                <b>
-                    <a href="https://en.gravatar.com/emails/new"
-                    target="actionRequired"
-                    title="Already use Gravatar? Add and verify your school email">
-                        Add &amp; verify school email</a>
-                </b>
-            </div>
-            <div class="gravatar-login">
-                <input type="password" id="gravatarPassword"
-                placeholder="Gravatar password" pattern=".{7,}" />
-                <input type="button" value="Sign in" /> 
-                <a href="https://en.wordpress.com/wp-login.php?action=lostpassword&wpcom_connect=1">Forgot password?</a>
-            </div>
-        </div>
-        <div class="grid_7">
-            <div class="no-js">
-                <a href="https://en.gravatar.com/gravatars/new"
-                target="actionRequired">Add an image</a>
-            </div>
-            <div class="webcam">
-                How about webcam.js here? http://pixlcore.com/read/WebcamJS
-            </div>
-        </div>
-      </section>
-      
-      <!-- Github -->
-      <section class="container_12">
-        <header>
-          <h1 class="grid_2">Github</h1>
-          <div class="grid_10">Github hosts private repositories free for students: 
-            <span class="no-githubLoggedIn">
-                create or upgrade your account for educational use
-            </span>
-            <span class="githubLoggedIn no-githubUpgradedPlan">
-                upgrade your account for educational use
-            </span>
-            <span class="githubLoggedIn githubUpgradedPlan">
-                thanks for setting up your account!
-            </span>
+        <form method="post" action="/" >
+        <hgroup>
+          <h1 class="grid_2">Profile</h1>
+          <div class="grid_4">Tell git your full name and school email address</div>
+          <div class="grid_6">
+            {{#if !gravatarAccount}}
+                Create or update your Gravatar to help the instructor learn names
+            {{else}}
+                Update your Gravatar to help the instructor learn names
+            {{/if}}
           </div>
           <div class="clear"></div>
-        </header>
-        
+          <hr />
+        </hgroup>
+        <div class="grid_2"><img src="http://www.gravatar.com/avatar/{{emailHash}}?d=retro&s=140" title="Your Gravatar" width="140" height="140" /></div>
+        <div class="grid_4">
+          <input type="text" name="user.name" value="{{fullName}}" placeholder="Full name" pattern="[a-zA-Z.]+ [a-zA-Z. ]+" required /><br />
+          <input type="email" name="user.email" value="{{email}}" placeholder="School email address" required autofocus /><br />
+          <button>Configure Git</button>
+          <pre>
+git config --global user.name "{{fullName}}"
+git config --global user.email "{{email}}"</pre>
+        </div>
+        <div class="grid_6">
+          {{#if gravatarAccount }}
+          Thanks for creating a Gravatar! (<a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Update</a>)
+          {{else}}
+            <ol>
+              <li><a href="https://en.gravatar.com/emails/new" target="actionRequired">Add email to Gravatar account</a> or <a href="https://en.gravatar.com/connect/?source=_signup" target="actionRequired">join Gravatar</a><br />
+              (use {{emailPrompt}})</li>
+              <li>Gravatar will email a link: click to verify your school email</li>
+              <li><a href="https://en.gravatar.com/gravatars/new" target="actionRequired">Add an image</a></li>
+            </ol>
+          {{/if}}
+        </div>
+        </form>
+      </section>
+      <br />
+      <form>
+      <input type="hidden" name="user.name" value="{{fullName}}" />
+      <input type="hidden" name="user.email" value="{{email}}" />
+      <section class="container_12">
+        <hgroup>
+          <h1 class="grid_2">Github</h1>
+          <div class="grid_4">Github hosts private repositories free for students</div>
+          <div class="grid_6">
+            {{#if !githubLoggedIn}}
+                Create or upgrade your Github account for educational use
+            {{else}}
+                {{#if !githubUpgradedPlan}}
+                    Upgrade your Github account for educational use
+                {{else}}
+                    Thanks for setting up your Github account!
+                {{/if}}
+            {{/if}}
+          </div>
+          <div class="clear"></div>
+          <hr />
+        </hgroup>
         <div class="clear"></div>
         <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/github.svg" width="140" height="140" /></div>
-        <div class="grid_3">
-            <div class="githubLoggedIn">
-                <span class="fail">Sorry, I was unable to sign in. You need to complete setup steps yourself.</span>
-                <span class="success">
-                    You are signed into Github
-                    <button>Sign out</button>
-                </span>
-            </div>
-            <div class="no-githubLoggedIn">
-                <a href="https://github.com/join"
-                target="actionRequired"
-                title="New to Github? Join with your school email">
-                    <b>Join</b></a>
-                or 
-                <a href="https://github.com/settings/emails"
-                target="actionRequired" 
-                title="Already use Github? Add and verify your school email">
-                    <b>Add &amp; verify school email</b></a>
-                <br/>
-                
-                <input type="text" name="github.login" id="githubLogin"
-                value="{{githubUsername}}" placeholder="Github username"
-                pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" title="Github username" required />
-                <br />
-                
-                <input type="password" id="githubPassword"
-                placeholder="Github password" pattern=".{7,}"
-                required />
-                <br />
-                
-                <div class="github-two-factor">
-                    <input type="text" id="otp"
-                    placeholder="Authentication code"
-                    pattern="[0-9]{6}"
-                    required />
-                    <br />
-                </div>
-                <input type="button"
-                onclick="login(this);"
-                value="Sign in" /> <a href="https://github.com/password_reset">Forgot password?</a>
-            </div>
+        <div class="grid_4">
+          {{#if githubLoggedIn}}
+            You are signed into Github <button>Sign out</button>
+          {{else}}
+            <input type="text" name="github.login" value="{{githubUsername}}" placeholder="Github username" pattern="^[0-9a-zA-Z][0-9a-zA-Z-]*$" required /><br />
+            <input type="password" id="password" placeholder="Password" pattern=".{7,}" required /><br />
+          {{#if githubTwoFactor}}
+            <input type="text" id="otp" placeholder="Authentication code" pattern="[0-9]{6}" required /><br />
+          {{/if}}
+          <input type="button" onclick="login(this);" value="Sign in" /> <a href="https://github.com/password_reset">Forgot password?</a>
+          {{/if}}
         </div>
-        <div class="grid_7">
-            <div class="githubLoggedIn">
-                Setup steps
-                <ol>
-                    <li class="no-githubVerifiedEmail"><a href="https://github.com/settings/emails" target="actionRequired">Add &amp; verify your school email</a></li>
-                    <li class="no-githubVerifiedEmail">Github will email a link: click to verify your school email</li>
-                    <li class="no-githubUpgradedPlan"><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an educational discount</a></li>
-                    <li class="githubUpgradedPlan">Thanks for creating your account!</li>
-                    <li class="status githubFullNameShared">
-                        <!-- Only ask the user to do stuff themselves if Javascript's disabled (or failed) and the server's dead (or failed) -->
-                        <a class="fail" target="actionRequired" href="https://github.com/settings/profile">Share your name with Github</a>
-                        <span class="success">Shared your name with Github (<a target="actionRequired" href="https://github.com/settings/profile">Update profile</a>)</span>
-                    </li>
-                    <li class="status githubRepositoryCreated">
-                        <a class="fail" target="actionRequired" href="https://github.com/new">Create <b>private</b> repository REPOSITORY</a>
-                        <span class="success">Created private repository <a href="#" target="actionRequired">REPOSITORY</a></span>
-                    </li>
-                    <li class="status githubCollaboratorAdded">
-                        <span class="fail">Add INSTRUCTOR as a collaborator for REPOSITORY</span>
-                        <span class="success"><a href="#" target="actionRequired">Added INSTRUCTOR as a collaborator for REPOSITORY</a></span>
-                    </li>
-                    <li class="status githubPublicKeyShared">
-                        <div class="fail">
-                            <a href="https://github.com/settings/ssh" target="actionRequired">Share public key</a><br/>
-                            <textarea>PUBLIC_KEY</textarea>
-                        </div>
-                        <div class="success">
-                            Shared public key (<a href="https://github.com/settings/ssh" target="actionRequired">Update</a>)
-                        </div>
-                    </li>
-                </ol>
-            </div>
+        <div class="grid_6">
+          <ol>
+            {{#if githubLoggedIn}}
+              {{#if !githubEmailFound}}
+               <li><a href="https://github.com/settings/emails" target="actionRequired">Add &amp; verify your email with Github</a></li>
+              {{/if}}
+            {{else}}
+              {{#if !githubEmailFound}}
+                <li><b>Github users:</b> <a href="https://github.com/settings/emails" target="actionRequired"> Add &amp; verify your email</a> <br />
+                <b>New to Github?</b> <a href="https://github.com/join" target="actionRequired">Join</a>
+                (use {{emailPrompt}})</li>
+              {{/if}}
+            {{/if}}
+            {{#if !githubVerifiedEmail}}
+              <li>Github will email a link: click to verify your school email</li>
+            {{/if}}
+            {{#if !githubUpgradedPlan}}
+              <li><a href="https://education.github.com/discount_requests/new" target="actionRequired">Request an individual student discount</a></li>
+            {{/if}}
+          </ol>
         </div>
       </section>
+      <br />
       <section class="container_12">
-        <header>
+        <hgroup>
           <h1 class="grid_2">Git Setup</h1>
           <div class="grid_10">Set up your git repositories: <b>local</b> (<a href="{{localRepo}}" target="_blank"><code>~/{{repo}}</code></a>), <b>origin</b> (<a href="https://github.com/{{githubUsername}}/{{repo}}" target="_blank">your private repository</a>), and <b>upstream</b> (<a href="https://github.com/{{githubInstructorLogin}}/{{repo}}" target="_blank">course repository</a>)</div>
           <div class="clear"></div>
-        </header>
+          <hr />
+        </hgroup>
         <div class="clear"></div>
         <div class="grid_2"><img src="http://lawrancej.github.io/starterupper/git.svg" width="140" height="140" /></div>
         <div class="grid_10">
@@ -345,10 +138,20 @@ git remote add upstream https://github.com/{{githubInstructorLogin}}/{{repo}}.gi
 git push -u origin master</pre>
         </div>
       </section>
-    </form>
+      </form>
+    </script>
   </article>
   <script>
-    var model = {
+    var ractive = new Ractive({
+      // The `el` option can be a node, an ID, or a CSS selector.
+      el: 'gravatar_container',
+
+      // We could pass in a string, but for the sake of convenience
+      // we're passing the ID of the <script> tag above.
+      template: '#gravatar_template',
+
+      // Here, we're passing in some initial data
+      data: {
         // Name of the repository only
         repo: 'REPOSITORY',
         // file:// path to local repository
@@ -363,29 +166,21 @@ git push -u origin master</pre>
         // User's public key
         publicKey: 'PUBLIC_KEY',
         
-        // User's email (DO NOT set directly, use model.setEmail())
+        // User's email
         email: 'USER_EMAIL',
-        // Sanitize email address before setting it
-        setEmail: function(address) {
-            this.email = address.toLowerCase().trim();
-        },
         // Is the user's email valid?
-		validEmail: function() {
-            var regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-            return regex.test(this.email);
-        },
-        //Is the user's email a school email?
-        schoolEmail: function() {
-            var regex = /edu$/;
-            return regex.test(this.email);
-        },
+        validEmail: false,
+        // Is the user's email a school email?
+        schoolEmail: false,
+        
         // Gravatar ID
-        gravatarId: function() {
-            return SparkMD5.hash(this.email);
-        },
+        emailHash: SparkMD5.hash('USER_EMAIL'),
         // Did we find a Gravatar image from the user's email? (Assume yes unless we get a 404 error)
         gravatarAccount: true,
         
+        // Email placeholder
+        emailPrompt: 'USER_EMAIL',
+
         // What's the username?
         githubUsername: 'GITHUB_LOGIN',
         // Who's the instructor?
@@ -408,54 +203,26 @@ git push -u origin master</pre>
         githubPublicKeyShared: false,
         // Did we share the full name?
         githubFullNameShared: false
-    };
-	
-    var updateView = {
-        name: function() {
-            model.name = $("#name").val();
-            $( "#git-config-name" ).html('git config --global user.name "' + model.name + '"');
-        },
-        email: function() {
-            model.setEmail($("#email").val());
-            $( "#git-config-email" ).html('git config --global user.email ' + model.email);
-           
-            model.gravatarAccount = model.validEmail && model.schoolEmail;
-            this.gravatar();
-            $("#invisible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=404');
-            $("#visible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=retro&s=140'); 
-			$( "#githubLogin" ).val(model.email.match(/(^.*?)(?=@)/gmi));
-        },
-        noGravatar: function() {
-            model.gravatarAccount = false;
-            $('.no-gravatar-account').show();
-            $('.gravatar-account').hide();
-        },
-        yesGravatar: function() {
-            $('.no-gravatar-account').hide();
-            $('.gravatar-account').show();
-        },
-        gravatar: function() {
-            (model.gravatarAccount) ? this.yesGravatar() : this.noGravatar();
-        }
-    };
-    $( "#name" ).on( "change", function( event ) {
-        updateView.name();
+      }
     });
-    $( "#email" ).on( "change", function( event ) {
-        updateView.email();
+    
+    ractive.observe('email', function ( newValue, oldValue ) {
+        var newEmail=newValue.toLowerCase().trim();
+        var regex=/edu$/;
+        var emailValid=/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        var validEmail=emailValid.test(newEmail);
+        var schoolEmail=regex.test(newEmail);
+        ractive.set('validEmail',validEmail);
+        ractive.set('schoolEmail',schoolEmail);
+        ractive.set('email',newEmail);
+        ractive.set('emailHash', SparkMD5.hash(newEmail));
+        ractive.set('emailPrompt', (validEmail && schoolEmail) ? newEmail: "your school email");
+        ractive.set('gravatarAccount',validEmail && schoolEmail);
     });
-    $( "#invisible-gravatar" ).on( "error", function( event ) {
-        updateView.noGravatar();
-    });
-    $(function() {
-        updateView.name();
-        updateView.email();
-        updateView.gravatar();
-    });
-  </script>
-
-  <script>
-    var ractive = {}
+    
+    function noGravatarAccount(source) {
+        ractive.set('gravatarAccount', false);
+    }
     function setupUser() {
         // Setup user profile
         Github.getUser({
@@ -572,7 +339,6 @@ git push -u origin master</pre>
                 setupRepo();
             },
             badCredential: function() {
-                // Clear the password
                 $("#password").attr('value', '');
             },
             twoFactor: function() {
