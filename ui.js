@@ -76,8 +76,8 @@ var controller = {
     // Update email view on change
     email: function() {
         $( "#git-config-email" ).html('git config --global user.email ' + model.email());
-        
-        $("#visible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=retro&s=140');
+        $("#SGravatar").attr('src', 'http://myweb.wit.edu/kieuq/New_folder/webcam.html?hash=' + model.gravatarId());
+        //$("#visible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=retro&s=140');
         $.ajax({
             method: "GET",
             dataType: "jsonp",
@@ -120,6 +120,7 @@ $( "#name" ).on( "change", function(event) {
 });
 $( "#email" ).on( "change", function(event) {
     controller.email();
+	$("#SGravatar").attr('src', 'http://myweb.wit.edu/kieuq/New_folder/webcam.html?hash=' + model.gravatarId());
 });
 $( "#github-password" ).on( "change", function(event) {
     controller.github();

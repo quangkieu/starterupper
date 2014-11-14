@@ -5,19 +5,31 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>WebcamJS Test Page</title>
-	  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <title>Git and Hosting Setup</title>
+  <link href="font-awesome-4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <!-- Suppress favicon -->
   <link rel="shortcut icon" href="#" />
-  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/reset.css" />
-  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/text.css" />
-  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/960.css" />
-  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/reset.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
+  <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />  
+  <script src="http://lawrancej.github.io/starterupper/modernizr-latest.js"></script>
+  <!--<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>-->
   <style>
+  ul {
+    margin-bottom: 0px;
+  }
+  .subheading {
+    text-align: right;
+  }
+  .error {
+    color:red;
+  }
   .success {
     color:green;
   }
   .fail {
-    color:red;
+
+    color:black;
   }
   h1 {
     margin:0px;
@@ -57,9 +69,6 @@
       .login-control {display: none;}
     </style>
   </noscript>
-  <script src="https://lawrancej.github.io/starterupper/sparkMD5.js"></script>
-  <script src="https://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
-  <script src="https://lawrancej.github.io/starterupper/github.js"></script>
 	<style type="text/css">
 		body { font-family: Helvetica, sans-serif; }
 		h2, h3 { margin-top:0; }
@@ -73,7 +82,7 @@
      <section class="container_12">
         <header>
         <h1 class="grid_2">Gravatar</h1>
-        <div class="grid_10">
+        <div class="grid_12">
             Create or update your Gravatar (global profile picture)
             to help the instructor learn names
         </div>
@@ -81,7 +90,7 @@
         </header>
         <div class="grid_2"> 
             <center><img id="visible-gravatar"
-            src="https://www.gravatar.com/avatar/EMAIL_HASH?d=retro&s=140"
+            src="http://www.gravatar.com/avatar/EMAIL_HASH?d=retro&s=140"
             title="Your Gravatar" width="140" height="140" />
 			<h5>Is this you?</h5></center>
         </div>
