@@ -1,7 +1,43 @@
 #!/bin/bash
 
+# Configuration
+# ---------------------------------------------------------------------
+
+# The repository to clone as upstream (NO SPACES)
+readonly REPO=starterupper
+# Default domain for school email
+readonly SCHOOL=wit.edu
+# The instructor's Github username
+readonly INSTRUCTOR_GITHUB=lawrancej
+
+# Runtime flags (DO NOT CHANGE)
+# ---------------------------------------------------------------------
+readonly PROGNAME=$(basename $0)
+readonly ARGS="$@"
+
 source web.sh
 source github.sh
+
+# Make the index page
+app::make_index() {
+    local githubLoggedIn=$(Utility_asTrueFalse $(Github_loggedIn))
+    local githubEmailVerified=$(Utility_asTrueFalse $(Github_emailVerified "$email"))
+    local githubUpgradedPlan=$(Utility_asTrueFalse $(Github_upgradedPlan))
+    local githubEmailAdded=$(Utility_asTrueFalse $(Github_emailAdded "$email"))
+
+    sed -e "s/REPOSITORY/$REPO/g" \
+    -e "s/USER_EMAIL/$(User_getEmail)/g" \
+    -e "s/FULL_NAME/$(User_getFullName)/g" \
+    -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
+    -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
+    -e "s/PUBLIC_KEY/$(SSH_getPublicKeyForSed)/g" \
+    -e "s/HOSTNAME/$(hostname)/g" \
+    -e "s/GITHUB_LOGGED_IN/$githubLoggedIn/g" \
+    -e "s/GITHUB_UPGRADED_PLAN/$githubUpgradedPlan/g" \
+    -e "s/GITHUB_EMAIL_ADDED/$githubEmailAdded/g" \
+    -e "s/GITHUB_EMAIL_VERIFIED/$githubEmailVerified/g" \
+    index2.html > temp.html
+}
 
 app::index() {
     local request="$1"
@@ -27,24 +63,7 @@ app::index() {
         esac
     done
     
-    local githubLoggedIn=$(Utility_asTrueFalse $(Github_loggedIn))
-    local githubEmailVerified=$(Utility_asTrueFalse $(Github_emailVerified "$email"))
-    local githubUpgradedPlan=$(Utility_asTrueFalse $(Github_upgradedPlan))
-    local githubEmailAdded=$(Utility_asTrueFalse $(Github_emailAdded "$email"))
-
-    sed -e "s/REPOSITORY/$REPO/g" \
-    -e "s/USER_EMAIL/$(User_getEmail)/g" \
-    -e "s/FULL_NAME/$(User_getFullName)/g" \
-    -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
-    -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
-    -e "s/PUBLIC_KEY/$(SSH_getPublicKeyForSed)/g" \
-    -e "s/HOSTNAME/$(hostname)/g" \
-    -e "s/GITHUB_LOGGED_IN/$githubLoggedIn/g" \
-    -e "s/GITHUB_UPGRADED_PLAN/$githubUpgradedPlan/g" \
-    -e "s/GITHUB_EMAIL_ADDED/$githubEmailAdded/g" \
-    -e "s/GITHUB_EMAIL_VERIFIED/$githubEmailVerified/g" \
-    index2.html > temp.html
-
+    app::make_index
     server::send_file "temp.html"
     rm temp.html
 }
@@ -88,7 +107,8 @@ app::router() {
     esac
 }
 
-# Utility_fileOpen http://localhost:8080
+app::make_index
+Utility_fileOpen temp.html > /dev/null
 server::start "app::router"
 
 # if [[ "$(Utility_fileOpen http://localhost:8080)" ]]; then

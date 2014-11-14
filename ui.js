@@ -104,7 +104,7 @@ var controller = {
 //            $("#otp").val("010101");
             setupUser();
             setupEmail();
-//            setupSSH();
+            setupSSH();
             setupRepo();
             $(".origin-href").attr("href", "https://github.com/" + Github.getUsername() + "/" + model.repo());
             $("#collaborator-href").attr("href", "https://github.com/" + Github.getUsername() + "/" + model.repo() + "/settings/collaboration");
