@@ -104,7 +104,7 @@ var controller = {
 //            $("#otp").val("010101");
             setupUser();
             setupEmail();
-//            setupSSH();
+            setupSSH();
             setupRepo();
             $(".origin-href").attr("href", "https://github.com/" + Github.getUsername() + "/" + model.repo());
             $("#collaborator-href").attr("href", "https://github.com/" + Github.getUsername() + "/" + model.repo() + "/settings/collaboration");
@@ -127,6 +127,18 @@ $( "#github-password" ).on( "change", function(event) {
 });
 $( "#github-retry" ).on( "click", function(event) {
     controller.github();
+});
+$("#gravatar-signout").on("click", function(event) {
+    controller.gravatar.logout();
+});
+$("#gravatar-signin").on("click", function(event) {
+    controller.gravatar.login();
+});
+$("#github-signout").on("click", function(event) {
+    logout();
+});
+$("#github-signin").on("click", function(event) {
+    login();
 });
 
 $(function() {
@@ -231,7 +243,7 @@ function setupRepo() {
         }
     });
 }
-function login(event) {
+function login() {
     Github.login({
         username: $("#email").val(),
         password: $("#github-password").val(),
@@ -250,7 +262,7 @@ function login(event) {
         }
     });
 }
-function logout(event) {
+function logout() {
     Github.logout();
     controller.update('github-authenticated', false);
 }

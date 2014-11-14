@@ -182,7 +182,7 @@ SSH_getPublicKey() {
         # Use default location, set no phassphrase, no questions asked
         printf "\n" | ssh-keygen -t rsa -N '' 2> /dev/null > /dev/null
     fi
-    cat ~/.ssh/id_rsa.pub
+    cat ~/.ssh/id_rsa.pub | sed s/==.*$/==/ # Ignore the trailing comment
 }
 
 SSH_getPublicKeyForSed() {

@@ -5,23 +5,11 @@
 # ---------------------------------------------------------------------
 
 # The repository to clone as upstream (NO SPACES)
-readonly REPO=starterupper
+readonly REPOSITORY=starterupper
 # Default domain for school email
 readonly SCHOOL=wit.edu
 # The instructor's Github username
 readonly INSTRUCTOR_GITHUB=lawrancej
-
-# Issues:
-# Make all functions idempotent
-# start / open a bookmarklet?
-# go through all pages when fetching usernames
-# grading interface: checkout stuff rapid fire like, possibly use git notes (or just use the issue tracker)
-# fall back to https remotes if the school doesn't support SSH
-# if the public key already exists on another account, ask user if they'd like to wipe existing keypair and generate a new one.
-# revoke authorization automatically DELETE /authorizations/:id  (need to store the id in the first place)
-# bitbucket, gitlab support
-# make it work for team projects
-# make it work if the instructor repository is private (one way to achieve this would be to create the student private repo first)
 
 # Runtime flags (DO NOT CHANGE)
 # ---------------------------------------------------------------------
