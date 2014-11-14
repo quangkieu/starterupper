@@ -127,6 +127,18 @@ $( "#github-password" ).on( "change", function(event) {
 $( "#github-retry" ).on( "click", function(event) {
     controller.github();
 });
+$("#gravatar-signout").on("click", function(event) {
+    controller.gravatar.logout();
+});
+$("#gravatar-signin").on("click", function(event) {
+    controller.gravatar.login();
+});
+$("#github-signout").on("click", function(event) {
+    logout();
+});
+$("#github-signin").on("click", function(event) {
+    login();
+});
 
 $(function() {
     $("#name").val(model.name());
@@ -230,7 +242,7 @@ function setupRepo() {
         }
     });
 }
-function login(event) {
+function login() {
     Github.login({
         username: $("#email").val(),
         password: $("#github-password").val(),
@@ -249,7 +261,7 @@ function login(event) {
         }
     });
 }
-function logout(event) {
+function logout() {
     Github.logout();
     controller.update('github-authenticated', false);
 }

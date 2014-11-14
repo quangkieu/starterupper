@@ -9,9 +9,7 @@
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/reset.css" />
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/text.css" />
   <link rel="stylesheet" href="http://lawrancej.github.io/starterupper/960.css" />
-  <link rel="stylesheet" href="browser.css" />
   <style>
-  
   ul {
     margin-bottom: 0px;
   }
@@ -39,14 +37,15 @@
     padding-bottom: 5px;
   }
   section {
-    margin-bottom:10px;
+    margin-bottom:5px;
   }
   input[type="text"] { width:200px; }
   input[type="email"] { width:200px; }
-  input[type="password"] { width:200px; }
+  input[type="password"] { width:120px; }
   .js #javascript-warning {display: none;}
   .js #manual-github-login {display: none;}
   .js #manual-github-login-label {display: none;}
+  .js #manual-github-login-password {display: none;}
   .github-two-factor {display: none; }
   .webcam { display: none; }
   .manual { display: none; }
@@ -61,8 +60,11 @@
   
   </style>
   <noscript>
+    <link rel="stylesheet" href="http://localhost:8080/browser.css" />
     <style>
-      .login-control {display: none;}
+    .github-authenticated {display: none;}
+    .gravatar-authenticated {display: none;}
+/*      .login-control {display: none;} */
 /*      #github-retry {display: none;} */
     </style>
   </noscript>
@@ -122,27 +124,6 @@
         </div>
         <div class="clear msie"></div>
 
-        <!-- Chrome users -->
-        <div class="grid_2 chrome">
-            <img src="http://lawrancej.github.io/starterupper/chrome.svg" width="140" height="140" title="Chrome" />
-        </div>
-        <div class="grid_10 chrome">
-            <b>Chrome users</b>: if you installed ScriptSafe or NotScripts,
-            enable (allow or trust) JavaScript
-            <ol style="margin-bottom: 0px;">
-                <li>Otherwise, open a new tab and type
-                <code>chrome://settings</code> in the location (address) bar</li>
-                <li>Click <b>Show advanced settings...</b></li>
-                <li>In the "Privacy" section,
-                click <b>Content settings...</b></li>
-                <li>In the "Javascript" section, select
-                <b>Allow all sites to run JavaScript (recommended)</b></li>
-                <li>Click <b>Done</b></li>
-                <li>Reload this page</li>
-            </ol>
-        </div>
-        <div class="clear chrome"></div>
-        
         <!-- Firefox users -->
         <div class="grid_2 firefox">
             <a href="http://kb.mozillazine.org/About:config"
@@ -163,6 +144,25 @@
             </ol>
         </div>
         <div class="clear firefox"></div>
+        
+        <!-- Chrome users -->
+        <div class="grid_2 chrome">
+            <img src="http://lawrancej.github.io/starterupper/chrome.svg" width="140" height="140" title="Chrome" />
+        </div>
+        <div class="grid_10 chrome">
+            <b>Chrome users</b>: if you installed ScriptSafe or NotScripts,
+            enable (allow or trust) JavaScript
+            <ol style="margin-bottom: 0px;">
+                <li>Otherwise, open a new tab</li>
+                <li>Type <code>chrome://settings/content</code> in the location (address) bar</li>
+                <li>In the "Javascript" section, select
+                <b>Allow all sites to run JavaScript (recommended)</b></li>
+                <li>Click <b>Done</b></li>
+                <li>Reload this page</li>
+            </ol>
+        </div>
+        <div class="clear chrome"></div>
+        
       </section>
       
       <!-- What to do if the script is offline -->
@@ -278,14 +278,14 @@
             </div>
             <div class="gravatar-authenticated login-control">
                 <i class="fa fa-fw fa-lg fa-lock"></i> You are signed in
-                <input type="button" onclick="controller.gravatar.logout(this);" value="Sign out" />
+                <input type="button" id="gravatar-signout" value="Sign out" />
             </div>
             <div class="no-gravatar-authenticated login-control">
                 <i class="fa fa-fw fa-lg fa-unlock"></i> You are not signed in<br/>
             
                 <input type="password" id="gravatarPassword"
                 placeholder="Gravatar password" pattern=".{7,}" />
-                <input type="button" value="Sign in" onclick="controller.gravatar.login(this)" /> 
+                <input type="button" value="Sign in" id="gravatar-signin" /> 
                 <a href="https://en.wordpress.com/wp-login.php?action=lostpassword&wpcom_connect=1"
                 target="actionRequired">Forgot password?</a>
             </div>
@@ -317,7 +317,7 @@
         <div class="grid_2 no-github-authenticated onboard subheading">
             Setup account
         </div>
-        <div class="grid_7 no-github-authenticated onboard">
+        <div class="grid_3 no-github-authenticated onboard">
             <i class="fa fa-fw fa-lg fa-user"></i>
             <a href="https://github.com/join" target="actionRequired"
             title="New to Github? Join with your school email">
@@ -327,14 +327,13 @@
             target="actionRequired"
             title="Already use Github? Add and verify your school email">
                 <b>Add &amp; verify email</b></a>
-            <br/>
-            <i class="fa fa-fw fa-lg fa-hand-o-right"></i> Either way, use school email<br/>
+        </div>
+        <div class="grid_7 no-github-authenticated onboard">
+<!--            <i class="fa fa-fw fa-lg fa-info-circle"></i> -->
+            Use your school email for account setup
         </div>
         <div class="clear"></div>
-        <div class="grid_2 subheading">
-            <div id="manual-github-login-label">
-                Github username
-            </div>
+        <div class="grid_2 subheading automated">
             <div class="github-authenticated login-control">
                 You're signed in <i class="fa fa-lg fa-lock"></i>
             </div>
@@ -342,40 +341,33 @@
                 You're not signed in <i class="fa fa-lg fa-unlock"></i>
             </div>
         </div>
-        <div class="grid_7">
-            <!-- Show this only when JavaScript is disabled -->
-            <input type="text" id="manual-github-login" name="github.login"
-            placeholder="Github username" pattern="[0-9a-zA-Z][0-9a-zA-Z-]*"
-            title="Github username (must be alphanumeric)" required />
-            
+        <div class="grid_3 automated">
             <div class="github-authenticated login-control">
                 <input type="hidden" name="github.login" id="github-login" />
-                <input type="button" onclick="logout(this);" value="Sign out" />
+                <input type="button" id="github-signout" value="Sign out" />
+                <input type="button" id="github-retry" value="Finish setup" />
             </div>
             <div class="no-github-authenticated login-control">
                 <input type="password" id="github-password"
                 placeholder="Github password" pattern=".{7,}"
                 title="Github password (must be 7+ characters)" required />
-                <br />
+                <input type="button" id="github-signin" value="Sign in" />
                 
                 <div class="github-two-factor">
                     <input type="text" id="otp" placeholder="Authentication code"
-                    pattern="[0-9]{6}" required />
-                    <br />
+                    pattern="[0-9]{6}" />
                 </div>
-                <input type="button" onclick="login(this);" value="Sign in" />
-                <a href="https://github.com/password_reset"
-                target="actionRequired">Forgot password?</a>
             </div>
+        </div>
+        <div class="grid_7 no-github-authenticated login-control automated">
+            <a href="https://github.com/password_reset"
+            target="actionRequired">Forgot password?</a>
         </div>
         <div class="clear"></div>
         <div class="grid_2 github-authenticated subheading">
             Setup checklist
         </div>
-        <div class="grid_7 github-authenticated">
-            <div class="no-github">
-                <input type="button" id="github-retry" value="Finish setup" />
-            </div>
+        <div class="grid_7 github-authenticated manual">
             <ul class="fa-ul" style="margin-left: 0px;">
                 <li class="no-github-email-verified">
                     <i class="fa-li fa fa-lg fa-envelope fail"></i>
@@ -458,7 +450,7 @@
           <div class="clear"></div>
         </header>
         <div class="clear"></div>
-        <div class="grid_2 subheading" >
+        <div class="grid_2 subheading">
             Configure git<br/><br/>
             Clone upstream<br/><br/>
             Configure remotes
