@@ -36,7 +36,7 @@ app::make_index() {
     -e "s/GITHUB_UPGRADED_PLAN/$githubUpgradedPlan/g" \
     -e "s/GITHUB_EMAIL_ADDED/$githubEmailAdded/g" \
     -e "s/GITHUB_EMAIL_VERIFIED/$githubEmailVerified/g" \
-    index2.html > temp.html
+    index.html > temp.html
 }
 
 app::index() {
