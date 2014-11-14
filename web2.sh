@@ -3,14 +3,14 @@
 source web.sh
 source github.sh
 
-PrintIndex() {
+app::index() {
     local request="$1"
     
-    echo "$(Request_payload "$request")" >&2
-#    printf "$(Request_query "$request")" >&2
+    echo "$(request::payload "$request")" >&2
+#    printf "$(request::query "$request")" >&2
     local email
     
-    Request_postFormData "$request" | while read parameter; do
+    request::post_form_data "$request" | while read parameter; do
         local key="$(Parameter_key "$parameter")"
         local value="$(Parameter_value "$parameter")"
         case "$key" in
@@ -45,21 +45,51 @@ PrintIndex() {
     -e "s/GITHUB_EMAIL_VERIFIED/$githubEmailVerified/g" \
     index2.html > temp.html
 
-    WebServer_sendFile "temp.html"
+    server::send_file "temp.html"
     rm temp.html
 }
 
-MyRouter() {
+# Return the browser to the browser so you can browse while you browse
+app::browser() {
     local request="$1"
-    local target="$(Request_file "$request")"
+    local agent="$(request::lookup "$request" "User-Agent")"
+    case "$agent" in
+        *MSIE* | *Trident* ) # Internet explorer
+            cat << 'EOF' > browser.css
+.firefox { display: none; }
+.chrome { display: none; }
+EOF
+            ;;
+        *Firefox* )
+            cat << 'EOF' > browser.css
+.chrome { display: none; }
+.msie { display: none; }
+EOF
+            ;;
+        *Chrome* )
+            cat << 'EOF' > browser.css
+.firefox { display: none; }
+.msie { display: none; }
+EOF
+            ;;
+    esac
+    server::send_file browser.css
+    rm browser.css
+
+}
+
+app::router() {
+    local request="$1"
+    local target="$(request::file "$request")"
     case "$target" in
-        "/" ) PrintIndex "$request" ;;
-        * )   WebServer_sendFile "$request"
+        "/" ) app::index "$request" ;;
+        "browser.css" ) app::browser "$request" ;;
+        * ) server::send_file "$target"
     esac
 }
 
-Utility_fileOpen http://localhost:8080
-server::start "MyRouter"
+# Utility_fileOpen http://localhost:8080
+server::start "app::router"
 
 # if [[ "$(Utility_fileOpen http://localhost:8080)" ]]; then
     # echo -e "Opened web browser to http://localhost:8080                                [\e[1;32mOK\e[0m]" >&2
