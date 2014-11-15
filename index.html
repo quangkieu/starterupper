@@ -166,13 +166,26 @@
       </section>
       
       <!-- What to do if the script is offline -->
-      <section class="container_12 manual">
+      <section class="container_12 manual" id="troubleshoot">
         <header>
             <div class="grid_12"><i class="fa fa-warning fa-fw fa-lg error"></i>
                 <b>Server off-line</b>: Troubleshoot or complete steps manually
             </div>
             <div class="clear"></div>
         </header>
+        <div class="grid_2">
+            <b>Possible cause</b><br/>
+            Cannot download <code>netcat</code>
+        </div>
+        <div class="grid_7">
+            <b>Solution</b><br/>
+            <ol>
+                <li>Download <code>netcat</code></li>
+                <li>Close this window and restart the script in the command line</li>
+            </ol>
+        </div>
+        <div class="clear"></div>
+        
         <div class="grid_2">
             <b>Possible cause</b><br/>
             Firewall blocked <code>netcat</code>
@@ -367,72 +380,83 @@
         <div class="grid_2 github-authenticated subheading">
             Setup checklist
         </div>
-        <div class="grid_7 github-authenticated manual">
+        <div class="grid_10 github-authenticated manual">
             <ul class="fa-ul" style="margin-left: 0px;">
                 <li class="no-github-email-verified">
                     <i class="fa-li fa fa-lg fa-envelope fail"></i>
                     <a href="https://github.com/settings/emails"
                     target="actionRequired">Verify
-                    your school email</a>
+                    your school email</a> to get an educational discount
                 </li>
                 <li class="github-email-verified">
                     <i class="fa-li fa fa-lg fa-check success"></i>
                     <a href="https://github.com/settings/emails"
-                    target="actionRequired">Verified school email</a>
+                    target="actionRequired">School email verified</a>
+                    to get an educational discount
                 </li>
                 <li class="no-github-upgraded">
                     <i class="fa-li fa fa-lg fa-graduation-cap fail"></i>
                     <a href="https://education.github.com/discount_requests/new"
                     target="actionRequired">Request an educational discount</a>
+                    to create private repositories for free
                 </li>
                 <li class="github-upgraded">
                     <i class="fa-li fa fa-lg fa-check success"></i>
                     <a href="https://education.github.com/discount_requests/new"
                     target="actionRequired">Educational discount approved</a>
+                    to create private repositories for free
                 </li>
                 <li class="no-github-profile">
                     <i class="fa-li fa fa-lg fa-user fail"></i>
                     <a target="actionRequired"
                     href="https://github.com/settings/profile">
                         Share your full name</a>
+                        to help the instructor to learn names
                 </li>
                 <li class="github-profile">
                     <i class="fa-li fa fa-lg fa-check success"></i>
                     <a target="actionRequired"
-                    href="https://github.com/settings/profile">Updated profile</a>
+                    href="https://github.com/settings/profile">
+                        Shared your full name</a>
+                        to help the instructor to learn names
                 </li>
                 <li class="no-github-key">
                     <i class="fa-li fa fa-lg fa-key fail"></i>
                     <a href="https://github.com/settings/ssh"
-                    target="actionRequired">Share public key</a>:
+                    target="actionRequired">Share your public key</a>:
                     <input type="text" value="PUBLIC_KEY" style="width:100px;" />
+                    so git can push and pull securely without passwords
                 </li>
                 <li class="github-key">
                     <i class="fa-li fa fa-lg fa-check success"></i>
-                    Shared public key
-                    (<a href="https://github.com/settings/ssh"
-                    target="actionRequired">Update</a>)
+                    <a href="https://github.com/settings/ssh"
+                    target="actionRequired">Shared your public key</a>
+                    so git can push and pull securely without passwords
                 </li>
                 <li class="no-github-repository">
                     <i class="fa-li fa fa-lg fa-database fail"></i>
                     <a target="actionRequired" href="https://github.com/new">
-                        Create private repository REPOSITORY</a>
+                        Create private repository REPOSITORY</a>,
+                        a place to submit work that nobody else can see
                 </li>
                 <li class="github-repository">
                     <i class="fa-li fa fa-lg fa-check success"></i>
                     <a href="https://github.com/USER_NAME/REPOSITORY"
                     target="actionRequired"
-                    class="origin-href">Created repository REPOSITORY</a>
+                    class="origin-href">Created repository REPOSITORY</a>,
+                    a place to submit work that nobody else can see
                 </li>
                 <li class="no-github-collaborator">
                     <i class="fa-li fa fa-lg fa-users fail"></i>
-                    Allow INSTRUCTOR_GITHUB to collaborate on REPOSITORY
+                    Allow the instructor (INSTRUCTOR_GITHUB) to collaborate on
+                    your private repository
                 </li>
                 <li class="github-collaborator">
                     <i class="fa-li fa fa-lg fa-check success"></i>
                     <a href="https://github.com/USER_NAME/REPOSITORY/settings/collaboration"
                     id="collaborator-href" target="actionRequired">
-                        INSTRUCTOR_GITHUB may collaborate on REPOSITORY</a>
+                    The instructor (INSTRUCTOR_GITHUB) may collaborate on
+                    your private repository</a>
                 </li>
             </ul>
         </div>
