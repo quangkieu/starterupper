@@ -94,16 +94,22 @@ EOF
     esac
     server::send_file browser.css
     rm browser.css
+}
 
+# Setup local repositories
+app::setup() {
+    local request="$1"
+    
 }
 
 app::router() {
     local request="$1"
     local target="$(request::file "$request")"
     case "$target" in
-        "/" ) app::index "$request" ;;
+        "/" )           app::index "$request" ;;
         "browser.css" ) app::browser "$request" ;;
-        * ) server::send_file "$target"
+        "setup" )       app::setup "$request" ;;
+        * )             server::send_file "$target"
     esac
 }
 

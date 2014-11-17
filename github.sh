@@ -205,7 +205,7 @@ Github_authorize() {
                 "note": "starterupper $(date --iso-8601=seconds)"
             }
 EOF
-    curl -i -u $(Host_getUsername "github"):$password -H "X-GitHub-OTP: $code" -d "$json" https://api.github.com/authorizations 2> /dev/null
+    curl -i -u $(User_getEmail):$password -H "X-GitHub-OTP: $code" -d "$json" https://api.github.com/authorizations 2> /dev/null
 }
 
 # Idea: refactor to use interactive_setValue instead.
