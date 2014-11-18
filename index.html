@@ -25,10 +25,6 @@
   .fail {
     color:black;
   }
-  h1 {
-    margin:0px;
-    padding:0px;
-  }
   header {
     display: block;
     border-bottom: 1px solid lightgray;
@@ -46,26 +42,31 @@
   .js #manual-github-login {display: none;}
   .js #manual-github-login-label {display: none;}
   .js #manual-github-login-password {display: none;}
-  .github-two-factor {display: none; }
   .webcam { display: none; }
-  .manual { display: none; }
   
   .js .no-github-upgraded { display: none; }
+  
+  /* The script may replace these values */
+  .manual { display: none; }
+  /* JavaScript or the server may replace these values */
+  .github-two-factor {display: none; }
   .github-email-verified {display: none;}
   .github-upgraded { display: none; }
   .github-profile { display:none; }
   .github-collaborator {display: none;}
   .github-repository {display: none;}
   .github-key {display: none;}
+  .git-clone {display: none;}
+  .git-config {display: none;}
+  .git-push {display: none;}
   
   </style>
   <noscript>
     <link rel="stylesheet" href="http://localhost:8080/browser.css" />
     <style>
+    /* The server may replace these values */
     .github-authenticated {display: none;}
     .gravatar-authenticated {display: none;}
-/*      .login-control {display: none;} */
-/*      #github-retry {display: none;} */
     </style>
   </noscript>
   <script src="http://lawrancej.github.io/starterupper/modernizr-latest.js"></script>
@@ -77,13 +78,13 @@
 <body>
   <article>
     <form method="post" action="/" >
-      <!-- The server should replace these values -->
+      <!-- The server must replace these values -->
       <input type="hidden" id="repository" value="REPOSITORY" />
       <input type="hidden" id="instructor" value="INSTRUCTOR_GITHUB" />
       <input type="hidden" id="host" value="USER_NAME@HOSTNAME" />
       <input type="hidden" id="public-key" value="PUBLIC_KEY" />
       
-    <!-- Nag the user if JavaScript is disabled -->
+      <!-- Nag the user if JavaScript is disabled -->
       <section class="container_12" id="javascript-warning">
         <header>
             <div class="grid_12"><i class="fa fa-warning fa-fw fa-lg error"></i>
@@ -342,7 +343,6 @@
                 <b>Add &amp; verify email</b></a>
         </div>
         <div class="grid_7 no-github-authenticated onboard">
-<!--            <i class="fa fa-fw fa-lg fa-info-circle"></i> -->
             Use your school email for account setup
         </div>
         <div class="clear"></div>
@@ -385,8 +385,8 @@
                 <li class="no-github-email-verified">
                     <i class="fa-li fa fa-lg fa-envelope fail"></i>
                     <a href="https://github.com/settings/emails"
-                    target="actionRequired">Verify
-                    your school email</a> to get an educational discount
+                    target="actionRequired">Verify your school email</a>
+                    to get an educational discount
                 </li>
                 <li class="github-email-verified">
                     <i class="fa-li fa fa-lg fa-check success"></i>
@@ -482,34 +482,43 @@
         </div>
         <div class="grid_10">
           <ul class="fa-ul" style="margin-left: 0px; font-size: 10pt;">
-            <li><i class="fa fa-li fa-lg fa-user fail"></i>
+            <li>
+            <i class="fa-li fa fa-lg fa-check success git-config"></i>
+            <i class="fa fa-li fa-lg fa-user fail no-git-config"></i>
             <code id="git-config-name">git config --global user.name "FULL_NAME"</code>
             </li>
             <li>
-            <i class="fa fa-envelope fa-li fa-lg fail"></i><code
+            <i class="fa-li fa fa-lg fa-check success git-config"></i>
+            <i class="fa fa-envelope fa-li fa-lg fail no-git-config"></i><code
             id="git-config-email">git config --global user.email USER_EMAIL</code>
             </li>
             <li>
-            <i class="fa-li fa fa-lg fa-code-fork fail"></i>
+            <i class="fa-li fa fa-lg fa-check success git-clone"></i>
+            <i class="fa-li fa fa-lg fa-code-fork fail no-git-clone"></i>
             <code>cd && git clone https://github.com/INSTRUCTOR_GITHUB/REPOSITORY.git</code>
             </li>
             <li>
-            <i class="fa-li fa fa-lg fa-folder-open fail"></i>
+            <i class="fa-li fa fa-lg fa-check success git-clone"></i>
+            <i class="fa-li fa fa-lg fa-folder-open fail no-git-clone"></i>
             <code>cd REPOSITORY</code></li>
             <li>
-            <i class="fa-li fa fa-lg fa-chain-broken fail"></i>
+            <i class="fa-li fa fa-lg fa-check success git-clone"></i>
+            <i class="fa-li fa fa-lg fa-chain-broken fail no-git-clone"></i>
             <code>git remote rm origin</code>
             </li>
             <li>
-            <i class="fa-li fa fa-lg fa-chain fail"></i>
+            <i class="fa-li fa fa-lg fa-check success git-clone"></i>
+            <i class="fa-li fa fa-lg fa-chain fail no-git-clone"></i>
             <code>git remote add upstream https://github.com/INSTRUCTOR_GITHUB/REPOSITORY.git</code>
             </li>
             <li>
-            <i class="fa-li fa fa-lg fa-chain fail origin"></i>
+            <i class="fa-li fa fa-lg fa-check success git-push"></i>
+            <i class="fa-li fa fa-lg fa-chain fail no-git-push"></i>
             <code id="origin-code">git remote add origin git@github.com:USER_NAME/REPOSITORY.git</code>
             </li>
             <li>
-            <i class="fa-li fa fa-lg fa-cloud-upload fail origin"></i>
+            <i class="fa-li fa fa-lg fa-check success git-push"></i>
+            <i class="fa-li fa fa-lg fa-cloud-upload fail no-git-push"></i>
             <code>git push -u origin master</code>
             </li>
           </ul>

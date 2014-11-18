@@ -68,7 +68,7 @@ app::index() {
     rm temp.html
 }
 
-# Return the browser to the browser so you can browse while you browse
+# Return the browser to the browser for disabled JavaScript troubleshooting
 app::browser() {
     local request="$1"
     local agent="$(request::lookup "$request" "User-Agent")"
@@ -99,9 +99,11 @@ EOF
 # Setup local repositories
 app::setup() {
     local request="$1"
+    echo "$(request::payload "$request")" >&2
     
 }
 
+# Handle requests from the browser
 app::router() {
     local request="$1"
     local target="$(request::file "$request")"
