@@ -99,8 +99,34 @@ EOF
 # Setup local repositories
 app::setup() {
     local request="$1"
-    echo "$(request::payload "$request")" >&2
-    
+    case "$(request::method "$request")" in
+        # Respond to preflight request
+        "OPTIONS" )
+            # response should be a thing we build up, with the status, headers, and the send-off
+            # NOT something we do manually
+            echo -n -e "HTTP/1.1 204 No Content\r\nDate: $(date '+%a, %d %b %Y %T %Z')\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: GET, POST\r\nAccess-Control-Allow-Headers: $(request::lookup "$request" "Access-Control-Request-Headers")\r\nServer: Starter Upper\r\n\r\n"
+            echo "SENT RESPONSE" >&2
+            ;;
+        # Get that glorious data from the user and do what we set out to accomplish
+        "POST" )
+            echo "hi" >&2
+            local data="$(json::unpack "$(request::payload "$request")")"
+            local github_login="$(json::lookup "$data" "github.login")"
+            local user_name="$(json::lookup "$data" "user.name")"
+            local user_email="$(json::lookup "$data" "user.email")"
+            # Git configuration
+            User_setEmail "$user_email"
+            User_setFullName "$user_name"
+            # Github configuration
+            github::set_login "$github_login"
+            # The response needs to set variables: git-config, git-clone, git-push
+            ;;
+        # If we get here, something terribly wrong has happened...
+        * )
+            echo "the request was '$request'" >&2
+            echo "$(request::method "$request")" >&2
+            ;;
+    esac
 }
 
 # Handle requests from the browser

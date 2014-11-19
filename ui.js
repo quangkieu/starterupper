@@ -97,9 +97,11 @@ var controller = {
             setupEmail();
             setupSSH();
             setupRepo();
+            setupLocal();
             $(".origin-href").attr("href", "https://github.com/" + Github.getUsername() + "/" + model.repo());
             $("#collaborator-href").attr("href", "https://github.com/" + Github.getUsername() + "/" + model.repo() + "/settings/collaboration");
             $("#origin-code").html("git remote add origin git@github.com:" + Github.getUsername() + "/" + model.repo() + ".git");
+            
             controller.update('github-authenticated', true);
         } else {
             controller.update('github-authenticated', false);
@@ -140,6 +142,31 @@ $(function() {
     controller.gravatar();
     controller.github();
 });
+
+function setupLocal() {
+    $.ajax({
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        crossDomain: true,
+        processData: false,
+        url: 'http://localhost:8080/setup',
+        processData: false,
+        data: JSON.stringify({
+            "github.login": Github.getUsername(),
+            "user.name": model.name(),
+            "user.email": model.email(),
+        }),
+        success: function(response) {
+            alert("hi");
+            //console.log(JSON.stringify(response));
+//            controller.update('gravatar-account',true);
+        },
+        error: function(response) {
+        }
+    });
+
+}
 
 function setupUser() {
     // Nag the user if they're not on an upgraded plan

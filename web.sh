@@ -7,6 +7,19 @@ readonly PIPE=.httpipe
 # http://mywiki.wooledge.org/NamedPipes
 # Also, simultaneous connections
 
+json::unpack() {
+    local json="$1"
+    echo "$json" | tr -d '"{}' | tr ',' '\n'
+}
+
+# Given a header key, return the value
+json::lookup() {
+    local json="$1"; shift
+    local key="$1"
+    echo -e "$json" | grep "$key" | sed -e "s/^$key:\(.*\)$/\1/"
+}
+
+
 # Is this a request line?
 request::line() {
     local line="$1"
@@ -19,7 +32,7 @@ request::line() {
 # Get the method (e.g., GET, POST) of the request
 request::method() {
     local request="$1"
-    echo "$request" | sed -e "s/\(^[^ ]*\).*/\1/"
+    echo "$request" | sed -e "s/\(^[^ ]*\).*/\1/" | head -n 1
 }
 
 # Get the target (URL) of the request

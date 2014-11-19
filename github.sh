@@ -5,6 +5,13 @@ source utility.sh
 # Github non-interactive functions
 # ---------------------------------------------------------------------
 
+github::set_login() {
+    local login="$1"
+    if [[ $(Github_validUsername "$login") ]]; then
+        git config --global github.login "$login"
+    fi
+}
+
 # Helpers
 
 # Invoke a Github API method requiring authorization using curl
@@ -406,6 +413,7 @@ Github_getDiscount() {
 # Github_plan
 
 # Hmm, deep screen sandboxing mode will run a command twice. This is bad.
+# Possible workaround: submit bogus password?
 # Github_authenticate
 # Github_addEmail "q2w3e4r5@mailinator.com"
 # echo $(Github_emailAdded "lawrancej@wit.edu")
