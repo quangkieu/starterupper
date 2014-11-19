@@ -44,8 +44,6 @@
   .js #manual-github-login-password {display: none;}
   .webcam { display: none; }
   
-  .js .no-github-upgraded { display: none; }
-  
   /* The script may replace these values */
   .manual { display: none; }
   /* JavaScript or the server may replace these values */
@@ -93,6 +91,27 @@
             <div class="clear"></div>
         </header>
         
+        <!-- Firefox users -->
+        <div class="grid_2 firefox">
+            <a href="http://kb.mozillazine.org/About:config"
+            target="actionRequired">
+                <img src="http://lawrancej.github.io/starterupper/firefox.svg" width="140"
+                height="140" title="Firefox" />
+            </a>
+        </div>
+        <div class="grid_10 firefox">
+            <b>Firefox users</b>: if you installed NoScript,
+            enable (allow or trust) JavaScript
+            <ol>
+                <li>Otherwise, open a new tab and type <code>about:config</code>
+                in the location (address) bar</li>
+                <li>Type <code>javascript.enabled</code> in the <b>Search</b> box</li>
+                <li>Double-click to set <code>javascript.enabled</code> to <b>true</b></li>
+                <li>Reload this page</li>
+            </ol>
+        </div>
+        <div class="clear firefox"></div>
+        
         <!-- IE users -->
         <div class="grid_2 subheading msie">
             <img src="http://lawrancej.github.io/starterupper/ie.svg" width="140" height="140"
@@ -125,27 +144,6 @@
         </div>
         <div class="clear msie"></div>
 
-        <!-- Firefox users -->
-        <div class="grid_2 firefox">
-            <a href="http://kb.mozillazine.org/About:config"
-            target="actionRequired">
-                <img src="http://lawrancej.github.io/starterupper/firefox.svg" width="140"
-                height="140" title="Firefox" />
-            </a>
-        </div>
-        <div class="grid_10 firefox">
-            <b>Firefox users</b>: if you installed NoScript,
-            enable (allow or trust) JavaScript
-            <ol>
-                <li>Otherwise, open a new tab and type <code>about:config</code>
-                in the location (address) bar</li>
-                <li>Type <code>javascript.enabled</code> in the <b>Search</b> box</li>
-                <li>Double-click to set <code>javascript.enabled</code> to <b>true</b></li>
-                <li>Reload this page</li>
-            </ol>
-        </div>
-        <div class="clear firefox"></div>
-        
         <!-- Chrome users -->
         <div class="grid_2 chrome">
             <img src="http://lawrancej.github.io/starterupper/chrome.svg" width="140" height="140" title="Chrome" />
@@ -382,81 +380,65 @@
         </div>
         <div class="grid_10 github-authenticated manual">
             <ul class="fa-ul" style="margin-left: 0px;">
-                <li class="no-github-email-verified">
-                    <i class="fa-li fa fa-lg fa-envelope fail"></i>
+                <li>
+                    <i class="fa-li fa fa-lg fa-check success github-email-verified"></i>
+                    <i class="fa-li fa fa-lg fa-envelope fail no-github-email-verified"></i>
                     <a href="https://github.com/settings/emails"
-                    target="actionRequired">Verify your school email</a>
+                    target="actionRequired"><span class="github-email-verified">
+                    Verified your school email</span><span class="no-github-email-verified">
+                    Verify your school email</span></a>
                     to get an educational discount
                 </li>
-                <li class="github-email-verified">
-                    <i class="fa-li fa fa-lg fa-check success"></i>
-                    <a href="https://github.com/settings/emails"
-                    target="actionRequired">School email verified</a>
-                    to get an educational discount
-                </li>
-                <li class="no-github-upgraded">
-                    <i class="fa-li fa fa-lg fa-graduation-cap fail"></i>
+                <li>
+                    <i class="fa-li fa fa-lg fa-graduation-cap fail no-github-upgraded"></i>
+                    <i class="fa-li fa fa-lg fa-check success github-upgraded"></i>
                     <a href="https://education.github.com/discount_requests/new"
-                    target="actionRequired">Request an educational discount</a>
+                    target="actionRequired"><span class="no-github-upgraded">
+                    Request an educational discount</span><span class="github-upgraded">
+                    Educational discount approved</span></a>
                     to create private repositories for free
                 </li>
-                <li class="github-upgraded">
-                    <i class="fa-li fa fa-lg fa-check success"></i>
-                    <a href="https://education.github.com/discount_requests/new"
-                    target="actionRequired">Educational discount approved</a>
-                    to create private repositories for free
+                <li>
+                    <i class="fa-li fa fa-lg fa-user fail no-github-profile"></i>
+                    <i class="fa-li fa fa-lg fa-check success github-profile"></i>
+                    <a href="https://github.com/settings/profile"
+                    target="actionRequired"><span class="no-github-profile">
+                    Share your full name</span><span class="github-profile">
+                    Shared your full name</span></a>
+                    to help the instructor to learn names
                 </li>
-                <li class="no-github-profile">
-                    <i class="fa-li fa fa-lg fa-user fail"></i>
-                    <a target="actionRequired"
-                    href="https://github.com/settings/profile">
-                        Share your full name</a>
-                        to help the instructor to learn names
-                </li>
-                <li class="github-profile">
-                    <i class="fa-li fa fa-lg fa-check success"></i>
-                    <a target="actionRequired"
-                    href="https://github.com/settings/profile">
-                        Shared your full name</a>
-                        to help the instructor to learn names
-                </li>
-                <li class="no-github-key">
-                    <i class="fa-li fa fa-lg fa-key fail"></i>
+                <li>
+                    <i class="fa-li fa fa-lg fa-key fail no-github-key"></i>
+                    <i class="fa-li fa fa-lg fa-check success github-key"></i>
                     <a href="https://github.com/settings/ssh"
-                    target="actionRequired">Share your public key</a>:
-                    <input type="text" value="PUBLIC_KEY" style="width:100px;" />
-                    so git can push and pull securely without passwords
+                    target="actionRequired"><span class="no-github-key">
+                    Share your public key (below)</span><span class="github-key">
+                    Shared your public key (below)</span></a>
+                    so git can push and pull securely without passwords<br/>
+                    <input type="text" value="PUBLIC_KEY" style="width: 500px;" readonly />
                 </li>
-                <li class="github-key">
-                    <i class="fa-li fa fa-lg fa-check success"></i>
-                    <a href="https://github.com/settings/ssh"
-                    target="actionRequired">Shared your public key</a>
-                    so git can push and pull securely without passwords
-                </li>
-                <li class="no-github-repository">
-                    <i class="fa-li fa fa-lg fa-database fail"></i>
-                    <a target="actionRequired" href="https://github.com/new">
-                        Create private repository REPOSITORY</a>,
+                <li>
+                    <i class="fa-li fa fa-lg fa-check success github-repository"></i>
+                    <i class="fa-li fa fa-lg fa-database fail no-github-repository"></i>
+                    <a target="actionRequired" href="https://github.com/new"
+                    class="no-github-repository">
+                        Create private repository REPOSITORY</a><a
+                    href="https://github.com/USER_NAME/REPOSITORY"
+                    target="actionRequired"
+                    class="origin-href github-repository">
+                        Created repository REPOSITORY</a>,
                         a place to submit work that nobody else can see
                 </li>
-                <li class="github-repository">
-                    <i class="fa-li fa fa-lg fa-check success"></i>
-                    <a href="https://github.com/USER_NAME/REPOSITORY"
-                    target="actionRequired"
-                    class="origin-href">Created repository REPOSITORY</a>,
-                    a place to submit work that nobody else can see
-                </li>
-                <li class="no-github-collaborator">
-                    <i class="fa-li fa fa-lg fa-users fail"></i>
-                    Allow the instructor (INSTRUCTOR_GITHUB) to collaborate on
-                    your private repository
-                </li>
-                <li class="github-collaborator">
-                    <i class="fa-li fa fa-lg fa-check success"></i>
+                <li>
+                    <i class="fa-li fa fa-lg fa-check success github-collaborator"></i>
+                    <i class="fa-li fa fa-lg fa-users fail no-github-collaborator"></i>
                     <a href="https://github.com/USER_NAME/REPOSITORY/settings/collaboration"
                     id="collaborator-href" target="actionRequired">
-                    The instructor (INSTRUCTOR_GITHUB) may collaborate on
-                    your private repository</a>
+                    <span class="no-github-collaborator">
+                    Let the instructor (INSTRUCTOR_GITHUB) collaborate</span><span
+                    class="github-collaborator">The instructor (INSTRUCTOR_GITHUB)
+                    may collaborate</span></a>
+                    on your private repository
                 </li>
             </ul>
         </div>
@@ -475,8 +457,8 @@
         </header>
         <div class="clear"></div>
         <div class="grid_2 subheading">
-            Configure git<br style="margin-bottom: 24px;" />
-            Clone upstream<br style="margin-bottom: 20px;"/>
+            Configure git<br style="margin-bottom: 22px;" />
+            Clone upstream<br style="margin-bottom: 22px;"/>
             Configure remotes<br style="margin-bottom: 42px;"/>
             Push to origin
         </div>
