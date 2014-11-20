@@ -3,28 +3,28 @@
 # ---------------------------------------------------------------------
 
 Test() {
-    username=$(User_getUsername)
-    fullname=$(User_getFullName)
-    email=$(User_getEmail)
+    username=$(user::getUsername)
+    fullname=$(user::getFullName)
+    email=$(user::getEmail)
     echo $fullname
     echo $username
     echo $email
     
-    echo "Valid email: $(Valid_email "LAWRANCEJ@WIT.EDU")"
+    echo "Valid email: $(valid::email "LAWRANCEJ@WIT.EDU")"
 
-    verified=$(Utility_nonEmptyValueMatchesRegex "$fullname" "")
+    verified=$(utility::nonEmptyValueMatchesRegex "$fullname" "")
 
-    public_key=$(SSH_getPublicKey)
+    public_key=$(ssh::getPublicKey)
     echo $public_key
-    connected=$(SSH_connected "github.com")
+    connected=$(ssh::connected "github.com")
     echo "SSH connected: $connected"
-    connected=$(SSH_connected "bitbucket.org")
+    connected=$(ssh::connected "bitbucket.org")
     echo "SSH connected: $connected"
-    connected=$(SSH_connected "gitlab.com")
+    connected=$(ssh::connected "gitlab.com")
     echo "SSH connected: $connected"
-    # Git_showRepositories
-    echo "$(Github_nameAvailable $(Host_getUsername "github"))"
-    echo "$(Github_nameAvailable "asdlfkjawer2")"
+    # git::showRepositories
+    echo "$(github::nameAvailable $(Host_getUsername "github"))"
+    echo "$(github::nameAvailable "asdlfkjawer2")"
 }
 
 query=$(Request_query "GET /?user.name=Joey+Lawrance&user.email=lawrancej%40wit.edu HTTP/1.1\n")

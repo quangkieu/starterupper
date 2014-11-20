@@ -7,7 +7,7 @@ source utility.sh
 
 github::set_login() {
     local login="$1"
-    if [[ $(Github_validUsername "$login") ]]; then
+    if [[ $(github::validUsername "$login") ]]; then
         git config --global github.login "$login"
     fi
 }
@@ -15,7 +15,7 @@ github::set_login() {
 # Helpers
 
 # Invoke a Github API method requiring authorization using curl
-Github_invoke() {
+github::invoke() {
     local method=$1; shift
     local url=$1; shift
     local data=$1;
@@ -26,68 +26,68 @@ Github_invoke() {
 # Queries
 
 # Is the name available on Github?
-Github_nameAvailable() {
+github::nameAvailable() {
     local username="$1"
     local result="$(curl -i https://api.github.com/users/$username 2> /dev/null)"
     if [[ -z $(echo $result | grep "HTTP/1.1 200 OK") ]]; then
-        Utility_success
+        utility::success
     else
-        Utility_fail
+        utility::fail
     fi
 }
 
 # A valid Github username is not available, by definition
-Github_validUsername() {
+github::validUsername() {
     local username="$1"
     # If the name is legit, ...
-    if [[ $(Utility_nonEmptyValueMatchesRegex "$username" "^[0-9a-zA-Z][0-9a-zA-Z-]*$") ]]; then
+    if [[ $(utility::nonEmptyValueMatchesRegex "$username" "^[0-9a-zA-Z][0-9a-zA-Z-]*$") ]]; then
         # And unavailable, ...
-        if [[ ! $(Github_nameAvailable $username) ]]; then
+        if [[ ! $(github::nameAvailable $username) ]]; then
             # It's valid
-            Utility_success
+            utility::success
         else
-            Utility_fail
+            utility::fail
         fi
     else
         # Otherwise, it's not valid
-        Utility_fail
+        utility::fail
     fi
 }
 
 # Are we logged into Github?
-Github_loggedIn() {
+github::loggedIn() {
     if [[ -n "$(git config --global github.token)" ]]; then
-        Utility_success
+        utility::success
     else
-        Utility_fail
+        utility::fail
     fi    
 }
 
 # Did the user add their email to the Github account?
-Github_emailAdded() {
+github::emailAdded() {
     local email="$1"
-    local emails="$(Github_invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ')"
+    local emails="$(github::invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ')"
     if [[ -z $(echo "$emails" | grep "$email") ]]; then
-        Utility_fail
+        utility::fail
     else
-        Utility_success
+        utility::success
     fi
 }
 
 # Did the user verify their email with Github?
-Github_emailVerified() {
+github::emailVerified() {
     local email="$1"
-    local emails="$(Github_invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ')"
+    local emails="$(github::invoke GET "/user/emails" "" | tr '\n}[]{' ' \n   ')"
     if [[ -z $(echo "$emails" | grep "$email" | grep "verified...true") ]]; then
-        Utility_fail
+        utility::fail
     else
-        Utility_success
+        utility::success
     fi
 }
 
 # What plan does the user have?
-Github_plan() {
-    Github_invoke GET /user '' \
+github::plan() {
+    github::invoke GET /user '' \
         | sed -n -e '/[\"]plan[\"]/,${p}' \
         | grep -E "[\"]name[\"]" \
         | sed -e 's/ *[\"]name[\"]: [\"]\(.*\)[\"].*/\1/' \
@@ -95,30 +95,30 @@ Github_plan() {
 }
 
 # Is the user's plan upgraded?
-Github_upgradedPlan() {
-    local plan="$(Github_plan)"
+github::upgradedPlan() {
+    local plan="$(github::plan)"
     # If we got nothing back, we're not authenticated
     if [[ -z "$plan" ]]; then
-        Utility_fail
+        utility::fail
     # If we got something back, and it's not the free plan, we're good
     elif [[ "$plan" != "free" ]]; then
-        Utility_success
+        utility::success
     # The free plan won't cut it
     else
-        Utility_fail
+        utility::fail
     fi
 }
 
 # start -> logged_in -> added email -> verified email -> upgraded account
-Github_accountStatus() {
-    local email="$(User_getEmail)"
-    if [[ ! $(Github_loggedIn) ]]; then
+github::accountStatus() {
+    local email="$(user::getEmail)"
+    if [[ ! $(github::loggedIn) ]]; then
         printf "start"
-    elif [[ ! $(Github_emailAdded "$email") ]]; then
+    elif [[ ! $(github::emailAdded "$email") ]]; then
         printf "logged_in"
-    elif [[ ! $(Github_emailVerified "$email") ]]; then
+    elif [[ ! $(github::emailVerified "$email") ]]; then
         printf "added_email"
-    elif [[ ! $(Github_upgradedPlan) ]]; then
+    elif [[ ! $(github::upgradedPlan) ]]; then
         printf "verified_email"
     else
         printf "upgraded"
@@ -128,24 +128,24 @@ Github_accountStatus() {
 # Commands
 
 # Log out of Github
-Github_logout() {
+github::logout() {
     git config --global --unset github.login
     git config --global --unset github.token
 }
 
 # Add email to Github account, if not already added
 # Even though this adds email programmatically, Github will not send a verification email.
-Github_addEmail() {
+github::addEmail() {
     local email="$1"
-    if [[ ! $(Github_emailAdded "$email") ]]; then
-        Github_invoke POST "/user/emails" "[\"$email\"]" > /dev/null
+    if [[ ! $(github::emailAdded "$email") ]]; then
+        github::invoke POST "/user/emails" "[\"$email\"]" > /dev/null
     fi
 }
 
 # Github CLI-interactive functions
 # ---------------------------------------------------------------------
 
-Github_hasAccount() {
+github::hasAccount() {
     local hasAccount="n"
     # If we don't have their github login, ...
     if [[ -z "$(git config --global github.login)" ]]; then
@@ -153,17 +153,17 @@ Github_hasAccount() {
         read -p "Do you have a Github account (yes or No [default])? " hasAccount < /dev/tty
         # Let's assume that they don't by default
         if [[ $hasAccount != [Yy]* ]]; then
-            Utility_fail
+            utility::fail
         else
-            Utility_success
+            utility::success
         fi
     else
-        Utility_success
+        utility::success
     fi
 }
 
 # Ask the user if they have an account yet, and guide them through onboarding
-Github_join() {
+github::join() {
     local hasAccount="n"
     
     # If we don't have their github login, ...
@@ -175,7 +175,7 @@ Github_join() {
 
         # Let's assume that they don't by default
         if [[ $hasAccount != [Yy]* ]]; then
-            echo "1. Join Github, using $(User_getEmail) as your email address."
+            echo "1. Join Github, using $(user::getEmail) as your email address."
             echo "2. Open your email inbox and verify your school email address."
             echo "3. Request an individual student educational discount."
             echo ""
@@ -188,22 +188,22 @@ Github_join() {
             echo ""
         fi
         
-        Github_verifyEmail
-        Github_getDiscount
+        github::verifyEmail
+        github::getDiscount
 
     fi
 }
 
 # Set the Github username, if not already set
-Github_setUsername() {
-    Github_join
+github::setUsername() {
+    github::join
     if [[ -z "$(git config --global github.token)" ]]; then
-        Interactive_setValue "github.login" "$(Host_getUsername "github")" "Github_validUsername" "Github username" "\nNOTE: Usernames are case-sensitive. See: https://github.com"
+        Interactive_setValue "github.login" "$(Host_getUsername "github")" "github::validUsername" "Github username" "\nNOTE: Usernames are case-sensitive. See: https://github.com"
     fi
 }
 
 # Attempt to login to Github
-Github_authorize() {
+github::authorize() {
     local password="$1"; shift
     local code="$1"
     read -r -d '' json <<-EOF
@@ -212,12 +212,12 @@ Github_authorize() {
                 "note": "starterupper $(date --iso-8601=seconds)"
             }
 EOF
-    curl -i -u $(User_getEmail):$password -H "X-GitHub-OTP: $code" -d "$json" https://api.github.com/authorizations 2> /dev/null
+    curl -i -u $(user::getEmail):$password -H "X-GitHub-OTP: $code" -d "$json" https://api.github.com/authorizations 2> /dev/null
 }
 
 # Idea: refactor to use interactive_setValue instead.
 # Acquire authentication token and store in github.token
-Github_authenticate() {
+github::authenticate() {
     # Don't bother if we already got the authentication token
     if [[ -n "$(git config --global github.token)" ]]; then
         return 0
@@ -233,7 +233,7 @@ Github_authenticate() {
             echo # We need this, otherwise it'll look bad
         fi
         # Generate authentication token request
-        token=$(Github_authorize "$password" "$code")
+        token=$(github::authorize "$password" "$code")
         # If we got a bad credential, we need to reset the password and try again
         if [[ ! -z $(echo $token | grep "Bad credential") ]]; then
             echo -e "\e[1;37;41mERROR\e[0m: Incorrect password for user $(Host_getUsername "github"). Please wait."
@@ -269,8 +269,8 @@ Github_authenticate() {
 }
 
 # Share full name with Github
-Github_setFullName() {
-    local fullName="$(User_getFullName)"
+github::setFullName() {
+    local fullName="$(user::getFullName)"
     # If authentication failed, degrade gracefully
     if [[ -z $(git config --global github.token) ]]; then
         echo "Press enter to open https://github.com/settings/profile to update your Github profile."
@@ -280,36 +280,36 @@ Github_setFullName() {
     # Otherwise, use the API
     else
         echo "Updating Github profile information..."
-        Github_invoke PATCH "/user" "{\"name\": \"$fullName\"}" > /dev/null
+        github::invoke PATCH "/user" "{\"name\": \"$fullName\"}" > /dev/null
     fi
 }
 
 # Share the public key
-Github_sharePublicKey() {
+github::sharePublicKey() {
     local githubLogin="$(Host_getUsername "github")"
     # If authentication failed, degrade gracefully
     if [[ -z "$(git config --global github.token)" ]]; then
         echo "Press enter to open https://github.com/settings/ssh to share your public SSH key with Github."
         echo "On that page, click Add SSH Key, then enter these details:"
         echo "Title: $(hostname)"
-        echo "Key: $(Interactive_paste "$(SSH_getPublicKey)" "your public SSH key")"
+        echo "Key: $(Interactive_paste "$(ssh::getPublicKey)" "your public SSH key")"
         Interactive_fileOpen "https://github.com/settings/ssh"
     # Otherwise, use the API
     else
         # Check if public key is shared
         local publickeyShared=$(curl -i https://api.github.com/users/$githubLogin/keys 2> /dev/null)
         # If not shared, share it
-        if [[ -z $(echo "$publickeyShared" | grep $(SSH_getPublicKey | sed -e 's/ssh-rsa \(.*\)=.*/\1/')) ]]; then
+        if [[ -z $(echo "$publickeyShared" | grep $(ssh::getPublicKey | sed -e 's/ssh-rsa \(.*\)=.*/\1/')) ]]; then
             echo "Sharing public key..."
-            Github_invoke POST "/user/keys" "{\"title\": \"$(hostname)\", \"key\": \"$(SSH_getPublicKey)\"}" > /dev/null
+            github::invoke POST "/user/keys" "{\"title\": \"$(hostname)\", \"key\": \"$(ssh::getPublicKey)\"}" > /dev/null
         fi
     fi
     # Test SSH connection on default port (22)
-    if [[ ! $(SSH_connected "github.com") ]]; then
+    if [[ ! $(ssh::connected "github.com") ]]; then
         echo "Your network has blocked port 22; trying port 443..."
         printf "Host github.com\n  Hostname ssh.github.com\n  Port 443\n" >> ~/.ssh/config
         # Test SSH connection on port 443
-        if [[ ! $(SSH_connected "github.com") ]]; then
+        if [[ ! $(ssh::connected "github.com") ]]; then
             echo "WARNING: Your network has blocked SSH."
             ssh_works=false
         fi
@@ -317,21 +317,21 @@ Github_sharePublicKey() {
 }
 
 # Create a private repository on Github
-Github_createPrivateRepo() {
+github::createPrivateRepo() {
     # If authentication failed, degrade gracefully
     if [[ -z "$(git config --global github.token)" ]]; then
-        Github_manualCreatePrivateRepo
+        github::manualCreatePrivateRepo
         return 0
     fi
     
     local githubLogin="$(Host_getUsername "github")"
     # Don't create a private repo if it already exists
-    if [[ -z $(Github_invoke GET "/repos/$githubLogin/$REPO" "" | grep "Not Found") ]]; then
+    if [[ -z $(github::invoke GET "/repos/$githubLogin/$REPO" "" | grep "Not Found") ]]; then
         return 0
     fi
     
     echo "Creating private repository $githubLogin/$REPO on Github..."
-    local result="$(Github_invoke POST "/user/repos" "{\"name\": \"$REPO\", \"private\": true}")"
+    local result="$(github::invoke POST "/user/repos" "{\"name\": \"$REPO\", \"private\": true}")"
     if [[ ! -z $(echo $result | grep "HTTP/... 4.." ) ]]; then
         echo -n -e "\e[1;37;41mERROR\e[0m: "
         echo "Unable to create private repository."
@@ -342,14 +342,14 @@ Github_createPrivateRepo() {
         echo "* If you were already a Github user, free up some private repositories."
         echo
         
-        Github_verifyEmail
-        Github_getDiscount
-        Github_manualCreatePrivateRepo
+        github::verifyEmail
+        github::getDiscount
+        github::manualCreatePrivateRepo
     fi
 }
 
 # Add a collaborator
-Github_addCollaborator() {
+github::addCollaborator() {
     local githubLogin="$(Host_getUsername "github")"
     # If authentication failed, degrade gracefully
     if [[ -z "$(git config --global github.token)" ]]; then
@@ -360,12 +360,12 @@ Github_addCollaborator() {
     # Otherwise, use the API
     else
         echo "Adding $1 as a collaborator..."
-        Github_invoke PUT "/repos/$githubLogin/$REPO/collaborators/$1" "" > /dev/null
+        github::invoke PUT "/repos/$githubLogin/$REPO/collaborators/$1" "" > /dev/null
     fi
 }
 
 # Clean up everything but the repo (BEWARE!)
-Github_clean() {
+github::clean() {
     echo "Delete starterupper-script under Personal access tokens"
     Interactive_fileOpen "https://github.com/settings/applications"
     sed -i s/.*github.com.*// ~/.ssh/known_hosts
@@ -377,9 +377,9 @@ Github_clean() {
 }
 
 # Add collaborators
-Github_addCollaborators() {
+github::addCollaborators() {
     cd ~/$REPO
-    for repository in $(Github_invoke GET "/user/repos?type=member\&sort=created\&page=1\&per_page=100" "" | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
+    for repository in $(github::invoke GET "/user/repos?type=member\&sort=created\&page=1\&per_page=100" "" | grep "full_name.*$REPO" | sed s/.*full_name....// | sed s/..$//); do
         git remote add ${repository%/*} git@github.com:$repository.git 2> /dev/null
     done
     git fetch --all
@@ -388,7 +388,7 @@ Github_addCollaborators() {
 # Deprecate these
 
 # Create a private repository manually
-Github_manualCreatePrivateRepo() {
+github::manualCreatePrivateRepo() {
     echo "Press enter to open https://github.com/new to create private repository $REPO on Github."
     echo "On that page, for Repository name, enter: $REPO. $(Interactive_paste "$REPO" "the repository name")"
     echo "Then, select Private and click Create Repository (DON'T tinker with other settings)."
@@ -396,25 +396,25 @@ Github_manualCreatePrivateRepo() {
 }
 
 # Ask user to verify email
-Github_verifyEmail() {
+github::verifyEmail() {
     echo "Press enter to open https://github.com/settings/emails to add your school email address."
     echo "Open your email inbox and wait a minute for an email from Github."
     echo "Follow its instructions: click the link in the email and click Confirm."
-    echo "$(Interactive_paste $(User_getEmail) "your school email")"
+    echo "$(Interactive_paste $(user::getEmail) "your school email")"
     Interactive_fileOpen "https://github.com/settings/emails"
 }
 
 # Ask the user to get the discount
-Github_getDiscount() {
+github::getDiscount() {
     echo "Press enter to open https://education.github.com/discount_requests/new to request an individual student educational discount from Github."
     Interactive_fileOpen "https://education.github.com/discount_requests/new"
 }
 
-# Github_plan
+# github::plan
 
 # Hmm, deep screen sandboxing mode will run a command twice. This is bad.
 # Possible workaround: submit bogus password?
-# Github_authenticate
-# Github_addEmail "q2w3e4r5@mailinator.com"
-# echo $(Github_emailAdded "lawrancej@wit.edu")
-# echo $(Github_emailVerified "lawrancej@wit.edu")
+# github::authenticate
+# github::addEmail "q2w3e4r5@mailinator.com"
+# echo $(github::emailAdded "lawrancej@wit.edu")
+# echo $(github::emailVerified "lawrancej@wit.edu")

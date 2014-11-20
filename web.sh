@@ -24,9 +24,9 @@ json::lookup() {
 request::line() {
     local line="$1"
     if [[ -z "$(echo "$line" | grep -E "^GET|^HEAD|^POST|^PUT|^DELETE|^CONNECT|^OPTIONS|^TRACE")" ]]; then
-        Utility_fail
+        utility::fail
     fi
-    Utility_success
+    utility::success
 }
 
 # Get the method (e.g., GET, POST) of the request
@@ -146,8 +146,8 @@ server::send_file() {
         response="HTTP/1.1 404 Not Found"
         file="404.html"
     fi
-    local type="$(Utility_MIMEType $file)"
-    response::send "$response" "$(Utility_fileSize "$file")" "$type"
+    local type="$(utility::MIMEType $file)"
+    response::send "$response" "$(utility::fileSize "$file")" "$type"
     cat "$file"
     echo "SENT $file" >&2
 }
@@ -158,7 +158,7 @@ server::listen() {
     while read -r line; do
         request=$(request::new "$line")
         # Send the request through 
-        Pipe_write "$PIPE" "$request\n"
+        pipe::write "$PIPE" "$request\n"
     done
 }
 
@@ -167,9 +167,9 @@ server::listen() {
 server::respond() {
     local routeFunction="$1"
     local request=""
-    Pipe_await "$PIPE"
+    pipe::await "$PIPE"
     while true; do
-        request="$(Pipe_read "$PIPE")"
+        request="$(pipe::read "$PIPE")"
         # Pass the request to the route function
         "$routeFunction" "$request"
     done
@@ -204,7 +204,7 @@ server::works() {
 # Start the web server, using the supplied routing function
 server::start() {
     local routes="$1"
-    Pipe_new "$PIPE"
+    pipe::new "$PIPE"
     local nc=$(Acquire_netcat)
     
     server::respond "$routes" | "$nc" -k -l 8080 | server::listen

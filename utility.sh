@@ -15,7 +15,7 @@ trap finish EXIT
 # ---------------------------------------------------------------------
 
 # Print out the size of the file
-Utility_fileSize() {
+utility::fileSize() {
     local file="$1"
     local theSize="$(du -b "$file" | cut -f1)"
     if [[ -z "$theSize" ]]; then
@@ -25,27 +25,27 @@ Utility_fileSize() {
 }
 
 # "return" failure
-Utility_fail() {
+utility::fail() {
     echo -n
     return 1
 }
 
 # "return" success
-Utility_success() {
+utility::success() {
     printf true
     return 0
 }
 
 # Return whether the last command was successful
-Utility_lastSuccess() {
+utility::lastSuccess() {
     if [[ $? -eq 0 ]]; then
-        Utility_success
+        utility::success
     else
-        Utility_fail
+        utility::fail
     fi
 }
 
-Utility_asTrueFalse() {
+utility::asTrueFalse() {
     local result="$1"
     if [[ "$result" ]]; then
         printf "true"
@@ -55,7 +55,7 @@ Utility_asTrueFalse() {
 }
 
 # Make a named pipe. It sniffs for mkfifo and mknod first. If we don't get a real pipe, just fake it with a regular file.
-Pipe_new() {
+pipe::new() {
     local pipe="$1"
     rm -f "$pipe" 2> /dev/null
     # Attempt to make a pipe
@@ -72,7 +72,7 @@ Pipe_new() {
 }
 
 # Wait until we get the pipe
-Pipe_await() {
+pipe::await() {
     local pipe="$1"
     until [[ -p "$pipe" ]] || [[ -f "$pipe" ]]; do
         sleep 1
@@ -80,7 +80,7 @@ Pipe_await() {
 }
 
 # Cross-platform read from named pipe
-Pipe_write() {
+pipe::write() {
     local pipe="$1"; shift
     local data="$1"
     # We use echo here so we can send multi-line strings on one line
@@ -88,14 +88,14 @@ Pipe_write() {
     # If we got a real pipe, the pipe will wait, but if we got a fake pipe, ...
     if [[ ! -p "$pipe" ]]; then
         # We need to wait for the other side to read
-        while [[ "0" != "$(Utility_fileSize "$pipe")" ]]; do
+        while [[ "0" != "$(utility::fileSize "$pipe")" ]]; do
             sleep 1
         done
     fi
 }
 
 # Cross-platform read from named pipe
-Pipe_read() {
+pipe::read() {
     local pipe="$1"
     local line=""
     # If we got a real pipe, read will block until data comes in
@@ -106,7 +106,7 @@ Pipe_read() {
     # Windows users can't have nice things, as usual...
     elif [[ -f "$pipe" ]]; then
         # Wait for the other side to write
-        while [[ "0" == "$(Utility_fileSize "$pipe")" ]]; do
+        while [[ "0" == "$(utility::fileSize "$pipe")" ]]; do
             sleep 1
         done
         read -r line < "$pipe"
@@ -117,7 +117,7 @@ Pipe_read() {
 }
 
 # Get the MIME type by the extension
-Utility_MIMEType() {
+utility::MIMEType() {
     local fileName="$1";
     case $fileName in
         *.html | *.htm ) printf "text/html" ;;
@@ -135,40 +135,40 @@ Utility_MIMEType() {
 
 # Cross-platform paste to clipboard
 # Return success if we pasted to the clipboard, fail otherwise
-Utility_paste() {
+utility::paste() {
     case $OSTYPE in
-        msys | cygwin ) echo "$1" > /dev/clipboard; Utility_lastSuccess ;;
-        linux* | bsd* ) echo "$1" | xclip -selection clipboard; Utility_lastSuccess ;;
-        darwin* ) echo "$1" | pbcopy; Utility_lastSuccess ;;
-        *) Utility_fail ;;
+        msys | cygwin ) echo "$1" > /dev/clipboard; utility::lastSuccess ;;
+        linux* | bsd* ) echo "$1" | xclip -selection clipboard; utility::lastSuccess ;;
+        darwin* ) echo "$1" | pbcopy; utility::lastSuccess ;;
+        *) utility::fail ;;
     esac
 }
 
 # Cross-platform file open
 # Return success if we opened the file, fail otherwise
-Utility_fileOpen() {
+utility::fileOpen() {
     case $OSTYPE in
-        msys | cygwin ) start "$1"; Utility_lastSuccess ;;
-        linux* | bsd* ) xdg-open "$1"; Utility_lastSuccess ;;
-        darwin* ) open "$1"; Utility_lastSuccess ;;
-        *) Utility_fail ;;
+        msys | cygwin ) start "$1"; utility::lastSuccess ;;
+        linux* | bsd* ) xdg-open "$1"; utility::lastSuccess ;;
+        darwin* ) open "$1"; utility::lastSuccess ;;
+        *) utility::fail ;;
     esac
 }
 
 # Validate nonempty value matches a regex
 # Return success if the value is not empty and matches regex, fail otherwise
-Utility_nonEmptyValueMatchesRegex() {
+utility::nonEmptyValueMatchesRegex() {
     local value="$1"; shift
     local regex="$1"
     
     # First, check if value is empty
     if [[ -z "$value" ]]; then
-        Utility_fail
+        utility::fail
     # Then, check whether value matches regex
     elif [[ -z "$(echo "$value" | grep -E "$regex" )" ]]; then
-        Utility_fail
+        utility::fail
     else
-        Utility_success
+        utility::success
     fi
 }
 
@@ -176,7 +176,7 @@ Utility_nonEmptyValueMatchesRegex() {
 # ---------------------------------------------------------------------
 
 # Get the user's public key
-SSH_getPublicKey() {
+ssh::getPublicKey() {
     # If the public/private keypair doesn't exist, make it.
     if ! [[ -f ~/.ssh/id_rsa.pub ]]; then
         # Use default location, set no phassphrase, no questions asked
@@ -185,18 +185,18 @@ SSH_getPublicKey() {
     cat ~/.ssh/id_rsa.pub | sed s/==.*$/==/ # Ignore the trailing comment
 }
 
-SSH_getPublicKeyForSed() {
-    SSH_getPublicKey | sed -e 's/[/]/\\\//g'
+ssh::getPublicKeyForSed() {
+    ssh::getPublicKey | sed -e 's/[/]/\\\//g'
 }
 
 # Test connection
-SSH_connected() {
+ssh::connected() {
     local hostDomain="$1"; shift
     local sshTest=$(ssh -oStrictHostKeyChecking=no git@$hostDomain 2>&1)
     if [[ 255 -eq $? ]]; then
-        Utility_fail
+        utility::fail
     else
-        Utility_success
+        utility::success
     fi
 }
 
@@ -204,7 +204,7 @@ SSH_connected() {
 # ---------------------------------------------------------------------
 
 # Get the user's username
-User_getUsername() {
+user::getUsername() {
     local username="$USERNAME"
     if [[ -z "$username" ]]; then
         username="$(id -nu 2> /dev/null)"
@@ -216,28 +216,28 @@ User_getUsername() {
 }
 
 # A full name needs a first and last name
-Valid_fullName() {
+valid::fullName() {
     local fullName="$1"
-    Utility_nonEmptyValueMatchesRegex "$fullName" "\w+ \w+"
+    utility::nonEmptyValueMatchesRegex "$fullName" "\w+ \w+"
 }
 
 # Set the full name, and return whether we were able to set it
-User_setFullName() {
+user::setFullName() {
     local fullName="$1"
-    if [[ $(Valid_fullName "$fullName") ]]; then
+    if [[ $(valid::fullName "$fullName") ]]; then
         git config --global user.name "$fullName"
     fi
 }
 
 # Get the user's full name (Firstname Lastname); defaults to OS-supplied full name
 # Side effect: set ~/.gitconfig user.name if unset and full name from OS validates.
-User_getFullName() {
+user::getFullName() {
     # First, look in the git configuration
     local fullName="$(git config --global user.name)"
     
     # Ask the OS for the user's full name, if it's not valid
-    if [[ ! $(Valid_fullName "$fullName") ]]; then
-        local username="$(User_getUsername)"
+    if [[ ! $(valid::fullName "$fullName") ]]; then
+        local username="$(user::getUsername)"
         case $OSTYPE in
             msys | cygwin )
                 cat << 'EOF' > getfullname.ps1
@@ -264,56 +264,56 @@ EOF
         esac
         
         # If we got a legit full name from the OS, update the git configuration to reflect it.
-        User_setFullName "$fullName" > /dev/null
+        user::setFullName "$fullName" > /dev/null
     fi
     printf "$fullName"
 }
 
 # We're assuming that students have a .edu email address
-Valid_email() {
+valid::email() {
     local email="$(printf "$1" | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
-    Utility_nonEmptyValueMatchesRegex "$email" "edu$"
+    utility::nonEmptyValueMatchesRegex "$email" "edu$"
 }
 
 # Get the user's email; defaults to username@school
 # Side effect: set ~/.gitconfig user.email if unset
-User_getEmail() {
+user::getEmail() {
     # Try to see if the user already stored the email address
     local email="$(git config --global user.email | tr '[:upper:]' '[:lower:]' | tr -d ' ')"
     # If the stored email is bogus, ...
-    if [[ ! $(Valid_email "$email") ]]; then
+    if [[ ! $(valid::email "$email") ]]; then
         # Guess an email address and save it
-        email="$(User_getUsername)@$SCHOOL"
+        email="$(user::getUsername)@$SCHOOL"
     fi
     # Resave, just in case of goofups
     git config --global user.email "$email"
     printf "$email"
 }
 
-User_setEmail() {
+user::setEmail() {
     local email="$1"
-    if [[ $(Valid_email "$email") ]]; then
+    if [[ $(valid::email "$email") ]]; then
         git config --global user.email "$email"
     fi
 }
 
 # Get the domain name out of the user's email address
-User_getEmailDomain() {
-    printf "$(User_getEmail)" | sed 's/.*[@]//'
+user::getEmailDomain() {
+    printf "$(user::getEmail)" | sed 's/.*[@]//'
 }
 
 # Is the school valid?
-Valid_school() {
+valid::school() {
     local school="$1"
-    Utility_nonEmptyValueMatchesRegex "$school" "\w+"
+    utility::nonEmptyValueMatchesRegex "$school" "\w+"
 }
 
 # Get the user's school from their email address
-User_getSchool() {
+user::getSchool() {
     local school="$(git config --global user.school)"
     Acquire_software
-    if [[ ! "$(Utility_nonEmptyValueMatchesRegex "$school" "\w+")" ]]; then
-        school="$(echo -e "$(User_getEmailDomain)\r\n" | nc whois.educause.edu 43 | sed -n -e '/Registrant:/,/   .*/p' | sed -n -e '2,2p' | sed 's/^[ ]*//')"
+    if [[ ! "$(utility::nonEmptyValueMatchesRegex "$school" "\w+")" ]]; then
+        school="$(echo -e "$(user::getEmailDomain)\r\n" | nc whois.educause.edu 43 | sed -n -e '/Registrant:/,/   .*/p' | sed -n -e '2,2p' | sed 's/^[ ]*//')"
     fi
     printf "$school"
 }
@@ -326,7 +326,7 @@ Host_getUsername() {
     local host="$1"
     local username="$(git config --global $host.login)"
     if [[ -z "$username" ]]; then
-        username="$(User_getUsername)"
+        username="$(user::getUsername)"
     fi
     printf "$username"
 }
@@ -335,7 +335,7 @@ Host_getUsername() {
 # ---------------------------------------------------------------------
 
 # Clone repository and configure remotes
-Git_configureRepository() {
+git::configureRepository() {
     local hostDomain="$1"
     local originLogin="$2"
     local upstreamLogin="$3"
@@ -359,13 +359,13 @@ Git_configureRepository() {
 }
 
 # Show the local and remote repositories
-Git_showRepositories() {
+git::showRepositories() {
     local remote="$(git remote -v | grep origin | sed -e 's/.*git@\(.*\):\(.*\)\/\(.*\)\.git.*/https:\/\/\1\/\2\/\3/' | head -n 1)"
     cd ~
     # Open local repository in file browser
-    Utility_fileOpen $REPO
+    utility::fileOpen $REPO
     # Open remote repository in web browser
-    Utility_fileOpen "$remote"
+    utility::fileOpen "$remote"
 }
 
 # Push repository, and show the user local/remote repositories
@@ -375,7 +375,7 @@ Git_showRepositories() {
 # 3. SSH public key was shared with host
 # 4. SSH is working
 # 5. The private repo exists
-Git_pushRepo() {
+git::pushRepo() {
     cd ~/$REPO
     git fetch --all
     git push -u origin master # 2> /dev/null

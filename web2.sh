@@ -20,17 +20,17 @@ source github.sh
 
 # Make the index page
 app::make_index() {
-    local githubLoggedIn=$(Utility_asTrueFalse $(Github_loggedIn))
-    local githubEmailVerified=$(Utility_asTrueFalse $(Github_emailVerified "$email"))
-    local githubUpgradedPlan=$(Utility_asTrueFalse $(Github_upgradedPlan))
-    local githubEmailAdded=$(Utility_asTrueFalse $(Github_emailAdded "$email"))
+    local githubLoggedIn=$(utility::asTrueFalse $(github::loggedIn))
+    local githubEmailVerified=$(utility::asTrueFalse $(github::emailVerified "$email"))
+    local githubUpgradedPlan=$(utility::asTrueFalse $(github::upgradedPlan))
+    local githubEmailAdded=$(utility::asTrueFalse $(github::emailAdded "$email"))
 
     sed -e "s/REPOSITORY/$REPO/g" \
-    -e "s/USER_EMAIL/$(User_getEmail)/g" \
-    -e "s/FULL_NAME/$(User_getFullName)/g" \
+    -e "s/USER_EMAIL/$(user::getEmail)/g" \
+    -e "s/FULL_NAME/$(user::getFullName)/g" \
     -e "s/GITHUB_LOGIN/$(Host_getUsername github)/g" \
     -e "s/INSTRUCTOR_GITHUB/$INSTRUCTOR_GITHUB/g" \
-    -e "s/PUBLIC_KEY/$(SSH_getPublicKeyForSed)/g" \
+    -e "s/PUBLIC_KEY/$(ssh::getPublicKeyForSed)/g" \
     -e "s/HOSTNAME/$(hostname)/g" \
     -e "s/GITHUB_LOGGED_IN/$githubLoggedIn/g" \
     -e "s/GITHUB_UPGRADED_PLAN/$githubUpgradedPlan/g" \
@@ -51,12 +51,12 @@ app::index() {
         local value="$(Parameter_value "$parameter")"
         case "$key" in
             "user.name" )
-                User_setFullName "$value"
+                user::setFullName "$value"
                 ;;
             "user.email" )
                 email="$value"
-                User_setEmail "$value"
-                Github_addEmail "$value"
+                user::setEmail "$value"
+                github::addEmail "$value"
                 ;;
 #            "github.login" )
 #                Github
@@ -115,10 +115,11 @@ app::setup() {
             local user_name="$(json::lookup "$data" "user.name")"
             local user_email="$(json::lookup "$data" "user.email")"
             # Git configuration
-            User_setEmail "$user_email"
-            User_setFullName "$user_name"
+            user::setEmail "$user_email"
+            user::setFullName "$user_name"
             # Github configuration
             github::set_login "$github_login"
+            
             # The response needs to set variables: git-config, git-clone, git-push
             ;;
         # If we get here, something terribly wrong has happened...
@@ -142,10 +143,10 @@ app::router() {
 }
 
 app::make_index
-Utility_fileOpen temp.html > /dev/null
+utility::fileOpen temp.html > /dev/null
 server::start "app::router"
 
-# if [[ "$(Utility_fileOpen http://localhost:8080)" ]]; then
+# if [[ "$(utility::fileOpen http://localhost:8080)" ]]; then
     # echo -e "Opened web browser to http://localhost:8080                                [\e[1;32mOK\e[0m]" >&2
 # else
     # echo -e "Please open web browser to http://localhost:8080              [\e[1;32mACTION REQUIRED\e[0m]" >&2
