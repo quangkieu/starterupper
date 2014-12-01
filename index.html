@@ -57,6 +57,7 @@
   .git-clone {display: none;}
   .git-config {display: none;}
   .git-push {display: none;}
+  .no-setup-complete {display: none;}
   
   </style>
   <noscript>
@@ -344,7 +345,7 @@
             Use your school email for account setup
         </div>
         <div class="clear"></div>
-        <div class="grid_2 subheading automated">
+        <div class="grid_2 subheading">
             <div class="github-authenticated login-control">
                 You're signed in <i class="fa fa-lg fa-lock"></i>
             </div>
@@ -352,7 +353,7 @@
                 You're not signed in <i class="fa fa-lg fa-unlock"></i>
             </div>
         </div>
-        <div class="grid_3 automated">
+        <div class="grid_3">
             <div class="github-authenticated login-control">
                 <input type="hidden" name="github.login" id="github-login" />
                 <input type="button" id="github-signout" value="Sign out" />
@@ -362,7 +363,8 @@
                 <input type="password" id="github-password"
                 placeholder="Github password" pattern=".{7,}"
                 title="Github password (must be 7+ characters)" required />
-                <input type="button" id="github-signin" value="Sign in" />
+                <input type="button" id="github-signin" value="Sign in" 
+                title="Sign in to automate setup steps below" />
                 
                 <div class="github-two-factor">
                     <input type="text" id="otp" placeholder="Authentication code"
@@ -370,34 +372,18 @@
                 </div>
             </div>
         </div>
-        <div class="grid_7 no-github-authenticated login-control automated">
-            <a href="https://github.com/password_reset"
-            target="actionRequired">Forgot password?</a>
+        <div class="grid_7 login-control">
+            <a href="https://github.com/password_reset" target="actionRequired"
+            class="no-github-authenticated">Forgot password?</a>
         </div>
         <div class="clear"></div>
-        <div class="grid_2 github-authenticated subheading">
-            Setup checklist
+        <div class="grid_2 subheading">
+            Setup checklist<br/>
+            <span class="no-github-authenticated">(Sign in to complete)</span>
+            <span class="no-setup-complete">(Click <code>Finish setup</code>)</span>
         </div>
-        <div class="grid_10 github-authenticated manual">
+        <div class="grid_10">
             <ul class="fa-ul" style="margin-left: 0px;">
-                <li>
-                    <i class="fa-li fa fa-lg fa-check success github-email-verified"></i>
-                    <i class="fa-li fa fa-lg fa-envelope fail no-github-email-verified"></i>
-                    <a href="https://github.com/settings/emails"
-                    target="actionRequired"><span class="github-email-verified">
-                    Verified your school email</span><span class="no-github-email-verified">
-                    Verify your school email</span></a>
-                    to get an educational discount
-                </li>
-                <li>
-                    <i class="fa-li fa fa-lg fa-graduation-cap fail no-github-upgraded"></i>
-                    <i class="fa-li fa fa-lg fa-check success github-upgraded"></i>
-                    <a href="https://education.github.com/discount_requests/new"
-                    target="actionRequired"><span class="no-github-upgraded">
-                    Request an educational discount</span><span class="github-upgraded">
-                    Educational discount approved</span></a>
-                    to create private repositories for free
-                </li>
                 <li>
                     <i class="fa-li fa fa-lg fa-user fail no-github-profile"></i>
                     <i class="fa-li fa fa-lg fa-check success github-profile"></i>
@@ -418,15 +404,33 @@
                     <input type="text" value="PUBLIC_KEY" style="width: 500px;" readonly />
                 </li>
                 <li>
+                    <i class="fa-li fa fa-lg fa-check success github-email-verified"></i>
+                    <i class="fa-li fa fa-lg fa-envelope fail no-github-email-verified"></i>
+                    <a href="https://github.com/settings/emails"
+                    target="actionRequired"><span class="github-email-verified">
+                    Verified your school email</span><span class="no-github-email-verified">
+                    Verify your school email</span></a>
+                    to get an educational discount
+                </li>
+                <li>
+                    <i class="fa-li fa fa-lg fa-graduation-cap fail no-github-upgraded"></i>
+                    <i class="fa-li fa fa-lg fa-check success github-upgraded"></i>
+                    <a href="https://education.github.com/discount_requests/new"
+                    target="actionRequired"><span class="no-github-upgraded">
+                    Request an educational discount</span><span class="github-upgraded">
+                    Educational discount approved</span></a>
+                    to create private repositories for free
+                </li>
+                <li>
                     <i class="fa-li fa fa-lg fa-check success github-repository"></i>
                     <i class="fa-li fa fa-lg fa-database fail no-github-repository"></i>
                     <a target="actionRequired" href="https://github.com/new"
                     class="no-github-repository">
-                        Create private repository REPOSITORY</a><a
+                        Create private repository</a><a
                     href="https://github.com/USER_NAME/REPOSITORY"
                     target="actionRequired"
                     class="origin-href github-repository">
-                        Created repository REPOSITORY</a>,
+                        Created repository</a> <b>REPOSITORY</b>,
                         a place to submit work that nobody else can see
                 </li>
                 <li>
@@ -511,7 +515,7 @@
         <div class="grid_12">
           <i class="fa fa-fw fa-lg fa-warning" style="color:red;"></i>
           <b>DO NOT</b> move your local git repository to any folder synchronized
-          with Google Drive or Dropbox
+          with Dropbox or Google Drive
         </div>
       </section>
     </form>
