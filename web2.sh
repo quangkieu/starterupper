@@ -47,8 +47,8 @@ app::index() {
     local email
     
     request::post_form_data "$request" | while read parameter; do
-        local key="$(Parameter_key "$parameter")"
-        local value="$(Parameter_value "$parameter")"
+        local key="$(parameter::key "$parameter")"
+        local value="$(parameter::value "$parameter")"
         case "$key" in
             "user.name" )
                 user::setFullName "$value"
@@ -74,26 +74,12 @@ app::browser() {
     local agent="$(request::lookup "$request" "User-Agent")"
     case "$agent" in
         *MSIE* | *Trident* ) # Internet explorer
-            cat << 'EOF' > browser.css
-.firefox { display: none; }
-.chrome { display: none; }
-EOF
-            ;;
+            server::send_string ".firefox, .chrome {display: none;}" "browser.css" ;;
         *Firefox* )
-            cat << 'EOF' > browser.css
-.chrome { display: none; }
-.msie { display: none; }
-EOF
-            ;;
+            server::send_string ".chrome, .msie {display: none;}" "browser.css" ;;
         *Chrome* )
-            cat << 'EOF' > browser.css
-.firefox { display: none; }
-.msie { display: none; }
-EOF
-            ;;
+            server::send_string ".firefox, .msie {display: none;}" "browser.css" ;;
     esac
-    server::send_file browser.css
-    rm browser.css
 }
 
 # Setup local repositories
@@ -115,8 +101,14 @@ app::setup() {
             local user_name="$(json::lookup "$data" "user.name")"
             local user_email="$(json::lookup "$data" "user.email")"
             # Git configuration
-            user::setEmail "$user_email"
-            user::setFullName "$user_name"
+            
+            read -r -d '' response <<-EOF
+            {
+                "name": $(utility::asTrueFalse $(user::setFullName "$user_name")),
+                "email": $(utility::asTrueFalse $(user::setEmail "$user_email")),
+            }
+EOF
+            
             # Github configuration
             github::set_login "$github_login"
             
@@ -130,12 +122,19 @@ app::setup() {
     esac
 }
 
+# Dummy response to verify server works
+app::test() {
+    local request="$1"
+    server::send_string "true" "application/json"
+}
+
 # Handle requests from the browser
 app::router() {
     local request="$1"
     local target="$(request::file "$request")"
     case "$target" in
         "/" )           app::index "$request" ;;
+        "test" )        app::test "$request" ;;
         "browser.css" ) app::browser "$request" ;;
         "setup" )       app::setup "$request" ;;
         * )             server::send_file "$target"
