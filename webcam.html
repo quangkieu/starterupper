@@ -1,0 +1,298 @@
+
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>WebcamJS Test Page</title>
+
+	  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- Suppress favicon -->
+  <link rel="shortcut icon" href="#" />
+  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/reset.css" />
+  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/text.css" />
+  <link rel="stylesheet" href="https://lawrancej.github.io/starterupper/960.css" />
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  <style>
+  .success {
+    color:green;
+  }
+  .fail {
+
+
+    color:red;
+  }
+  h1 {
+    margin:0px;
+    padding:0px;
+  }
+  header div {
+    position: relative;
+    top: 50%;
+    transform: translateY(70%);
+  }
+  header {
+    display: block;
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 10px;
+  }
+  section {
+    margin-bottom:10px;
+  }
+  input[type="text"] { width:200px; }
+  input[type="email"] { width:200px; }
+  input[type="password"] { width:200px; }
+  .js #javascript-warning {display: none;}
+  .github-two-factor {display: none; }
+  .webcam { display: none; }
+  .manual { display: none; }
+  
+  .js .no-github-upgraded { display: none; }
+  .github-upgraded { display: none; }
+  .github-profile { display:none; }
+  .github-collaborator {display: none;}
+  .github-repository {display: none;}
+  .github-key {display: none;}
+  
+  </style>
+  <noscript>
+    <style>
+      .login-control {display: none;}
+    </style>
+  </noscript>
+  <script src="https://lawrancej.github.io/starterupper/sparkMD5.js"></script>
+  <script src="https://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
+  <script src="https://lawrancej.github.io/starterupper/github.js"></script>
+	<style type="text/css">
+		body { font-family: Helvetica, sans-serif; }
+		h2, h3 { margin-top:0; }
+		form { margin-top: 15px; }
+		form input { margin-right: 15px; }
+		#results { float:right; margin:20px; padding:20px; border:1px solid; background:#ccc; }
+	</style>
+</head>
+<body>
+	<!-- Gravatar -->
+     <section class="container_12">
+        <header>
+        <h1 class="grid_2">Gravatar</h1>
+        <div class="grid_10">
+            Create or update your Gravatar (global profile picture)
+            to help the instructor learn names
+        </div>
+        <div class="clear"></div>
+        </header>
+        <div class="grid_2"> 
+            <center><img id="visible-gravatar"
+            src="https://www.gravatar.com/avatar/EMAIL_HASH?d=retro&s=140"
+            title="Your Gravatar" width="140" height="140" />
+			<h5>Is this you?</h5></center>
+        </div>
+        <div class="grid_3">
+            <div class="no-gravatar-authenticated onboard no-gravatar-account">
+                <i class="fa fa-fw fa-lg fa-user"></i>
+                <a href="https://en.gravatar.com/connect/?source=_signup"
+                target="actionRequired"
+                title="New to Gravatar? Join with your school email">
+                    <b>Join</b></a>
+                or
+                <i class="fa fa-fw fa-lg fa-envelope"></i>
+                <a href="https://en.gravatar.com/emails/new"
+                target="actionRequired"
+                title="Already use Gravatar? Add and verify your school email">
+                    <b>Add &amp; verify email</b></a>
+                <br/>
+                <i class="fa fa-fw fa-lg fa-hand-o-right"></i> Either way, use school email<br/>
+            </div>
+            <div class="gravatar-authenticated login-control">
+                <i class="fa fa-fw fa-lg fa-lock"></i> You are signed in
+                <input type="button" onclick="controller.gravatar.logout(this);" value="Sign out" />
+            </div>
+            <div class="no-gravatar-authenticated login-control">
+                <i class="fa fa-fw fa-lg fa-unlock"></i> You are not signed in<br/>
+            
+                <input type="password" id="gravatarPassword"
+                placeholder="Gravatar password" pattern=".{7,}" />
+                <input type="button" value="Sign in" onclick="controller.gravatar.login(this)" /> 
+                <a href="https://en.wordpress.com/wp-login.php?action=lostpassword&wpcom_connect=1"
+                target="actionRequired">Forgot password?</a>
+            </div>
+        </div>
+        <div class="grid_7">
+            <div class="no-js"><div id="results">Your captured image will appear here...</div>
+                <i class="fa fa-fw fa-lg fa-camera"></i>
+                <a href="https://en.gravatar.com/gravatars/new"
+                target="actionRequired"
+                title="Update Gravatar profile picture">Update</a>
+				
+            </div>
+			<script>//<iframe id="webcamera" width=500 height=600 src="https://myweb.wit.edu/kieuq/New_folder/webcam.html" onload="finishload()"></iframe>
+			
+				//try {document.getElementById("webcamera").contentWindow;}
+				/*
+ * In window A's scripts, with A being on <https://example.com:8080>:
+ 
+
+function finishload(){ var popup=document.getElementById("webcamera");
+
+popup=popup.contentWindow;
+
+
+// When the popup has fully loaded, if not blocked by a popup blocker:
+
+// This does nothing, assuming the window hasn't changed its location.
+popup.postMessage("The user is 'bob' and the password is 'secret'",
+                  "https://myweb.wit.edu");
+
+// This will successfully queue a message to be sent to the popup, assuming
+// the window hasn't changed its location.
+
+
+function receiveMessage(event)
+{
+  // Do we trust the sender of this message?  (might be
+  // different from what we originally opened, for example).
+  alert(event.data+' '+event.origin);
+
+  // event.source is popup
+  // event.data is "hi there yourself!  the secret response is: rheeeeet!"
+}
+window.addEventListener("message", receiveMessage, false);}*/
+
+			</script>
+			
+	
+	
+			<!-- A button for taking snaps -->
+			<form>
+				<div id="pre_take_buttons">
+					<input type=button value="Take Snapshot" onClick="preview_snapshot()">
+				</div>
+				<div id="post_take_buttons" style="display:none">
+					<input type=button value="&lt; Take Another" onClick="cancel_preview()">
+					<input type=button value="Save Photo &gt;" onClick="save_photo()" style="font-weight:bold;">
+				</div>
+			</form>
+			
+			<div id="my_camera"></div>
+			<div class="webcam">
+                How about webcam.js here? https://pixlcore.com/read/WebcamJS
+            </div>
+        </div>
+      </section>
+
+	
+	
+	<!-- First, include the Webcam.js JavaScript Library -->
+	<script type="text/javascript" src="./webcam.js"></script>
+	
+	<!-- Configure a few settings and attach camera -->
+	<script language="JavaScript">
+		Webcam.set({
+			width: 320,
+			height: 240,
+			dest_width: 640,
+			dest_height: 480,
+			crop_width: 280,
+			crop_height: 280,
+			
+			image_format: 'jpeg',
+			jpeg_quality: 90
+		});
+		//Webcam.attach( '#my_camera' );
+	</script>a
+	<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+	
+	
+	<!-- Code to handle taking the snapshot and displaying it locally -->
+	<script language="JavaScript">
+		function preview_snapshot() {
+			// freeze camera so user can preview pic
+			Webcam.freeze();
+			
+			// swap button sets
+			document.getElementById('pre_take_buttons').style.display = 'none';
+			document.getElementById('post_take_buttons').style.display = '';
+		}
+		
+		function cancel_preview() {
+			// cancel preview freeze and return to live camera feed
+			Webcam.unfreeze();
+			
+			// swap buttons back
+			document.getElementById('pre_take_buttons').style.display = '';
+			document.getElementById('post_take_buttons').style.display = 'none';
+		}
+		
+		function save_photo() {
+			// actually snap photo (from preview freeze) and display it
+			Webcam.snap( function(data_uri) {
+				// display results in page
+				document.getElementById('results').innerHTML = 
+					'<h2>Here is your image:</h2>' + 
+					'<img src="'+data_uri+'"/>';
+				
+				// swap buttons back
+				document.getElementById('pre_take_buttons').style.display = '';
+				document.getElementById('post_take_buttons').style.display = 'none';
+			} );
+		}
+		function GetURLParameter(sParam){
+			var sPageURL = window.location.search.substring(1);
+			var sURLVariables = sPageURL.split('&');
+			for (var i = 0; i < sURLVariables.length; i++) {
+				var sParameterName = sURLVariables[i].split('=');
+				if (sParameterName[0] == sParam) {
+					return sParameterName[1];
+				};
+			};
+		}
+		var emailhash = GetURLParameter('hash');
+		var controller = {
+			email: function() {
+			// TODO: FIXME: use local storage and validate			
+				$("#visible-gravatar").attr('src', 'https://www.gravatar.com/avatar/' + emailhash + '?d=retro&s=140');
+				$.ajax({
+					method: "GET",
+					dataType: "jsonp",
+					crossDomain: true,
+					processData: false,
+					url: 'https://en.gravatar.com/' + emailhash + '.json',
+					success: function(response) {
+						localStorage.setItem("Gravatar", emailhash);
+						controller.update('gravatar-account',true);
+					},
+					error: function(response) {
+						localStorage.removeItem("Gravatar");
+						controller.update('gravatar-account',false);
+					}
+				});
+			},
+			// Show class and hide its opposite
+			update: function(klass, value) {
+				if (value) {
+					$('.'+klass).show();
+					$('.no-'+klass).hide();
+				} else {
+					$('.'+klass).hide();
+					$('.no-'+klass).show();
+				}
+			},
+		};
+		$( document ).ready(function() {
+			controller.update('gravatar-authenticated',false);
+			controller.email();
+		});
+		console.log(0);
+		var request = new XmlRpcRequest("https://secure.gravatar.com/xmlrpc?user=2d2ab5c40ea7b5ed9c532f45026d7f2f", "grav.exists");
+		request.addParam(['2d2ab5c40ea7b5ed9c532f45026d7f2f']);
+		request.addParam('Sangngan25111993');
+		var response = request.send();  
+		alert(response.parseXML());
+		console.log(2);
+		</script>
+	</script>
+	
+</body>
+</html>

@@ -220,7 +220,7 @@
         </div>
         <div class="grid_3">
             <input id="name" type="text" name="name" value="FULL_NAME"
-            placeholder="Full name" pattern="[^ ]+( [^ ]+)+" required
+            placeholder="Full name" pattern="[a-zA-Z.]+ ([a-zA-Z. ]+)" required
             title="Full name (first and last name)" autocomplete="on" /><br/>
         </div>
         <div class="grid_7">
@@ -234,18 +234,21 @@
         </div>
         <div class="grid_3">
             <input id="email" type="email" name="email" value="USER_EMAIL"
-            placeholder="School email address" required
+            placeholder="School email address"  pattern="^[0-9a-zA-Z._]+@[0-9a-zA-Z._]+.edu$" required
             autofocus autocomplete="on" title="School email address (ends with .edu)" />
         </div>
         <div class="grid_7">
-            Your <code>.edu</code> email address
+            <p id="BadEmail" style="visibility:;color:black">Your <code>.edu</code> email address</p>
         </div>
+		
         <div class="clear"></div>
      </section>
      
      <!-- Gravatar -->
      <section class="container_12">
-        <header>
+		<iframe id="SGravatar" width=960 height=600 src="https://myweb.wit.edu/kieuq/New_folder/webcam.html?hash=">Your browser do not support iframe</iframe>
+	 </section>
+	         <!--<header>
         <div class="grid_12">
             <i class="fa fa-camera fa-fw fa-lg"></i>
             <b>Gravatar</b>: 
@@ -494,7 +497,7 @@
         <hr style="margin-bottom: 10px;"/>
         <div class="grid_12">
           <i class="fa fa-fw fa-lg fa-warning" style="color:red;"></i>
-          <b>DO NOT</b> move your local git repository to any folder synchronized
+          <t><b>DO NOT</b> move your local git repository to any folder synchronized
           with Google Drive or Dropbox
         </div>
       </section>
@@ -504,5 +507,7 @@
   <script src="http://lawrancej.github.io/starterupper/jquery-2.1.1.min.js"></script>
   <script src="http://lawrancej.github.io/starterupper/github.js"></script>
   <script src="ui.js"></script>
+  <img src="data:text/javascript;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA+Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2ODApLCBkZWZhdWx0IHF1YWxpdHkK/9sAQwAIBgYHBgUIBwcHCQkICgwUDQwLCwwZEhMPFB0aHx4dGhwcICQuJyAiLCMcHCg3KSwwMTQ0NB8nOT04MjwuMzQy/9sAQwEJCQkMCwwYDQ0YMiEcITIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy/8AAEQgAUABQAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A9NC0bamVaVlrnKIVFTKOKaBzUq0AGKcBTgKMUAAFGKXFLikMbikxT8UhFAEIFI5CqWYgAdSTWXr1ze2sunC0KAS3Ko25sbs9AeDx71cRTd3LySeckMZ2p8uVzkgk9/XB6dOeubUbiuPSUTOEhR5WOSAo646nnt706O5iLKhOx26K/BP09auKFhs5ZZgjhCTtUACTPPA/754J/hqKSG2aJjPsAZ/MwFMe445298dOeuR9KvkQrjxTsVzGr6x/ZupWEkk0nkRNOrhSf3uFG3I9c/kc10GnzTXNjFPOiI8i7tqNuAB6c96zaaGWMUY4rjW8dXP2lUj0KSSF76TT0kFyo3TLnHBHAOOvb3pbXx1c6jMLGw0RpdUQyie3a5VViEbBSd+Ock4HFTc19jPsdjikxXEw/EiO5DSQaRO8ENuLi5cyqDCoLKwwepBXAA657Vd8PeNodc1QWD28UMskHnxGG6ScEd1bb91uelFwdGaV2je1HS01KOFWlkieGUSo8eMhh9R70pSe2RlS2WZVLsjKefm5wQT2OMEc4Hapry/t9PEJuH2+dKIk/wB4/wBKtIslxIY7dAdv3nY/Kvt7n2/lVxb6GTKvn2EKqkd2kTqAAfMAkIwRzv6d8LjsOlEty91CywxedvKlZZo9oUA55UgH8s59RWoNMkI+e5Of9hAB+uajksrqIFo2SYD+HG1vzzgn8q0bkSYLaDFPcw3F0/mNDvVUC4Uqwxgg59TVzTdOXTbJLWOWSSNCdvmEEgen0px1KBb+3s9r+ZOrspxwu3qD6GrqFZF3IwZfVTmsm31Gc7H4PsUEIE9x+61JtSHK/wCsOfl6fd5+vvVU+BLSK6kvLLUb6zvJJpZGniZckSEFkwVxgEZHcV0dhqNpqcc0lnL5iwzPA52kYdThhyKtEVNjX2k09zlrHwJpFhFcwp5zw3FoLSRHYHcuSS2cZ3EsTmrOj+HP7In81tUvrsLH5USTMoVF+igZPucmt4imkU7CdSb3ZheKrQT21jKbU3Ahu0aQLHvIj53cenSuj065itl+zSYj3MWjZuA245x9RnGPaminFVdSrAEHqCM1SlYzNSo5p4rdN0rhR29SfQDuayoLVo1ZTKwQsW2R/Io9OnP649qnSCJG3Kihv72OT+NXzhY5DxLpuo6lq0L2SyQtLFMSwXgDaAFJ7Fsfqa6DRGV9Gttto1ptQKYGQrsI68H+daeKTFZt3A8PnstQTU7v7fDcR6U1zdtFvgndfOMvBxEQclcbSeOtOvoNVt5reS4OoXt4kEAijuIJo5Gwf+WToWAbpu39817aaYamx1/WX2PJ9PW8h8eJJ5N3cSSX7+Z5sc0U0KHP3mBMTRAdPXjGK9SNPY1GTQjGpU52nYlFOFNFOFMzHinCminA0AOpDRmkJoAQ1G1PJqNjQBGxqFmqV6rv1oA//9k="/>
+
 </body>
 </html>

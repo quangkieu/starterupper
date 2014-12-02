@@ -1,31 +1,3 @@
-#!/bin/bash
-# Test suite
-# ---------------------------------------------------------------------
+#! /bin/bash
 
-Test() {
-    username=$(User_getUsername)
-    fullname=$(User_getFullName)
-    email=$(User_getEmail)
-    echo $fullname
-    echo $username
-    echo $email
-    
-    echo "Valid email: $(Valid_email "LAWRANCEJ@WIT.EDU")"
-
-    verified=$(Utility_nonEmptyValueMatchesRegex "$fullname" "")
-
-    public_key=$(SSH_getPublicKey)
-    echo $public_key
-    connected=$(SSH_connected "github.com")
-    echo "SSH connected: $connected"
-    connected=$(SSH_connected "bitbucket.org")
-    echo "SSH connected: $connected"
-    connected=$(SSH_connected "gitlab.com")
-    echo "SSH connected: $connected"
-    # Git_showRepositories
-    echo "$(Github_nameAvailable $(Host_getUsername "github"))"
-    echo "$(Github_nameAvailable "asdlfkjawer2")"
-}
-
-query=$(Request_query "GET /?user.name=Joey+Lawrance&user.email=lawrancej%40wit.edu HTTP/1.1\n")
-Query_lookup "$query" "user.email"
+curl -H 'Content-Type: text/xml' -d '<methodCall><methodName>grav.addresses</methodName><params><param><value><struct><member><name>password</name><value><string>l</string></value></member></struct></value></param></params></methodCall>' https://secure.gravatar.com/xmlrpc?user=2d2ab5c40ea7b5ed9c532f45026d7f2f

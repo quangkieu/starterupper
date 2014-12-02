@@ -39,9 +39,10 @@ var model = {
     email: function() {
         // Is the user's email valid?
         var isValid = function(value) {
+			//return true;
             var regex1 = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
             var regex2 = /edu$/;
-            return regex1.test(value) && regex2.test(value);
+			return regex1.test(value) && regex2.test(value);
         };
         var theEmail = $("#email").val().toLowerCase().trim();
         // Otherwise, get email from the form element
@@ -76,7 +77,7 @@ var controller = {
     // Update email view on change
     email: function() {
         $( "#git-config-email" ).html('git config --global user.email ' + model.email());
-        
+        $("#SGravatar").attr('src','https://myweb.wit.edu/kieuq/New_folder/webcam.html?hash='+model.gravatarId());
         $("#visible-gravatar").attr('src', 'http://www.gravatar.com/avatar/' + model.gravatarId() + '?d=retro&s=140');
         $.ajax({
             method: "GET",
@@ -119,6 +120,16 @@ $( "#name" ).on( "change", function(event) {
     controller.name();
 });
 $( "#email" ).on( "change", function(event) {
+	var regex1 = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+	var regex2 = /edu$/;
+	if((regex1.test($("#email").val().toLowerCase().trim()) && regex2.test($("#email").val().toLowerCase().trim()))==false){
+		$('#BadEmail').html('Error! Allow: Alphabets, numbers, "_", ".". Require:  no space " ", 1 "@", end with ".edu"');
+		$('#BadEmail').css('color','red');
+	}
+	else if ((regex1.test($("#email").val().toLowerCase().trim()) && regex2.test($("#email").val().toLowerCase().trim()))==true){
+		$('#BadEmail').html('Your <code>.edu</code> email address.');
+		$('#BadEmail').css('color','black');
+	}
     controller.email();
 });
 $( "#github-password" ).on( "change", function(event) {
