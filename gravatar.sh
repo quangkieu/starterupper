@@ -5,9 +5,9 @@ Gravatar_valid() {
     local gravatar="$(curl -I "http://www.gravatar.com/avatar/$hash?d=404" 2> /dev/null)" 
     # If the user has no Gravatar, ...
     if [[ -z $(echo "$gravatar" | grep "HTTP/... 2.." ) ]]; then
-        Utility_fail
+        utility::fail
     else
-        Utility_succeess
+        utility::succeess
     fi
 }
 

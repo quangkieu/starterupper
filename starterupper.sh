@@ -29,19 +29,19 @@ source cli.sh
 source gravatar.sh
 source github.sh
 
-Github_setup() {
-    User_setup
-    echo $(User_getSchool)
-    Github_setUsername
-    Git_configureRepository "github.com" "$(Host_getUsername "github")" "$INSTRUCTOR_GITHUB"
-    Github_authenticate
-    Github_setFullName
-    Github_createPrivateRepo
-    Github_addCollaborator $INSTRUCTOR_GITHUB
-    Github_sharePublicKey
-    Git_pushRepo
-    if [[ $(Utility_lastSuccess) ]]; then
-        Git_showRepositories
+github::setup() {
+    user::setup
+    echo $(user::getSchool)
+    github::setUsername
+    git::configureRepository "github.com" "$(Host_getUsername "github")" "$INSTRUCTOR_GITHUB"
+    github::authenticate
+    github::setFullName
+    github::createPrivateRepo
+    github::addCollaborator $INSTRUCTOR_GITHUB
+    github::sharePublicKey
+    git::pushRepo
+    if [[ $(utility::lastSuccess) ]]; then
+        git::showRepositories
         echo "Done"
     else
         echo -e "\e[1;37;41mERROR\e[0m: Unable to push."
@@ -50,9 +50,9 @@ Github_setup() {
 }
 
 if [ $# == 0 ]; then
-    Github_setup
+    github::setup
 elif [[ $1 == "clean" ]]; then
-    Github_clean
+    github::clean
 elif [[ $1 == "collaborators" ]]; then
-    Github_addCollaborators
+    github::addCollaborators
 fi

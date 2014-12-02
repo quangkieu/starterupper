@@ -1,21 +1,16 @@
 // The M in MVC
 var model = {
+    // Server-set constant getters
     // Name of the repository
-    repo: function() {
-        return $("#repository").val();
-    },
+    repo: function()       { return $("#repository").val(); },
     // Who's the instructor? (i.e., github login)
-    instructor: function() {
-        return $("#instructor").val();
-    },
+    instructor: function() { return $("#instructor").val(); },
     // User's login at their machine
-    hostLogin: function() {
-        return $("#host").val();
-    },
+    hostLogin: function()  { return $("#host").val(); },
     // User's public key
-    publicKey: function() {
-        return $("#public-key").val();
-    },
+    publicKey: function()  { return $("#public-key").val(); },
+    
+    // Server-initialized variable getters
     // The user's full name
     name: function() {
         // Is the name valid?
@@ -45,7 +40,7 @@ var model = {
 			return regex1.test(value) && regex2.test(value);
         };
         var theEmail = $("#email").val().toLowerCase().trim();
-        // Otherwise, get email from the form element
+        // Get email from the form element
         if (isValid(theEmail)) {
             localStorage.setItem("User.email", theEmail);
             return theEmail;
@@ -58,9 +53,7 @@ var model = {
         return "";
     },
     // Gravatar ID
-    gravatarId: function() {
-        return SparkMD5.hash(model.email());
-    },
+    gravatarId: function() { return SparkMD5.hash(model.email()); },
 };
 
 // The C in MVC :-)
@@ -101,15 +94,15 @@ var controller = {
     github: function() {
         if (Github.authenticated()) {
             $("#github-login").val(Github.getUsername());
-//            $("#github-password").val("bogus password");
-//            $("#otp").val("010101");
             setupUser();
             setupEmail();
             setupSSH();
             setupRepo();
+            setupLocal();
             $(".origin-href").attr("href", "https://github.com/" + Github.getUsername() + "/" + model.repo());
             $("#collaborator-href").attr("href", "https://github.com/" + Github.getUsername() + "/" + model.repo() + "/settings/collaboration");
             $("#origin-code").html("git remote add origin git@github.com:" + Github.getUsername() + "/" + model.repo() + ".git");
+            
             controller.update('github-authenticated', true);
         } else {
             controller.update('github-authenticated', false);
@@ -160,6 +153,31 @@ $(function() {
     controller.gravatar();
     controller.github();
 });
+
+function setupLocal() {
+    $.ajax({
+        method: "POST",
+        contentType: "application/json",
+        dataType: "json",
+        crossDomain: true,
+        processData: false,
+        url: 'http://localhost:8080/setup',
+        processData: false,
+        data: JSON.stringify({
+            "github.login": Github.getUsername(),
+            "user.name": model.name(),
+            "user.email": model.email(),
+        }),
+        success: function(response) {
+            alert("hi");
+            //console.log(JSON.stringify(response));
+//            controller.update('gravatar-account',true);
+        },
+        error: function(response) {
+        }
+    });
+
+}
 
 function setupUser() {
     // Nag the user if they're not on an upgraded plan

@@ -7,19 +7,31 @@ readonly PIPE=.httpipe
 # http://mywiki.wooledge.org/NamedPipes
 # Also, simultaneous connections
 
+json::unpack() {
+    local json="$1"
+    echo "$json" | tr -d '"{}' | tr ',' '\n'
+}
+
+# Given a header key, return the value
+json::lookup() {
+    local json="$1"; shift
+    local key="$1"
+    echo -e "$json" | grep "$key" | sed -e "s/^$key:\(.*\)$/\1/"
+}
+
 # Is this a request line?
 request::line() {
     local line="$1"
     if [[ -z "$(echo "$line" | grep -E "^GET|^HEAD|^POST|^PUT|^DELETE|^CONNECT|^OPTIONS|^TRACE")" ]]; then
-        Utility_fail
+        utility::fail
     fi
-    Utility_success
+    utility::success
 }
 
 # Get the method (e.g., GET, POST) of the request
 request::method() {
     local request="$1"
-    echo "$request" | sed -e "s/\(^[^ ]*\).*/\1/"
+    echo "$request" | sed -e "s/\(^[^ ]*\).*/\1/" | head -n 1
 }
 
 # Get the target (URL) of the request
@@ -57,20 +69,20 @@ request::post_form_data() {
 }
 
 # Given a query key, return the URL decoded value
-Query_lookup() {
+query::lookup() {
     local query="$1"; shift
     local key="$1"
     echo -e "$(printf "$query" | grep "$key" | sed -e "s/^$key=\(.*\)/\1/" -e 'y/+/ /; s/%/\\x/g')"
 }
 
 # Return the key corresponding to the field
-Parameter_key() {
+parameter::key() {
     local parameter="$1"
     echo "$parameter" | cut -d '=' -f 1
 }
 
 # Return the URL decoded value corresponding to the field
-Parameter_value() {
+parameter::value() {
     local parameter="$1"
     echo -e "$(echo "$parameter" | cut -d '=' -f 2 | sed 'y/+/ /; s/%/\\x/g')"
 }
@@ -113,30 +125,70 @@ request::new() {
     echo "$request"
 }
 
-# Send out HTTP response and headers
-response::send() {
-    local response="$1"; shift
-    local length="$1"; shift
-    local type="$1";
+# Build a new response
+response::new() {
+    local status="$1"
+    echo "HTTP/1.1 $status\r\nDate: $(date '+%a, %d %b %Y %T %Z')\r\nServer: Starter Upper"
+}
 
-    echo -ne "$response\r\nDate: $(date '+%a, %d %b %Y %T %Z')\r\nServer: Starter Upper\r\nContent-Length: $length\r\nContent-Encoding: binary\r\nContent-Type: $type\r\n\r\n"
+# Add a header to the response
+response::add_header() {
+    local response="$1"; shift
+    local header="$1";
+    echo "$response\r\n$header"
+}
+
+# Add headers to response assuming file is payload
+response::add_file_headers() {
+    local response="$1"; shift
+    local file="$1"
+    response="$response\r\nContent-Length: $(utility::fileSize "$file")"
+    response="$response\r\nContent-Encoding: binary"
+    response="$response\r\nContent-Type: $(utility::MIMEType $file)"
+    echo "$response"
+}
+
+# Add headers to response assuming string is payload
+response::add_string_headers() {
+    local response="$1"; shift
+    local str="$1"; shift
+    local type="$1"
+    response="$response\r\nContent-Length: ${#str}"
+    response="$response\r\nContent-Type: $type"
+    echo "$response"
+}
+
+# "Send" the response headers
+response::send() {
+    echo -ne "$1\r\n\r\n"
 }
 
 # Send file with HTTP response headers
 server::send_file() {
-    local file="$1"; shift
-    local response="HTTP/1.1 200 OK"
+    local file="$1";
     if [[ -z "$file" ]]; then
         return 0
     fi
+    local response="$(response::new "200 OK")"
     if [[ ! -f "$file" ]]; then
-        response="HTTP/1.1 404 Not Found"
+        response="$(response::new "404 Not Found")"
         file="404.html"
     fi
-    local type="$(Utility_MIMEType $file)"
-    response::send "$response" "$(Utility_fileSize "$file")" "$type"
+    response="$(response::add_file_headers "$response" "$file")"
+    response::send "$response"
     cat "$file"
     echo "SENT $file" >&2
+}
+
+# Send string with HTTP response headers
+server::send_string() {
+    local str="$1"; shift
+    local type="$1"
+    local response="$(response::new "200 OK")"
+    response="$(response::add_string_headers "$response" "$str" "$(utility::MIMEType $type)")"
+    response::send "$response"
+    echo "$str"
+#    echo "SENT $str" >&2
 }
 
 # Listen for requests
@@ -145,7 +197,7 @@ server::listen() {
     while read -r line; do
         request=$(request::new "$line")
         # Send the request through 
-        Pipe_write "$PIPE" "$request\n"
+        pipe::write "$PIPE" "$request\n"
     done
 }
 
@@ -154,9 +206,9 @@ server::listen() {
 server::respond() {
     local routeFunction="$1"
     local request=""
-    Pipe_await "$PIPE"
+    pipe::await "$PIPE"
     while true; do
-        request="$(Pipe_read "$PIPE")"
+        request="$(pipe::read "$PIPE")"
         # Pass the request to the route function
         "$routeFunction" "$request"
     done
@@ -191,7 +243,7 @@ server::works() {
 # Start the web server, using the supplied routing function
 server::start() {
     local routes="$1"
-    Pipe_new "$PIPE"
+    pipe::new "$PIPE"
     local nc=$(Acquire_netcat)
     
     server::respond "$routes" | "$nc" -k -l 8080 | server::listen

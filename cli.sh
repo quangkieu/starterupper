@@ -7,7 +7,7 @@ Interactive_paste() {
     local text="$1"; shift
     local prompt="$1"
     # If we cannot paste to the clipboard, ask the user
-    if [[ ! $(Utility_paste "$text") ]]; then
+    if [[ ! $(utility::paste "$text") ]]; then
         printf "Copy/paste $prompt:\n$text\n"
     # On a Mac, it's Command V
     elif [[ $OSTYPE == darwin* ]]; then
@@ -21,7 +21,7 @@ Interactive_paste() {
 # Cross platform file open
 Interactive_fileOpen() {
     read < /dev/tty
-    if [[ ! $(Utility_fileOpen "$1") ]]; then
+    if [[ ! $(utility::fileOpen "$1") ]]; then
         echo "Please open $1"
     else
         echo "Opening $1"
@@ -50,7 +50,7 @@ Interactive_confirm() {
         esac
     done
     # If the supplied value was invalid to begin with, indicate failure
-    Utility_fail
+    utility::fail
 }
 
 # Ask the user to set the value
@@ -65,7 +65,7 @@ Interactive_setValue() {
     Interactive_confirm "$value" "$isValid" "$prompt"
     
     # If the user wasn't okay with the default value, ask for the right one.
-    if [[ ! $(Utility_lastSuccess) ]]; then
+    if [[ ! $(utility::lastSuccess) ]]; then
         # The user didn't like the value or it was invalid to begin with
         value=""
         # So, as long as the value is bogus, ...
@@ -85,7 +85,7 @@ Interactive_setValue() {
 }
 
 # Interactively setup user information
-User_setup() {
-    Interactive_setValue "user.name" "$(User_getFullName)" "Valid_fullName" "full name" "Include your first and last name."
-    Interactive_setValue "user.email" "$(User_getEmail)" "Valid_email" "school email address" "Use your .edu address."
+user::setup() {
+    Interactive_setValue "user.name" "$(user::getFullName)" "valid::fullName" "full name" "Include your first and last name."
+    Interactive_setValue "user.email" "$(user::getEmail)" "valid::email" "school email address" "Use your .edu address."
 }
